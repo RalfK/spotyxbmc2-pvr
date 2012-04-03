@@ -31,6 +31,7 @@
 #include "pictures/Picture.h"
 #include "guilib/TextureManager.h"
 #include "cores/dvdplayer/DVDFileInfo.h"
+#include "cores/AudioEngine/AEFactory.h"
 #include "PlayListPlayer.h"
 #include "Autorun.h"
 #include "video/Bookmark.h"
@@ -124,7 +125,6 @@
 #include "music/karaoke/GUIDialogKaraokeSongSelector.h"
 #include "music/karaoke/GUIWindowKaraokeLyrics.h"
 #endif
-#include "guilib/AudioContext.h"
 #include "guilib/GUIFontTTF.h"
 #include "network/Network.h"
 #include "storage/IoSupport.h"
@@ -279,10 +279,7 @@
 #define MEASURE_FUNCTION
 #endif
 
-#ifdef HAS_SDL_AUDIO
-#include <SDL/SDL_mixer.h>
-#endif
-#ifdef TARGET_WINDOWS
+#ifdef _WIN32
 #include <shlobj.h>
 #include "win32util.h"
 #endif
@@ -293,6 +290,7 @@
 #ifdef TARGET_DARWIN_OSX
 #include "CocoaInterface.h"
 #include "XBMCHelper.h"
+#include "cores/AudioEngine/Engines/CoreAudioAE.h"
 #endif
 #ifdef TARGET_DARWIN
 #include "DarwinUtils.h"
@@ -630,10 +628,6 @@ bool CApplication::Create()
 
 #if defined(HAS_SDL_OPENGL) || (HAS_GLES == 2)
   sdlFlags |= SDL_INIT_VIDEO;
-#endif
-
-#ifdef HAS_SDL_AUDIO
-  sdlFlags |= SDL_INIT_AUDIO;
 #endif
 
 #ifdef HAS_SDL_JOYSTICK
@@ -1209,6 +1203,11 @@ bool CApplication::Initialize()
 
   /* window id's 3000 - 3100 are reserved for python */
 
+  /* start the audio engine */
+  CAEFactory::LoadEngine();
+
+  SetHardwareVolume(CAEFactory::AE->GetVolume());
+
   // Make sure we have at least the default skin
   if (!LoadSkin(g_guiSettings.GetString("lookandfeel.skin")) && !LoadSkin(DEFAULT_SKIN))
   {
@@ -1246,16 +1245,9 @@ bool CApplication::Initialize()
   CLog::Log(LOGINFO, "removing tempfiles");
   CUtil::RemoveTempFiles();
 
-  //  Restore volume
+  //  Show mute symbol
   if (g_settings.m_bMute)
-  {
-    SetVolume(g_settings.m_iPreMuteVolumeLevel);
     Mute();
-  }
-  else
-  {
-    SetVolume(g_settings.m_nVolumeLevel, false);
-  }
 
   // if the user shutoff the xbox during music scan
   // restore the settings
@@ -2547,7 +2539,7 @@ bool CApplication::OnAction(const CAction &action)
       { // unpaused - set the playspeed back to normal
         SetPlaySpeed(1);
       }
-      g_audioManager.Enable(m_pPlayer->IsPaused() && !g_audioContext.IsPassthroughActive());
+      g_audioManager.Enable(m_pPlayer->IsPaused());
       return true;
     }
     if (!m_pPlayer->IsPaused())
@@ -2607,7 +2599,7 @@ bool CApplication::OnAction(const CAction &action)
       {
         // unpause, and set the playspeed back to normal
         m_pPlayer->Pause();
-        g_audioManager.Enable(m_pPlayer->IsPaused() && !g_audioContext.IsPassthroughActive());
+        g_audioManager.Enable(m_pPlayer->IsPaused());
 
         g_application.SetPlaySpeed(1);
         return true;
@@ -2647,29 +2639,20 @@ bool CApplication::OnAction(const CAction &action)
   {
     if (!m_pPlayer || !m_pPlayer->IsPassthrough())
     {
-      // increase or decrease the volume
-      int volume;
-      if (g_settings.m_bMute)
-      {
-        volume = (int)((float)g_settings.m_iPreMuteVolumeLevel * 0.01f * (VOLUME_MAXIMUM - VOLUME_MINIMUM) + VOLUME_MINIMUM);
-        UnMute();
-      }
-      else
-        volume = g_settings.m_nVolumeLevel + g_settings.m_dynamicRangeCompressionLevel;
+      float volume = CAEFactory::AE->GetVolume();
 
       // calculate speed so that a full press will equal 1 second from min to max
-      float speed = float(VOLUME_MAXIMUM - VOLUME_MINIMUM);
+      float speed = VOLUME_MAXIMUM - VOLUME_MINIMUM;
       if (action.GetRepeat())
         speed *= action.GetRepeat();
       else
         speed /= 50; //50 fps
 
       if (action.GetID() == ACTION_VOLUME_UP)
-        volume += (int)((float)fabs(action.GetAmount()) * action.GetAmount() * speed);
-      else
-        volume -= (int)((float)fabs(action.GetAmount()) * action.GetAmount() * speed);
+           volume += (float)fabs(action.GetAmount()) * action.GetAmount() * speed;
+      else volume -= (float)fabs(action.GetAmount()) * action.GetAmount() * speed;
 
-      SetVolume(volume, false);
+      SetHardwareVolume(volume);
     }
     // show visual feedback of volume change...
     ShowVolumeBar(&action);
@@ -3479,6 +3462,9 @@ void CApplication::Stop(int exitCode)
     g_Windowing.DestroyWindow();
     g_Windowing.DestroyWindowSystem();
 
+    // shutdown the AudioEngine
+    CAEFactory::AE->Shutdown();
+
     CLog::Log(LOGNOTICE, "stopped");
   }
   catch (...)
@@ -3867,12 +3853,6 @@ bool CApplication::PlayFile(const CFileItem& item, bool bRestart)
     m_eCurrentPlayer = eNewCore;
     m_pPlayer = CPlayerCoreFactory::CreatePlayer(eNewCore, *this);
   }
-
-  // Workaround for bug/quirk in SDL_Mixer on OSX.
-  // TODO: Remove after GUI Sounds redux
-#if defined(__APPLE__) || defined(_LINUX)
-  g_audioManager.Enable(false);
-#endif
 
   bool bResult;
   if (m_pPlayer)
@@ -4866,11 +4846,6 @@ void CApplication::Process()
   m_applicationMessenger.ProcessMessages();
   if (g_application.m_bStop) return; //we're done, everything has been unloaded
 
-  // check if we can free unused memory
-#ifndef _LINUX
-  g_audioManager.FreeUnused();
-#endif
-
   // check how far we are through playing the current item
   // and do anything that needs doing (lastfm submission, playcount updates etc)
   CheckPlayingProgress();
@@ -5011,6 +4986,8 @@ void CApplication::ProcessSlow()
   
   if (!IsPlayingVideo())
     CAddonInstaller::Get().UpdateRepos();
+
+  CAEFactory::AE->GarbageCollect();
 }
 
 // Global Idle Time in Seconds
@@ -5128,8 +5105,8 @@ void CApplication::Mute()
   if (g_peripherals.Mute())
     return;
 
-  g_settings.m_iPreMuteVolumeLevel = GetVolume();
-  SetVolume(0);
+  g_settings.m_fVolumeLevel = CAEFactory::AE->GetVolume();
+  CAEFactory::AE->SetVolume(0.0f);
   g_settings.m_bMute = true;
 }
 
@@ -5138,58 +5115,27 @@ void CApplication::UnMute()
   if (g_peripherals.UnMute())
     return;
 
-  SetVolume(g_settings.m_iPreMuteVolumeLevel);
-  g_settings.m_iPreMuteVolumeLevel = 0;
+  CAEFactory::AE->SetVolume(g_settings.m_fVolumeLevel);
+  g_settings.m_fVolumeLevel = 1.0f;
   g_settings.m_bMute = false;
 }
 
-void CApplication::SetVolume(long iValue, bool isPercentage /* = true */)
+void CApplication::SetVolume(long iValue)
 {
-  // convert the percentage to a mB (milliBell) value (*100 for dB)
-  if (isPercentage)
-    iValue = (long)((float)iValue * 0.01f * (VOLUME_MAXIMUM - VOLUME_MINIMUM) + VOLUME_MINIMUM);
-
-  SetHardwareVolume(iValue);
-#ifndef HAS_SDL_AUDIO
-  g_audioManager.SetVolume(g_settings.m_nVolumeLevel);
-#else
-  g_audioManager.SetVolume((int)(128.f * (g_settings.m_nVolumeLevel - VOLUME_MINIMUM) / (float)(VOLUME_MAXIMUM - VOLUME_MINIMUM)));
-#endif
+  float hardwareVolume = (float)iValue / 100.0f;
+  SetHardwareVolume(hardwareVolume);
 }
 
-void CApplication::SetHardwareVolume(long hardwareVolume)
+void CApplication::SetHardwareVolume(float hardwareVolume)
 {
-  // TODO DRC
-  if (hardwareVolume >= VOLUME_MAXIMUM) // + VOLUME_DRC_MAXIMUM
-    hardwareVolume = VOLUME_MAXIMUM;// + VOLUME_DRC_MAXIMUM;
-  if (hardwareVolume <= VOLUME_MINIMUM)
-    hardwareVolume = VOLUME_MINIMUM;
-
-  // update our settings
-  if (hardwareVolume > VOLUME_MAXIMUM)
-  {
-    g_settings.m_dynamicRangeCompressionLevel = hardwareVolume - VOLUME_MAXIMUM;
-    g_settings.m_nVolumeLevel = VOLUME_MAXIMUM;
-  }
-  else
-  {
-    g_settings.m_dynamicRangeCompressionLevel = 0;
-    g_settings.m_nVolumeLevel = hardwareVolume;
-  }
-
-  // and tell our player to update the volume
-  if (m_pPlayer)
-  {
-    m_pPlayer->SetVolume(g_settings.m_nVolumeLevel);
-    // TODO DRC
-//    m_pPlayer->SetDynamicRangeCompression(g_settings.m_dynamicRangeCompressionLevel);
-  }
+  hardwareVolume = std::max(VOLUME_MINIMUM, std::min(VOLUME_MAXIMUM, hardwareVolume));
+  CAEFactory::AE->SetVolume(hardwareVolume);
 }
 
 int CApplication::GetVolume() const
 {
   // converts the hardware volume (in mB) to a percentage
-  return int(((float)(g_settings.m_nVolumeLevel + g_settings.m_dynamicRangeCompressionLevel - VOLUME_MINIMUM)) / (VOLUME_MAXIMUM - VOLUME_MINIMUM)*100.0f + 0.5f);
+  return CAEFactory::AE->GetVolume() * 100.0f;
 }
 
 int CApplication::GetSubtitleDelay() const
@@ -5228,7 +5174,7 @@ void CApplication::SetPlaySpeed(int iSpeed)
   m_pPlayer->ToFFRW(m_iPlaySpeed);
   if (m_iPlaySpeed == 1)
   { // restore volume
-    m_pPlayer->SetVolume(g_settings.m_nVolumeLevel);
+    m_pPlayer->SetVolume(VOLUME_MAXIMUM);
   }
   else
   { // mute volume

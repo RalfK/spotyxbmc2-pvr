@@ -1210,7 +1210,8 @@ bool CPeripheralCecAdapterUpdateThread::SetInitialConfiguration(void)
     // set amp present
     m_adapter->SetAudioSystemConnected(true);
     g_settings.m_bMute = false;
-    g_settings.m_nVolumeLevel = VOLUME_MAXIMUM;
+    g_settings.m_fVolumeLevel = VOLUME_MAXIMUM * 100;
+    g_application.SetVolume(VOLUME_MAXIMUM * 100);
   }
 
   m_adapter->m_bIsReady = true;
