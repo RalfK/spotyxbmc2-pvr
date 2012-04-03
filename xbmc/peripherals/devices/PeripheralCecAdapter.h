@@ -115,6 +115,7 @@ namespace PERIPHERALS
     static int CecLogMessage(void *cbParam, const CEC::cec_log_message &message);
     static int CecCommand(void *cbParam, const CEC::cec_command &command);
     static int CecConfiguration(void *cbParam, const CEC::libcec_configuration &config);
+    bool IsRunning(void) const;
 
     virtual bool GetNextKey(void);
     virtual bool GetNextCecKey(CEC::cec_keypress &key);
@@ -140,6 +141,7 @@ namespace PERIPHERALS
     CecVolumeChange                   m_lastChange;
     int                               m_iExitCode;
     bool                              m_bIsMuted;
+    bool                              m_bIsRunning;
     CPeripheralCecAdapterUpdateThread*m_queryThread;
     CEC::ICECCallbacks                m_callbacks;
     CCriticalSection                  m_critSection;

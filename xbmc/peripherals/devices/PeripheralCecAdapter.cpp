@@ -80,7 +80,7 @@ CPeripheralCecAdapter::CPeripheralCecAdapter(const PeripheralType type, const Pe
   m_lastKeypress(0),
   m_lastChange(VOLUME_CHANGE_NONE),
   m_iExitCode(0),
-  m_bIsMuted(false) // TODO fetch the correct initial value when system audiostatus is implemented in libCEC
+  m_bIsRunning(false)
 {
   m_button.iButton = 0;
   m_button.iDuration = 0;
@@ -300,6 +300,7 @@ void CPeripheralCecAdapter::Process(void)
   {
     CSingleLock lock(m_critSection);
     m_iExitCode = EXITCODE_QUIT;
+    m_bIsRunning = true;
   }
 
   CAnnouncementManager::AddAnnouncer(this);
@@ -349,7 +350,12 @@ void CPeripheralCecAdapter::Process(void)
   m_cecAdapter->Close();
 
   CLog::Log(LOGDEBUG, "%s - CEC adapter processor thread ended", __FUNCTION__);
-  m_bStarted = false;
+
+  {
+    CSingleLock lock(m_critSection);
+    m_bStarted = false;
+    m_bIsRunning = false;
+  }
 }
 
 bool CPeripheralCecAdapter::HasConnectedAudioSystem(void)
@@ -906,10 +912,14 @@ void CPeripheralCecAdapter::OnSettingChanged(const CStdString &strChangedSetting
     else if (bEnabled && !m_cecAdapter && m_bStarted)
       InitialiseFeature(FEATURE_CEC);
   }
-  else
+  else if (IsRunning())
   {
     SetConfigurationFromSettings();
     m_queryThread->UpdateConfiguration(&m_configuration);
+  }
+  else
+  {
+    InitialiseFeature(FEATURE_CEC);
   }
 }
 
@@ -1213,6 +1223,12 @@ bool CPeripheralCecAdapterUpdateThread::SetInitialConfiguration(void)
   CSingleLock lock(m_critSection);
   m_bIsUpdating = false;
   return true;
+}
+
+bool CPeripheralCecAdapter::IsRunning(void) const
+{
+  CSingleLock lock(m_critSection);
+  return m_bIsRunning;
 }
 
 void CPeripheralCecAdapterUpdateThread::Process(void)
