@@ -29,7 +29,6 @@
 #include "DllSwScale.h"
 #include "DllAvFilter.h"
 
-class CVDPAU;
 class CCriticalSection;
 
 class CDVDVideoCodecFFmpeg : public CDVDVideoCodec
@@ -45,6 +44,8 @@ public:
     virtual bool GetPicture(AVCodecContext* avctx, AVFrame* frame, DVDVideoPicture* picture) = 0;
     virtual int  Check     (AVCodecContext* avctx) = 0;
     virtual void Reset     () {}
+    virtual bool CanSkipDeint() {return false; }
+    virtual void SetSpeed(int speed) {}
     virtual const std::string Name() = 0;
     virtual CCriticalSection* Section() { return NULL; }
   };
@@ -61,6 +62,9 @@ public:
   virtual unsigned int SetFilters(unsigned int filters);
   virtual const char* GetName() { return m_name.c_str(); }; // m_name is never changed after open
   virtual unsigned GetConvergeCount();
+  virtual bool GetPts(double &pts, int &skippedDeint, int &interlaced) {pts=m_decoderPts; skippedDeint=m_skippedDeint; if (m_pFrame) interlaced = m_pFrame->interlaced_frame; return true;}
+  virtual void SetSpeed(int speed);
+  virtual void SetCodecControl(int state);
 
   bool               IsHardwareAllowed()                     { return !m_bSoftware; }
   IHardwareDecoder * GetHardware()                           { return m_pHardware; };
@@ -109,4 +113,8 @@ protected:
   int m_iLastKeyframe;
   double m_dts;
   bool   m_started;
+  double m_decoderPts, m_decoderInterval;
+  int    m_skippedDeint;
+  bool   m_requestSkipDeint;
+  int    m_codecControlState;
 };

@@ -56,6 +56,9 @@
 #ifdef HAVE_LIBVA
 #include "VAAPI.h"
 #endif
+#ifdef HAVE_LIBXVBA
+#include "XVBA.h"
+#endif
 
 using namespace boost;
 
@@ -71,14 +74,14 @@ enum PixelFormat CDVDVideoCodecFFmpeg::GetFormat( struct AVCodecContext * avctx
   while(*cur != PIX_FMT_NONE)
   {
 #ifdef HAVE_LIBVDPAU
-    if(CVDPAU::IsVDPAUFormat(*cur) && g_guiSettings.GetBool("videoplayer.usevdpau"))
+    if(VDPAU::CDecoder::IsVDPAUFormat(*cur) && g_guiSettings.GetBool("videoplayer.usevdpau"))
     {
       if(ctx->GetHardware())
         return *cur;
         
       CLog::Log(LOGNOTICE,"CDVDVideoCodecFFmpeg::GetFormat - Creating VDPAU(%ix%i)", avctx->width, avctx->height);
-      CVDPAU* vdp = new CVDPAU();
-      if(vdp->Open(avctx, *cur))
+      VDPAU::CDecoder* vdp = new VDPAU::CDecoder();
+      if(vdp->Open(avctx, *cur, ctx->m_uSurfacesCount))
       {
         ctx->SetHardware(vdp);
         return *cur;
@@ -100,13 +103,26 @@ enum PixelFormat CDVDVideoCodecFFmpeg::GetFormat( struct AVCodecContext * avctx
       dec->Release();
   }
 #endif
+#ifdef HAVE_LIBXVBA
+    if(*cur == PIX_FMT_XVBA_VLD && g_guiSettings.GetBool("videoplayer.usexvba"))
+    {
+      XVBA::CDecoder* dec = new XVBA::CDecoder();
+      if(dec->Open(avctx, *cur, ctx->m_uSurfacesCount))
+      {
+        ctx->SetHardware(dec);
+        return *cur;
+      }
+      else
+        dec->Release();
+    }
+#endif
 #ifdef HAVE_LIBVA
     // mpeg4 vaapi decoding is disabled
     if(*cur == PIX_FMT_VAAPI_VLD && g_guiSettings.GetBool("videoplayer.usevaapi") 
     && (avctx->codec_id != CODEC_ID_MPEG4 || g_advancedSettings.m_videoAllowMpeg4VAAPI)) 
     {
       VAAPI::CDecoder* dec = new VAAPI::CDecoder();
-      if(dec->Open(avctx, *cur))
+      if(dec->Open(avctx, *cur, ctx->m_uSurfacesCount))
       {
         ctx->SetHardware(dec);
         return *cur;
@@ -142,6 +158,7 @@ CDVDVideoCodecFFmpeg::CDVDVideoCodecFFmpeg() : CDVDVideoCodec()
   m_iLastKeyframe = 0;
   m_dts = DVD_NOPTS_VALUE;
   m_started = false;
+  m_decoderPts = DVD_NOPTS_VALUE;
 }
 
 CDVDVideoCodecFFmpeg::~CDVDVideoCodecFFmpeg()
@@ -195,13 +212,25 @@ bool CDVDVideoCodecFFmpeg::Open(CDVDStreamInfo &hints, CDVDCodecOptions &options
           continue;
 
         CLog::Log(LOGNOTICE,"CDVDVideoCodecFFmpeg::Open() Creating VDPAU(%ix%i, %d)",hints.width, hints.height, hints.codec);
-        CVDPAU* vdp = new CVDPAU();
+        VDPAU::CDecoder* vdp = new VDPAU::CDecoder();
         m_pCodecContext->codec_id = hints.codec;
         m_pCodecContext->width    = hints.width;
         m_pCodecContext->height   = hints.height;
         m_pCodecContext->coded_width   = hints.width;
         m_pCodecContext->coded_height  = hints.height;
-        if(vdp->Open(m_pCodecContext, pCodec->pix_fmts ? pCodec->pix_fmts[0] : PIX_FMT_NONE))
+
+        // check number of surfaces used in renderer
+        unsigned int surfaces = 0;
+        for(CDVDCodecOptions::iterator it = options.begin(); it != options.end(); it++)
+        {
+          if (it->m_name == "surfaces")
+          {
+            surfaces = std::atoi(it->m_value.c_str());
+            break;
+          }
+        }
+
+        if(vdp->Open(m_pCodecContext, pCodec->pix_fmts ? pCodec->pix_fmts[0] : PIX_FMT_NONE, surfaces))
         {
           m_pHardware = vdp;
           m_pCodecContext->codec_id = CODEC_ID_NONE; // ffmpeg will complain if this has been set
@@ -338,6 +367,14 @@ void CDVDVideoCodecFFmpeg::SetDropState(bool bDrop)
 {
   if( m_pCodecContext )
   {
+    if (bDrop && m_pHardware && m_pHardware->CanSkipDeint())
+    {
+      m_requestSkipDeint = true;
+      bDrop = false;
+    }
+    else
+      m_requestSkipDeint = false;
+
     // i don't know exactly how high this should be set
     // couldn't find any good docs on it. think it varies
     // from codec to codec on what it does
@@ -558,6 +595,7 @@ int CDVDVideoCodecFFmpeg::Decode(BYTE* pData, int iSize, double dts, double pts)
 void CDVDVideoCodecFFmpeg::Reset()
 {
   m_started = false;
+  m_decoderPts = DVD_NOPTS_VALUE;
   m_iLastKeyframe = m_pCodecContext->has_b_frames;
   m_dllAvCodec.avcodec_flush_buffers(m_pCodecContext);
 
@@ -662,6 +700,22 @@ bool CDVDVideoCodecFFmpeg::GetPictureCommon(DVDVideoPicture* pDvdVideoPicture)
     pDvdVideoPicture->pts = pts_itod(m_pFrame->reordered_opaque);
   else
     pDvdVideoPicture->pts = DVD_NOPTS_VALUE;
+
+  if (pDvdVideoPicture->pts != DVD_NOPTS_VALUE)
+    m_decoderPts = pDvdVideoPicture->pts;
+  else
+    m_decoderPts = m_dts;
+
+  if (m_requestSkipDeint)
+  {
+    pDvdVideoPicture->iFlags |= DVP_FLAG_DROPDEINT;
+    m_skippedDeint = 1;
+  }
+  else
+    m_skippedDeint = 0;
+
+  m_requestSkipDeint = false;
+  pDvdVideoPicture->iFlags |= m_codecControlState;
 
   if(!m_started)
     pDvdVideoPicture->iFlags |= DVP_FLAG_DROPPED;
@@ -882,4 +936,15 @@ unsigned CDVDVideoCodecFFmpeg::GetConvergeCount()
     return m_iLastKeyframe;
   else
     return 0;
+}
+
+void CDVDVideoCodecFFmpeg::SetSpeed(int speed)
+{
+  if (m_pHardware)
+    m_pHardware->SetSpeed(speed);
+}
+
+void CDVDVideoCodecFFmpeg::SetCodecControl(int state)
+{
+  m_codecControlState = state;
 }

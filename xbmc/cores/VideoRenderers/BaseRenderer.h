@@ -67,6 +67,8 @@ public:
   virtual void Flush() {};
 
   virtual unsigned int GetProcessorSize() { return 0; }
+  virtual unsigned int GetMaxProcessorSize() { return 0; }
+  virtual void SetProcessorSize(int numBuffers) { }
 
 protected:
   void       ChooseBestResolution(float fps);

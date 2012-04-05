@@ -44,6 +44,7 @@
 // First one being nullsoft's nsv audio decoder format
 
 PAPlayer::PAPlayer(IPlayerCallback& callback) :
+  CThread         ("PAPlayer"),
   IPlayer         (callback),
   m_playbackSpeed (1    ),
   m_isPlaying     (false),
@@ -226,7 +227,7 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
   if (!QueueNextFileEx(file, false))
     return false;
   
-  if (ThreadHandle() == NULL)
+  if (!IsRunning())
     Create();
   
   /* trigger playback start */

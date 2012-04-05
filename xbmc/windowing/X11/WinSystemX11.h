@@ -27,6 +27,7 @@
 #include "utils/Stopwatch.h"
 #include <GL/glx.h>
 #include "threads/CriticalSection.h"
+#include "XRandR.h"
 
 class IDispResource;
 
@@ -60,6 +61,9 @@ public:
   // Local to WinSystemX11 only
   Display*  GetDisplay() { return m_dpy; }
   GLXWindow GetWindow() { return m_glWindow; }
+  GLXContext GetGlxContext() { return m_glContext; }
+  Window GetWmWindow() { return m_wmWindow; }
+  void RefreshWindow();
 
 protected:
   bool RefreshGlxContext();
@@ -76,6 +80,9 @@ protected:
   CCriticalSection             m_resourceSection;
   std::vector<IDispResource*>  m_resources;
   uint64_t                     m_dpyLostTime;
+  XOutput      m_xrandrOut;
+  XMode        m_xrandrMode;
+  bool         m_internalModeSwitch;
 
 private:
   bool IsSuitableVisual(XVisualInfo *vInfo);

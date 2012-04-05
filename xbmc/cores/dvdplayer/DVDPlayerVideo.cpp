@@ -189,7 +189,7 @@ bool CDVDPlayerVideo::OpenStream( CDVDStreamInfo &hint )
     return false;
   }
 
-  if(g_guiSettings.GetBool("videoplayer.usedisplayasclock") && g_VideoReferenceClock.ThreadHandle() == NULL)
+  if(g_guiSettings.GetBool("videoplayer.usedisplayasclock") && !g_VideoReferenceClock.IsRunning())
   {
     g_VideoReferenceClock.Create();
     //we have to wait for the clock to start otherwise alsa can cause trouble
@@ -247,6 +247,7 @@ void CDVDPlayerVideo::OpenStream(CDVDStreamInfo &hint, CDVDVideoCodec* codec)
   m_stalled = m_messageQueue.GetPacketCount(CDVDMsg::DEMUXER_PACKET) == 0;
   m_started = false;
   m_codecname = m_pVideoCodec->GetName();
+  g_renderManager.EnableBuffering(false);
 }
 
 void CDVDPlayerVideo::CloseStream(bool bWaitForBuffers)
@@ -291,7 +292,7 @@ void CDVDPlayerVideo::OnStartup()
   m_iCurrentPts = DVD_NOPTS_VALUE;
   m_FlipTimeStamp = m_pClock->GetAbsoluteClock();
 
-  g_dvdPerformanceCounter.EnableVideoDecodePerformance(ThreadHandle());
+  g_dvdPerformanceCounter.EnableVideoDecodePerformance(this);
 }
 
 void CDVDPlayerVideo::Process()
@@ -311,8 +312,10 @@ void CDVDPlayerVideo::Process()
 
   int iDropped = 0; //frames dropped in a row
   bool bRequestDrop = false;
+  int iDropDirective;
 
   m_videoStats.Start();
+  m_droppingStats.Reset();
 
   while (!m_bStop)
   {
@@ -414,18 +417,24 @@ void CDVDPlayerVideo::Process()
       if(m_pVideoCodec)
         m_pVideoCodec->Reset();
       m_packets.clear();
+      picture.iFlags &= ~DVP_FLAG_ALLOCATED;
       m_started = false;
+      m_droppingStats.Reset();
+      g_renderManager.EnableBuffering(false);
     }
     else if (pMsg->IsType(CDVDMsg::GENERAL_FLUSH)) // private message sent by (CDVDPlayerVideo::Flush())
     {
       if(m_pVideoCodec)
         m_pVideoCodec->Reset();
       m_packets.clear();
+      picture.iFlags &= ~DVP_FLAG_ALLOCATED;
 
       m_pullupCorrection.Flush();
       //we need to recalculate the framerate
       //TODO: this needs to be set on a streamchange instead
       ResetFrameRateCalc();
+      m_droppingStats.Reset();
+      g_renderManager.EnableBuffering(false);
 
       m_stalled = true;
       m_started = false;
@@ -443,6 +452,10 @@ void CDVDPlayerVideo::Process()
       m_speed = static_cast<CDVDMsgInt*>(pMsg)->m_value;
       if(m_speed == DVD_PLAYSPEED_PAUSE)
         m_iNrOfPicturesNotToSkip = 0;
+      m_droppingStats.Reset();
+//      g_renderManager.EnableBuffering(m_speed == DVD_PLAYSPEED_NORMAL);
+      if (m_pVideoCodec)
+        m_pVideoCodec->SetSpeed(m_speed);
     }
     else if (pMsg->IsType(CDVDMsg::PLAYER_STARTED))
     {
@@ -477,6 +490,29 @@ void CDVDPlayerVideo::Process()
         m_iNrOfPicturesNotToSkip = 1;
       }
 
+      bRequestDrop = false;
+      iDropDirective = CalcDropRequirement(pts);
+      if (iDropDirective & EOS_VERYLATE)
+      {
+        if (m_bAllowDrop)
+        {
+          m_pullupCorrection.Flush();
+          bRequestDrop = true;
+        }
+      }
+      int codecControl = 0;
+      if (iDropDirective & EOS_BUFFER_LEVEL)
+      {
+        if (iDropDirective & EOS_BUFFER_LEVEL)
+          codecControl |= DVP_FLAG_DRAIN;
+      }
+      m_pVideoCodec->SetCodecControl(codecControl);
+      if (iDropDirective & EOS_DROPPED)
+      {
+        m_iDroppedFrames++;
+        iDropped++;
+      }
+
 #ifdef PROFILE
       bRequestDrop = false;
 #else
@@ -486,6 +522,7 @@ void CDVDPlayerVideo::Process()
         bRequestDrop = false;
         m_iDroppedRequest = 0;
         m_iLateFrames     = 0;
+        m_droppingStats.m_requestOutputDrop = false;
       }
 #endif
 
@@ -524,7 +561,7 @@ void CDVDPlayerVideo::Process()
       if(m_pVideoCodec->GetConvergeCount() > 0)
       {
         m_packets.push_back(DVDMessageListItem(pMsg, 0));
-        if(m_packets.size() > m_pVideoCodec->GetConvergeCount() 
+        if(m_packets.size() > m_pVideoCodec->GetConvergeCount()
         || m_packets.size() * frametime > DVD_SEC_TO_TIME(10))
           m_packets.pop_front();
       }
@@ -534,11 +571,13 @@ void CDVDPlayerVideo::Process()
       // picture from a demux packet, this should be reasonable
       // for libavformat as a demuxer as it normally packetizes
       // pictures when they come from demuxer
-      if(bRequestDrop && !bPacketDrop && (iDecoderState & VC_BUFFER) && !(iDecoderState & VC_PICTURE))
-      {
-        m_iDroppedFrames++;
-        iDropped++;
-      }
+//      if(bRequestDrop && !bPacketDrop && (iDecoderState & VC_BUFFER) && !(iDecoderState & VC_PICTURE))
+//      {
+//        m_iDroppedFrames++;
+//        iDropped++;
+//      }
+
+      bRequestDrop = false;
 
       // loop while no error
       while (!m_bStop)
@@ -561,6 +600,8 @@ void CDVDPlayerVideo::Process()
 
           m_pVideoCodec->Reset();
           m_packets.clear();
+          picture.iFlags &= ~DVP_FLAG_ALLOCATED;
+          g_renderManager.DiscardBuffer();
           break;
         }
 
@@ -670,11 +711,15 @@ void CDVDPlayerVideo::Process()
             CDVDCodecUtils::FreePicture(pTempYUVPackedPicture);
 #endif
 
+            if (!m_bFpsInvalid)
+              frametime = (double)DVD_TIME_BASE/m_fFrameRate;
+
             if(m_started == false)
             {
               m_codecname = m_pVideoCodec->GetName();
               m_started = true;
               m_messageParent.Put(new CDVDMsgInt(CDVDMsg::PLAYER_STARTED, DVDPLAYER_VIDEO));
+              g_renderManager.EnableBuffering(true);
             }
 
             // guess next frame pts. iDuration is always valid
@@ -1037,6 +1082,10 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
         flags |= CONF_FLAGS_FORMAT_VDPAU;
         formatstr = "VDPAU";
         break;
+      case DVDVideoPicture::FMT_VDPAU_420:
+        flags |= CONF_FLAGS_FORMAT_VDPAU_420;
+        formatstr = "VDPAU_420";
+        break;
       case DVDVideoPicture::FMT_DXVA:
         flags |= CONF_FLAGS_FORMAT_DXVA;
         formatstr = "DXVA";
@@ -1051,6 +1100,10 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
       case DVDVideoPicture::FMT_CVBREF:
         flags |= CONF_FLAGS_FORMAT_CVBREF;
         formatstr = "BGRA";
+        break;
+      case DVDVideoPicture::FMT_XVBA:
+        flags |= CONF_FLAGS_FORMAT_XVBA;
+        formatstr = "XVBA";
         break;
     }
 
@@ -1160,50 +1213,63 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
   m_FlipTimeStamp += max(0.0, iSleepTime);
   m_FlipTimeStamp += iFrameDuration;
 
-  if (iSleepTime <= 0 && m_speed)
-    m_iLateFrames++;
-  else
-    m_iLateFrames = 0;
+//  if (iSleepTime <= 0 && m_speed)
+//    m_iLateFrames++;
+//  else
+//    m_iLateFrames = 0;
+//
+//  // ask decoder to drop frames next round, as we are very late
+//  if(m_iLateFrames > 10)
+//  {
+//    if (!(pPicture->iFlags & DVP_FLAG_NOSKIP))
+//    {
+//      //if we're calculating the framerate,
+//      //don't drop frames until we've calculated a stable framerate
+//      if (m_bAllowDrop || m_speed != DVD_PLAYSPEED_NORMAL)
+//      {
+//        result |= EOS_VERYLATE;
+//        m_pullupCorrection.Flush(); //dropped frames mess up the pattern, so just flush it
+//      }
+//
+//      //if we requested 5 drops in a row and we're still late, drop on output
+//      //this keeps a/v sync if the decoder can't drop, or we're still calculating the framerate
+//      if (m_iDroppedRequest > 5)
+//      {
+//        m_iDroppedRequest--; //decrease so we only drop half the frames
+//        return result | EOS_DROPPED;
+//      }
+//      m_iDroppedRequest++;
+//    }
+//  }
+//  else
+//  {
+//    m_iDroppedRequest = 0;
+//  }
 
-  // ask decoder to drop frames next round, as we are very late
-  if(m_iLateFrames > 10)
+  if ((m_droppingStats.m_requestOutputDrop && !(pPicture->iFlags & DVP_FLAG_NOSKIP))
+     || (pPicture->iFlags & DVP_FLAG_DROPPED))
   {
-    if (!(pPicture->iFlags & DVP_FLAG_NOSKIP))
-    {
-      //if we're calculating the framerate,
-      //don't drop frames until we've calculated a stable framerate
-      if (m_bAllowDrop || m_speed != DVD_PLAYSPEED_NORMAL)
-      {
-        result |= EOS_VERYLATE;
-        m_pullupCorrection.Flush(); //dropped frames mess up the pattern, so just flush it
-      }
-
-      //if we requested 5 drops in a row and we're still late, drop on output
-      //this keeps a/v sync if the decoder can't drop, or we're still calculating the framerate
-      if (m_iDroppedRequest > 5)
-      {
-        m_iDroppedRequest--; //decrease so we only drop half the frames
-        return result | EOS_DROPPED;
-      }
-      m_iDroppedRequest++;
-    }
-  }
-  else
-  {
-    m_iDroppedRequest = 0;
+    m_droppingStats.AddOutputDropGain(pts, 1/m_fFrameRate);
+    m_droppingStats.m_requestOutputDrop = false;
+    CLog::Log(LOGDEBUG,"%s - dropped in output", __FUNCTION__);
+    return result | EOS_DROPPED;
   }
 
   if( m_speed < 0 )
   {
-    if( iClockSleep < -DVD_MSEC_TO_TIME(200)
-    && !(pPicture->iFlags & DVP_FLAG_NOSKIP) )
+    double decoderPts = m_droppingStats.m_lastDecoderPts;
+    double renderPts = m_droppingStats.m_lastRenderPts;
+    if (pts > renderPts)
+    {
+      if (decoderPts >= renderPts)
+      {
+        Sleep(200);
+      }
       return result | EOS_DROPPED;
+    }
   }
 
-  if( (pPicture->iFlags & DVP_FLAG_DROPPED) )
-    return result | EOS_DROPPED;
-
-  if( m_speed != DVD_PLAYSPEED_NORMAL && limited )
+  if( m_speed != DVD_PLAYSPEED_NORMAL && m_speed >= 0 && limited )
   {
     // calculate frame dropping pattern to render at this speed
     // we do that by deciding if this or next frame is closest
@@ -1239,6 +1305,16 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
       mDisplayField = FS_BOT;
   }
 
+  int buffer = g_renderManager.WaitForBuffer(m_bStop);
+  while (buffer < 0 && !CThread::m_bStop &&
+         CDVDClock::GetAbsoluteClock(false) < iCurrentClock + iSleepTime + DVD_MSEC_TO_TIME(500) )
+  {
+    Sleep(1);
+    buffer = g_renderManager.WaitForBuffer(m_bStop);
+  }
+  if (buffer < 0)
+    return EOS_DROPPED;
+
   ProcessOverlays(pPicture, pts);
   AutoCrop(pPicture);
 
@@ -1255,7 +1331,7 @@ int CDVDPlayerVideo::OutputPicture(const DVDVideoPicture* src, double pts)
   if (index < 0)
     return EOS_DROPPED;
 
-  g_renderManager.FlipPage(CThread::m_bStop, (iCurrentClock + iSleepTime) / DVD_TIME_BASE, -1, mDisplayField);
+  g_renderManager.FlipPage(CThread::m_bStop, pts, -1, mDisplayField, m_speed);
 
   return result;
 #else
@@ -1269,7 +1345,8 @@ void CDVDPlayerVideo::AutoCrop(DVDVideoPicture *pPicture)
   if ((pPicture->format == DVDVideoPicture::FMT_YUV420P) ||
      (pPicture->format == DVDVideoPicture::FMT_NV12) ||
      (pPicture->format == DVDVideoPicture::FMT_YUY2) ||
-     (pPicture->format == DVDVideoPicture::FMT_UYVY))
+     (pPicture->format == DVDVideoPicture::FMT_UYVY) ||
+     (pPicture->format == DVDVideoPicture::FMT_VDPAU_420))
   {
     RECT crop;
 
@@ -1498,7 +1575,7 @@ void CDVDPlayerVideo::CalcFrameRate()
   double frameduration = m_pullupCorrection.GetFrameDuration();
 
   if (frameduration == DVD_NOPTS_VALUE ||
-      (g_advancedSettings.m_videoFpsDetect == 1 && m_pullupCorrection.GetPatternLength() > 1))
+      (g_advancedSettings.m_videoFpsDetect == 1 && (m_pullupCorrection.GetPatternLength() > 1 && !m_bFpsInvalid)))
   {
     //reset the stored framerates if no good framerate was detected
     m_fStableFrameRate = 0.0;
@@ -1553,4 +1630,144 @@ void CDVDPlayerVideo::CalcFrameRate()
     m_fStableFrameRate = 0.0;
     m_iFrameRateCount = 0;
   }
+}
+
+int CDVDPlayerVideo::CalcDropRequirement(double pts)
+{
+  int result = 0;
+  double iSleepTime;
+  double iDecoderPts, iRenderPts;
+  double iInterval;
+  int    interlaced;
+  double iGain;
+  double iLateness;
+  bool   bNewFrame;
+  int    iSkippedDeint = 0;
+  int    iBufferLevel;
+
+  // get decoder stats
+  if (!m_pVideoCodec->GetPts(iDecoderPts, iSkippedDeint, interlaced))
+    iDecoderPts = pts;
+
+  // get render stats
+  g_renderManager.GetStats(iSleepTime, iRenderPts, iBufferLevel);
+
+  if (iBufferLevel < 0)
+    result |= EOS_BUFFER_LEVEL;
+  else if (iBufferLevel < 2)
+  {
+    result |= EOS_BUFFER_LEVEL;
+    CLog::Log(LOGDEBUG,"CDVDPlayerVideo::CalcDropRequirement - hurry: %d", iBufferLevel);
+  }
+
+  bNewFrame = iDecoderPts != m_droppingStats.m_lastDecoderPts;
+
+  if (interlaced)
+    iInterval = 2/m_fFrameRate*(double)DVD_TIME_BASE;
+  else
+    iInterval = 1/m_fFrameRate*(double)DVD_TIME_BASE;
+
+  // add any gains regardless of being late
+  if (m_droppingStats.m_lastDecoderPts > 0
+      && bNewFrame
+      && m_bAllowDrop
+      && m_droppingStats.m_dropRequests > 0)
+  {
+    iGain = (iDecoderPts - m_droppingStats.m_lastDecoderPts - iInterval)/(double)DVD_TIME_BASE;
+    if (iSkippedDeint)
+    {
+      CDroppingStats::CGain gain;
+      gain.gain = 1/m_fFrameRate;
+      gain.pts = iDecoderPts;
+      m_droppingStats.m_gain.push_back(gain);
+      m_droppingStats.m_totalGain += gain.gain;
+      result |= EOS_DROPPED;
+      m_droppingStats.m_dropRequests = 0;
+      CLog::Log(LOGDEBUG,"CDVDPlayerVideo::CalcDropRequirement - dropped de-interlacing cycle, Sleeptime: %f, Bufferlevel: %d", iSleepTime, iBufferLevel);
+    }
+    else if (iGain > 1/m_fFrameRate)
+    {
+      CDroppingStats::CGain gain;
+      gain.gain = iGain;
+      gain.pts = iDecoderPts;
+      m_droppingStats.m_gain.push_back(gain);
+      m_droppingStats.m_totalGain += iGain;
+      result |= EOS_DROPPED;
+      m_droppingStats.m_dropRequests = 0;
+      CLog::Log(LOGDEBUG,"CDVDPlayerVideo::CalcDropRequirement - dropped in decoder, Sleeptime: %f, Bufferlevel: %d, Gain: %f", iSleepTime, iBufferLevel, iGain);
+    }
+
+  }
+  m_droppingStats.m_lastDecoderPts = iDecoderPts;
+
+  // subtract gains
+  while (!m_droppingStats.m_gain.empty() &&
+         iRenderPts >= m_droppingStats.m_gain.front().pts)
+  {
+    m_droppingStats.m_totalGain -= m_droppingStats.m_gain.front().gain;
+    m_droppingStats.m_gain.pop_front();
+  }
+
+//  if (iSleepTime < 0)
+//  {
+//    CLog::Log(LOGNOTICE,"----- sleep: %f, gain :%f",
+//        iSleepTime, m_droppingStats.m_totalGain);
+//  }
+
+  // calculate lateness
+  iLateness = iSleepTime + m_droppingStats.m_totalGain;
+  if (iLateness < 0 && m_speed)
+  {
+    if (bNewFrame)
+      m_droppingStats.m_lateFrames++;
+
+    // if lateness is smaller than frametime, we observe this state
+    // for 10 cycles
+    if (m_droppingStats.m_lateFrames > 10 || iLateness < -2/m_fFrameRate)
+    {
+      // is frame allowed to skip
+      if (m_iNrOfPicturesNotToSkip <= 0)
+      {
+        result |= EOS_VERYLATE;
+
+        // drop in output
+        if (m_droppingStats.m_dropRequests > 7 && g_graphicsContext.IsFullScreenVideo())
+        {
+          m_droppingStats.m_dropRequests--; //decrease so we only drop half the frames
+          m_droppingStats.m_requestOutputDrop = true;
+          CLog::Log(LOGNOTICE,"-------- drop output");
+        }
+        else if (bNewFrame)
+          m_droppingStats.m_dropRequests++;
+      }
+    }
+  }
+  else
+  {
+    m_droppingStats.m_dropRequests = 0;
+    m_droppingStats.m_lateFrames = 0;
+    m_droppingStats.m_requestOutputDrop = false;
+  }
+  m_droppingStats.m_lastRenderPts = iRenderPts;
+  return result;
+}
+
+void CDroppingStats::Reset()
+{
+  m_gain.clear();
+  m_totalGain = 0;
+  m_lastDecoderPts = 0;
+  m_lastRenderPts = 0;
+  m_lateFrames = 0;
+  m_dropRequests = 0;
+  m_requestOutputDrop = false;
+}
+
+void CDroppingStats::AddOutputDropGain(double pts, double frametime)
+{
+  CDroppingStats::CGain gain;
+  gain.gain = frametime;
+  gain.pts = pts;
+  m_gain.push_back(gain);
+  m_totalGain += frametime;
 }

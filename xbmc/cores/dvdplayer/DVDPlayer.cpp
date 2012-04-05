@@ -348,7 +348,7 @@ bool CDVDPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 
     // if playing a file close it first
     // this has to be changed so we won't have to close it.
-    if(ThreadHandle())
+    if(IsRunning())
       CloseFile();
 
     m_bAbortRequest = false;
@@ -366,7 +366,7 @@ bool CDVDPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
     m_ready.Reset();
 	
 #if defined(HAS_VIDEO_PLAYBACK)
-    g_renderManager.PreInit();
+    g_renderManager.PreInit(&m_clock);
 #endif
 	
     Create();
@@ -440,9 +440,8 @@ void CDVDPlayer::OnStartup()
 
   m_messenger.Init();
 
-  g_dvdPerformanceCounter.EnableMainPerformance(ThreadHandle());
-
   CUtil::ClearTempFonts();
+  g_dvdPerformanceCounter.EnableMainPerformance(this);
 }
 
 bool CDVDPlayer::OpenInputStream()
@@ -1585,7 +1584,7 @@ void CDVDPlayer::HandlePlaySpeed()
 
     }
     else if (m_CurrentVideo.id >= 0
-          &&  m_CurrentVideo.inited == true
+          &&  (m_CurrentVideo.inited == true || GetPlaySpeed() < 0)
           &&  m_SpeedState.lastpts  != m_dvdPlayerVideo.GetCurrentPts()
           &&  m_SpeedState.lasttime != GetTime())
     {
@@ -2262,6 +2261,11 @@ void CDVDPlayer::HandleMessages()
         if (speed != DVD_PLAYSPEED_PAUSE && m_playSpeed != DVD_PLAYSPEED_PAUSE && speed != m_playSpeed)
           m_callback.OnPlayBackSpeedChanged(speed / DVD_PLAYSPEED_NORMAL);
 
+        if (m_playSpeed < 0 && speed >= 0)
+        {
+          m_messenger.Put(new CDVDMsgPlayerSeek(GetTime(), true, true, true));
+        }
+
         // if playspeed is different then DVD_PLAYSPEED_NORMAL or DVD_PLAYSPEED_PAUSE
         // audioplayer, stops outputing audio to audiorendere, but still tries to
         // sleep an correct amount for each packet
@@ -2278,6 +2282,7 @@ void CDVDPlayer::HandleMessages()
         //        until our buffers are somewhat filled
         if(m_pDemuxer)
           m_pDemuxer->SetSpeed(speed);
+
       }
       else if (pMsg->IsType(CDVDMsg::PLAYER_CHANNEL_SELECT_NUMBER) && m_messenger.GetPacketCount(CDVDMsg::PLAYER_CHANNEL_SELECT_NUMBER) == 0)
       {
@@ -2897,7 +2902,7 @@ bool CDVDPlayer::OpenAudioStream(int iStream, int source)
   m_dvdPlayerAudio.SendMessage(new CDVDMsg(CDVDMsg::PLAYER_STARTED), 1);
 
   /* audio normally won't consume full cpu, so let it have prio */
-  m_dvdPlayerAudio.SetPriority(GetThreadPriority(*this)+1);
+  m_dvdPlayerAudio.SetPriority(GetPriority()+1);
 
   return true;
 }
@@ -2962,11 +2967,11 @@ bool CDVDPlayer::OpenVideoStream(int iStream, int source)
   // the CoreAudio audio device handler thread. We do the same for
   // the DVDPlayerVideo thread so it can run to sleep without getting
   // swapped out by a busy OS.
-  m_dvdPlayerVideo.SetPrioritySched_RR();
+  m_dvdPlayerVideo.SetPriority(GetSchedRRPriority());
 #else
   /* use same priority for video thread as demuxing thread, as */
   /* otherwise demuxer will starve if video consumes the full cpu */
-  m_dvdPlayerVideo.SetPriority(GetThreadPriority(*this));
+  m_dvdPlayerVideo.SetPriority(GetPriority());
 #endif
   return true;
 

@@ -34,7 +34,8 @@
 
 namespace DXVA { class CSurfaceContext; }
 namespace VAAPI { struct CHolder; }
-class CVDPAU;
+namespace VDPAU { class CVdpauRenderPicture; }
+namespace XVBA { class CXvbaRenderPicture; }
 class COpenMax;
 class COpenMaxVideo;
 struct OpenMaxVideoBuffer;
@@ -59,10 +60,13 @@ struct DVDVideoPicture
       DXVA::CSurfaceContext* context;
     };
     struct {
-      CVDPAU* vdpau;
+      VDPAU::CVdpauRenderPicture* vdpau;
     };
     struct {
       VAAPI::CHolder* vaapi;
+    };
+    struct {
+      XVBA::CXvbaRenderPicture* xvba;
     };
 
     struct {
@@ -102,6 +106,7 @@ struct DVDVideoPicture
   enum EFormat {
     FMT_YUV420P = 0,
     FMT_VDPAU,
+    FMT_VDPAU_420,
     FMT_NV12,
     FMT_UYVY,
     FMT_YUY2,
@@ -109,6 +114,7 @@ struct DVDVideoPicture
     FMT_VAAPI,
     FMT_OMXEGL,
     FMT_CVBREF,
+    FMT_XVBA,
   } format;
 };
 
@@ -125,6 +131,10 @@ struct DVDVideoUserData
 
 #define DVP_FLAG_NOSKIP             0x00000010 // indicate this picture should never be dropped
 #define DVP_FLAG_DROPPED            0x00000020 // indicate that this picture has been dropped in decoder stage, will have no data
+#define DVP_FLAG_DROPDEINT          0x00000040 // indicate that this picture was requested to have been dropped in deint stage
+
+#define DVP_FLAG_SKIP_PROC          0x00000100
+#define DVP_FLAG_DRAIN              0x00000200
 
 // DVP_FLAG 0x00000100 - 0x00000f00 is in use by libmpeg2!
 
@@ -143,6 +153,10 @@ typedef std::vector<CDVDCodecOption> CDVDCodecOptions;
 #define VC_PICTURE  0x00000004  // the decoder got a picture, call Decode(NULL, 0) again to parse the rest of the data
 #define VC_USERDATA 0x00000008  // the decoder found some userdata,  call Decode(NULL, 0) again to parse the rest of the data
 #define VC_FLUSHED  0x00000010  // the decoder lost it's state, we need to restart decoding again
+#define VC_DROPPED  0x00000020  // needed to identify if a picture was dropped
+#define VC_HURRY    0x00000040
+#define VC_SKIPPROC 0x00000080
+
 class CDVDVideoCodec
 {
 public:
@@ -207,7 +221,6 @@ public:
    */
   virtual void SetDropState(bool bDrop) = 0;
 
-
   enum EFilterFlags {
     FILTER_NONE                =  0x0,
     FILTER_DEINTERLACE_YADIF   =  0x1,  /* use first deinterlace mode */
@@ -237,4 +250,16 @@ public:
   {
     return 0;
   }
+
+  virtual bool GetPts(double &pts, int &skippedDeint, int &interlaced)
+  {
+    return false;
+  }
+
+  virtual void SetSpeed(int speed)
+  {
+	return;
+  }
+
+  virtual void SetCodecControl(int state) {}
 };

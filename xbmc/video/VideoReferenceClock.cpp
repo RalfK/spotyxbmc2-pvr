@@ -31,6 +31,7 @@
   #include <sstream>
   #include <X11/extensions/Xrandr.h>
   #include "windowing/WindowingFactory.h"
+  #include "settings/AdvancedSettings.h"
   #define NVSETTINGSCMD "nvidia-settings -nt -q RefreshRate3"
 #elif defined(__APPLE__) && !defined(__arm__)
   #include <QuartzCore/CVDisplayLink.h>
@@ -107,7 +108,7 @@ using namespace std;
 
 #endif
 
-CVideoReferenceClock::CVideoReferenceClock()
+CVideoReferenceClock::CVideoReferenceClock() : CThread("CVideoReferenceClock")
 {
   m_SystemFrequency = CurrentHostFrequency();
   m_ClockSpeed = 1.0;
@@ -118,7 +119,7 @@ CVideoReferenceClock::CVideoReferenceClock()
 
 #if defined(HAS_GLX) && defined(HAS_XRANDR)
   m_Dpy = NULL;
-  m_UseNvSettings = true;
+  m_UseNvSettings = false;
 #endif
 }
 
@@ -270,12 +271,21 @@ bool CVideoReferenceClock::SetupGLX()
     return false;
   }
 
+  m_bIsATI = false;
+  m_bPolling = false;
+
   CStdString Vendor = g_Windowing.GetRenderVendor();
   Vendor.ToLower();
   if (Vendor.compare(0, 3, "ati") == 0)
   {
     CLog::Log(LOGDEBUG, "CVideoReferenceClock: GL_VENDOR: %s, using ati workaround", Vendor.c_str());
     m_bIsATI = true;
+    m_bPolling = true;
+  }
+  if (g_advancedSettings.m_vblankPolling)
+  {
+    m_bPolling = true;
+    CLog::Log(LOGDEBUG, "CVideoReferenceClock: use polling");
   }
 
   m_vInfo = glXChooseVisual(m_Dpy, DefaultScreen(m_Dpy), singleBufferAttributes);
@@ -285,7 +295,7 @@ bool CVideoReferenceClock::SetupGLX()
     return false;
   }
 
-  if (!m_bIsATI)
+  if (!m_bPolling)
   {
     Swa.border_pixel = 0;
     Swa.event_mask = StructureNotifyMask;
@@ -313,7 +323,7 @@ bool CVideoReferenceClock::SetupGLX()
     return false;
   }
 
-  if (!m_bIsATI)
+  if (!m_bPolling)
     ReturnV = glXMakeCurrent(m_Dpy, m_Window, m_Context);
   else
     ReturnV = glXMakeCurrent(m_Dpy, m_glPixmap, m_Context);
@@ -324,7 +334,7 @@ bool CVideoReferenceClock::SetupGLX()
     return false;
   }
 
-  if (!m_bIsATI)
+  if (!m_bPolling)
   {
     m_glXWaitVideoSyncSGI = (int (*)(int, int, unsigned int*))glXGetProcAddress((const GLubyte*)"glXWaitVideoSyncSGI");
     if (!m_glXWaitVideoSyncSGI)
@@ -368,6 +378,9 @@ bool CVideoReferenceClock::SetupGLX()
 
   UpdateRefreshrate(true); //forced refreshrate update
   m_MissedVblanks = 0;
+
+  if (m_bPolling)
+    SetPriority(1);
 
   return true;
 }
@@ -567,7 +580,7 @@ void CVideoReferenceClock::RunGLX()
   while(!m_bStop)
   {
     //wait for the next vblank
-    if (!m_bIsATI)
+    if (!m_bPolling)
     {
       ReturnV = m_glXWaitVideoSyncSGI(2, (VblankCount + 1) % 2, &VblankCount);
       m_glXGetVideoSyncSGI(&VblankCount); //the vblank count returned by glXWaitVideoSyncSGI is not always correct
@@ -591,7 +604,7 @@ void CVideoReferenceClock::RunGLX()
       sleepTime = std::max(int(300000LL/m_RefreshRate), sleepTime);
 
       unsigned int iterations = 0;
-      while (VblankCount == PrevVblankCount && !m_bStop)
+      while (VblankCount == PrevVblankCount && iterations < 500 && !m_bStop)
       {
         usleep(sleepTime);
         m_glXGetVideoSyncSGI(&VblankCount);
@@ -652,7 +665,7 @@ void CVideoReferenceClock::RunGLX()
       }
 
       CLog::Log(LOGDEBUG, "CVideoReferenceClock: Attaching glX context");
-      if (!m_bIsATI)
+      if (!m_bPolling)
         ReturnV = glXMakeCurrent(m_Dpy, m_Window, m_Context);
       else
         ReturnV = glXMakeCurrent(m_Dpy, m_glPixmap, m_Context);
@@ -1275,6 +1288,9 @@ int64_t CVideoReferenceClock::Wait(int64_t Target)
 
   if (m_UseVblank) //when true the vblank is used as clock source
   {
+    if (Target < m_CurrTime)
+      Target = m_CurrTime + 0.5/m_RefreshRate;
+
     while (m_CurrTime < Target)
     {
       //calculate how long to sleep before we should have gotten a signal that a vblank happened

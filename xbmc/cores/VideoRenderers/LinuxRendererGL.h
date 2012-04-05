@@ -35,13 +35,14 @@
 
 class CRenderCapture;
 
-class CVDPAU;
 class CBaseTexture;
 namespace Shaders { class BaseYUV2RGBShader; }
 namespace Shaders { class BaseVideoFilterShader; }
 namespace VAAPI   { struct CHolder; }
+namespace VDPAU   { class CVdpauRenderPicture; }
+namespace XVBA    { class CXvbaRenderPicture; }
 
-#define NUM_BUFFERS 3
+#define NUM_BUFFERS 10
 
 
 #undef ALIGN
@@ -94,6 +95,7 @@ enum RenderMethod
   RENDER_VDPAU=0x08,
   RENDER_POT=0x10,
   RENDER_VAAPI=0x20,
+  RENDER_XVBA=0x40,
 };
 
 enum RenderQuality
@@ -141,14 +143,20 @@ public:
   virtual void         UnInit();
   virtual void         Reset(); /* resets renderer after seek for example */
   virtual void         Flush();
+  virtual void         ReleaseBuffer(int idx);
+  virtual void         SetProcessorSize(int numBuffers) { m_NumYV12Buffers = numBuffers; }
+  virtual unsigned int GetMaxProcessorSize() { return NUM_BUFFERS; }
+  virtual unsigned int GetProcessorSize() { return m_NumYV12Buffers; }
 
 #ifdef HAVE_LIBVDPAU
-  virtual void         AddProcessor(CVDPAU* vdpau);
+  virtual void         AddProcessor(VDPAU::CVdpauRenderPicture* vdpau, int index);
 #endif
 #ifdef HAVE_LIBVA
-  virtual void         AddProcessor(VAAPI::CHolder& holder);
+  virtual void         AddProcessor(VAAPI::CHolder& holder, int index);
 #endif
-
+#ifdef HAVE_LIBXVBA
+  virtual void         AddProcessor(XVBA::CXvbaRenderPicture* xvba, int index);
+#endif
   virtual void RenderUpdate(bool clear, DWORD flags = 0, DWORD alpha = 255);
 
   // Feature support
@@ -190,6 +198,10 @@ protected:
   void DeleteVDPAUTexture(int index);
   bool CreateVDPAUTexture(int index);
 
+  void UploadVDPAUTexture420(int index);
+  void DeleteVDPAUTexture420(int index);
+  bool CreateVDPAUTexture420(int index);
+
   void UploadVAAPITexture(int index);
   void DeleteVAAPITexture(int index);
   bool CreateVAAPITexture(int index);
@@ -197,6 +209,10 @@ protected:
   void UploadYUV422PackedTexture(int index);
   void DeleteYUV422PackedTexture(int index);
   bool CreateYUV422PackedTexture(int index);
+
+  void UploadXVBATexture(int index);
+  void DeleteXVBATexture(int index);
+  bool CreateXVBATexture(int index);
 
   void UploadRGBTexture(int index);
   void ToRGBFrame(YV12Image* im, unsigned flipIndexPlane, unsigned flipIndexBuf);
@@ -210,7 +226,9 @@ protected:
   void RenderSinglePass(int renderBuffer, int field); // single pass glsl renderer
   void RenderSoftware(int renderBuffer, int field);   // single pass s/w yuv2rgb renderer
   void RenderVDPAU(int renderBuffer, int field);      // render using vdpau hardware
+  void RenderVDPAUYV12(int renderBuffer, int field);      // render using vdpau hardware
   void RenderVAAPI(int renderBuffer, int field);      // render using vdpau hardware
+  void RenderXVBA(int renderBuffer, int field);      // render using xvba hardware
 
   CFrameBufferObject m_fbo;
 
@@ -265,10 +283,13 @@ protected:
     GLuint    pbo[MAX_PLANES];
 
 #ifdef HAVE_LIBVDPAU
-    CVDPAU*   vdpau;
+    VDPAU::CVdpauRenderPicture *vdpau;
 #endif
 #ifdef HAVE_LIBVA
     VAAPI::CHolder& vaapi;
+#endif
+#ifdef HAVE_LIBXVBA
+    XVBA::CXvbaRenderPicture *xvba;
 #endif
   };
 
