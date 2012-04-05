@@ -23,8 +23,6 @@
 #include "threads/SingleLock.h"
 #include "Application.h"
 
-#define INFINITE 0xFFFFFFFF
-
 #ifndef min
 #define min(a,b) ((a) < (b) ? (a) : (b))
 #endif

@@ -433,7 +433,7 @@ bool CSoftAE::Initialize()
   /* we start even if we failed to open a sink */
   OpenSink();
   m_running = true;
-  m_thread  = new CThread(this);
+  m_thread = new CThread(this, "SoftAE");
   m_thread->Create();
   m_thread->SetPriority(THREAD_PRIORITY_ABOVE_NORMAL);
 

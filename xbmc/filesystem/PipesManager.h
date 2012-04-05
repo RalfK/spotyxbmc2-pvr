@@ -32,6 +32,7 @@
 
 #include <map>
 
+#define INFINITE 0xFFFFFFFF
 #define PIPE_DEFAULT_MAX_SIZE (6 * 1024 * 1024)
 
 namespace XFILE
