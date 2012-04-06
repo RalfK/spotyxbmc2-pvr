@@ -431,7 +431,7 @@ void CMusicInfoTagLoaderWMA::SetTagValueString(const CStdString& strFrameName, c
   }
   else if (strFrameName == "WM/Genre")
   {
-    // Multiple genres are stared in multiple "WM/Genre" tags we have to get them
+    // Multiple genres are  in multiple "WM/Genre" tags we have to get them
     // separatly and merge them to our system
     if (tag.GetGenre().empty())
       tag.SetGenre(strValue);
