@@ -27,7 +27,7 @@
 #include "../Utils.h"
 #include <string.h>
 #include "URL.h"
-#include "../../../filesystem/FileCurl.h"
+#include "../../../filesystem/CurlFile.h"
 #include "tinyXML/tinyxml.h"
 #include <fstream>
 #include "../../../filesystem/File.h"
@@ -144,7 +144,7 @@ namespace addon_music_spotify {
 		if (it == m_fanarts.end()) {
 			//we dont have it so we need to to a search for it
 
-			CFileCurl http;
+			CCurlFile http;
 			CStdString artistString = artistName;
 			artistString.Replace(' ', '+');
 			CStdString urlString;
