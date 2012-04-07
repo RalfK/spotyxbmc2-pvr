@@ -318,6 +318,7 @@
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogButtonMenu.cpp" />
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogCache.cpp" />
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogContextMenu.cpp" />
+    <ClCompile Include="..\..\xbmc\dialogs\GUIDialogExtendedProgressBar.cpp" />
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogFavourites.cpp" />
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogFileBrowser.cpp" />
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogGamepad.cpp" />

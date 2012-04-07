@@ -940,6 +940,9 @@
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogContextMenu.cpp">
       <Filter>dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\xbmc\dialogs\GUIDialogExtendedProgressBar.cpp">
+      <Filter>dialogs</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\xbmc\dialogs\GUIDialogFavourites.cpp">
       <Filter>dialogs</Filter>
     </ClCompile>

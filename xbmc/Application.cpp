@@ -229,6 +229,7 @@
 #include "settings/GUIDialogContentSettings.h"
 #include "video/dialogs/GUIDialogVideoScan.h"
 #include "dialogs/GUIDialogBusy.h"
+#include "dialogs/GUIDialogExtendedProgressBar.h"
 #include "dialogs/GUIDialogKeyboard.h"
 #include "dialogs/GUIDialogYesNo.h"
 #include "dialogs/GUIDialogOK.h"
@@ -1194,6 +1195,7 @@ bool CApplication::Initialize()
 
   g_windowManager.Add(new CGUIDialogPeripheralManager);
   g_windowManager.Add(new CGUIDialogPeripheralSettings);
+  g_windowManager.Add(new CGUIDialogExtendedProgressBar);     // window id = 614
 
   g_windowManager.Add(new CGUIWindowMusicPlayList);          // window id = 500
   g_windowManager.Add(new CGUIWindowMusicSongs);             // window id = 501
@@ -3218,6 +3220,7 @@ bool CApplication::Cleanup()
     g_windowManager.Delete(WINDOW_DIALOG_ADDON_SETTINGS);
     g_windowManager.Delete(WINDOW_DIALOG_ACCESS_POINTS);
     g_windowManager.Delete(WINDOW_DIALOG_SLIDER);
+    g_windowManager.Delete(WINDOW_DIALOG_EXT_PROGRESS);
 
     g_windowManager.Delete(WINDOW_DIALOG_OSD_TELETEXT);
     g_windowManager.Delete(WINDOW_DIALOG_TEXT_VIEWER);
