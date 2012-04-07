@@ -43,6 +43,7 @@ CGUIDialogNumeric::CGUIDialogNumeric(void)
 {
   m_bConfirmed = false;
   m_bCanceled = false;
+  m_iAutoCloseTimeoutMs = 0;
 
   m_mode = INPUT_PASSWORD;
   m_block = 0;
@@ -103,6 +104,7 @@ bool CGUIDialogNumeric::OnMessage(CGUIMessage& message)
       m_bConfirmed = false;
       m_bCanceled = false;
       m_dirty = false;
+      m_iAutoCloseTimeoutMs = 0;
       return CGUIDialog::OnMessage(message);
     }
     break;
@@ -283,6 +285,9 @@ void CGUIDialogNumeric::FrameMove()
 
 void CGUIDialogNumeric::OnNumber(unsigned int num)
 {
+  if (m_iAutoCloseTimeoutMs)
+    SetAutoClose(m_iAutoCloseTimeoutMs);
+
   if (m_mode == INPUT_NUMBER || m_mode == INPUT_PASSWORD)
   {
     m_number += num + '0';
@@ -566,16 +571,22 @@ bool CGUIDialogNumeric::ShowAndGetIPAddress(CStdString &IPAddress, const CStdStr
   return true;
 }
 
-bool CGUIDialogNumeric::ShowAndGetNumber(CStdString& strInput, const CStdString &strHeading)
+bool CGUIDialogNumeric::ShowAndGetNumber(CStdString& strInput, const CStdString &strHeading, unsigned int iAutoCloseTimeoutMs /* = 0 */)
 {
   // Prompt user for password input
   CGUIDialogNumeric *pDialog = (CGUIDialogNumeric *)g_windowManager.GetWindow(WINDOW_DIALOG_NUMERIC);
   pDialog->SetHeading( strHeading );
 
   pDialog->SetMode(INPUT_NUMBER, (void *)&strInput);
+  if (iAutoCloseTimeoutMs)
+  {
+    pDialog->m_iAutoCloseTimeoutMs = iAutoCloseTimeoutMs;
+    pDialog->SetAutoClose(iAutoCloseTimeoutMs);
+  }
+
   pDialog->DoModal();
 
-  if (!pDialog->IsConfirmed() || pDialog->IsCanceled())
+  if (!iAutoCloseTimeoutMs && (!pDialog->IsConfirmed() || pDialog->IsCanceled()))
     return false;
   pDialog->GetOutput(&strInput);
   return true;
