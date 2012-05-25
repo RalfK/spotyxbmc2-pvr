@@ -1,1 +1,1 @@
-Test
+Dieser Fork dient reinen Testzwecken des Git-Systems bzw. ggf. der späteren Pflege für die Allgemeinheit

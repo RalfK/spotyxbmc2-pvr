@@ -5,6 +5,7 @@ appkey.h
 # commonly used editors
 # vim
 *.swp
+*~
 # Eclipse
 *.project
 *.cproject
