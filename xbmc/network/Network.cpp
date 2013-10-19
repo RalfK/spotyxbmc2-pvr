@@ -516,6 +516,3 @@ int CreateTCPServerSocket(const int port, const bool bindLocal, const int backlo
 
   return sock;
 }
-
-}
-
