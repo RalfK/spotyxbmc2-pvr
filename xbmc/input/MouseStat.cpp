@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,8 +20,9 @@
 
 #include "MouseStat.h"
 #include "guilib/Key.h"
-#include "windowing/WindowingFactory.h"
+#include "settings/Setting.h"
 #include "utils/TimeUtils.h"
+#include "windowing/WindowingFactory.h"
 
 CMouseStat::CMouseStat()
 {
@@ -35,6 +36,16 @@ CMouseStat::CMouseStat()
 
 CMouseStat::~CMouseStat()
 {
+}
+
+void CMouseStat::OnSettingChanged(const CSetting *setting)
+{
+  if (setting == NULL)
+    return;
+
+  const std::string &settingId = setting->GetId();
+  if (settingId == "input.enablemouse")
+    SetEnabled(((CSettingBool*)setting)->GetValue());
 }
 
 void CMouseStat::Initialize()
@@ -157,13 +168,14 @@ void CMouseStat::HandleEvent(XBMC_Event& newEvent)
   else
     m_Action = ACTION_NOOP;
 
-  // Activate the mouse pointer
-  if (MovedPastThreshold() || m_mouseState.dz)
+  // activate the mouse pointer if we have an action or the mouse has moved far enough
+  if ((MovedPastThreshold() && m_Action == ACTION_MOUSE_MOVE) ||
+      (m_Action != ACTION_NOOP && m_Action != ACTION_MOUSE_MOVE))
     SetActive();
-  else if (bNothingDown)
+
+  // reset the mouse state if nothing is held down
+  if (bNothingDown)
     SetState(MOUSE_STATE_NORMAL);
-  else
-    SetActive();
 }
 
 void CMouseStat::SetResolution(int maxX, int maxY, float speedX, float speedY)

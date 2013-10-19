@@ -1,6 +1,6 @@
  /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -26,7 +25,6 @@
 #include "guilib/GUICheckMarkControl.h"
 #include "guilib/GUIRadioButtonControl.h"
 #include "guilib/GUIWindowManager.h"
-#include "settings/Settings.h"
 #include "Application.h"
 #include "ApplicationMessenger.h"
 #include "utils/Variant.h"
@@ -507,6 +505,7 @@ namespace XBMCAddon
 
     void Window::onControl(Control* action) { TRACE; /* do nothing by default */ }
     void Window::onClick(int controlId) { TRACE; /* do nothing by default */ }
+    void Window::onDoubleClick(int controlId) { TRACE; /* do nothing by default */ }
     void Window::onFocus(int controlId) { TRACE; /* do nothing by default */ }
     void Window::onInit() { TRACE; /* do nothing by default */ }
 
@@ -634,7 +633,7 @@ namespace XBMCAddon
         throw WindowException("Invalid resolution.");
 
       SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
-      ref(window)->SetCoordsRes(g_settings.m_ResInfo[res]);
+      ref(window)->SetCoordsRes(g_graphicsContext.GetResInfo((RESOLUTION)res));
     }
 
     void Window::setProperty(const char* key, const String& value)
@@ -652,7 +651,7 @@ namespace XBMCAddon
       SingleLockWithDelayGuard gslock(g_graphicsContext,languageHook);
       CStdString lowerKey = key;
       std::string value = ref(window)->GetProperty(lowerKey.ToLower()).asString();
-      return value.c_str();
+      return value;
     }
 
     void Window::clearProperty(const char* key)

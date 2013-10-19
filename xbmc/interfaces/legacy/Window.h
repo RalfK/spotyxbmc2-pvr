@@ -1,6 +1,6 @@
  /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -64,15 +63,30 @@ namespace XBMCAddon
       AddonClass::Ref<Control> control; // previously pObject
 #endif
 
+    /**
+     * getId() -- Returns the action's current id as a long or 0 if no action is mapped in the xml's.
+     */
       long getId() { TRACE; return id; }
+
+    /**
+     * getButtonCode() -- Returns the button code for this action.
+     */
       long getButtonCode() { TRACE; return buttonCode; }
+
+    /**
+     * getAmount1() -- Returns the first amount of force applied to the thumbstick n.
+     */
       float getAmount1() { TRACE; return fAmount1; }
+      
+    /**
+     * getAmount2() -- Returns the second amount of force applied to the thumbstick n.
+     */
       float getAmount2() { TRACE; return fAmount2; }
     };
 
     /**
-     * This is the main class for the xbmcgui.Window functionality. It is tied
-     *  into the main XBMC windowing system via the Interceptor
+     * This is the main class for the xbmcgui.Window functionality. It is tied\n
+     *  into the main XBMC windowing system via the Interceptor\n
      */
     class Window : public AddonCallback
     {
@@ -161,15 +175,18 @@ namespace XBMCAddon
        * 
        * This method will recieve all actions that the main program will send
        * to this window.
-       * By default, only the PREVIOUS_MENU and NAV_BACK actions are handled.
-       * Overwrite this method to let your script handle all actions.
-       * Don't forget to capture ACTION_PREVIOUS_MENU or ACTION_NAV_BACK, else the user can't close this window.
+       *
+       * Notes: 
+       * - By default, only the PREVIOUS_MENU and NAV_BACK actions are handled.
+       * - Overwrite this method to let your script handle all actions.
+       * - Don't forget to capture ACTION_PREVIOUS_MENU or ACTION_NAV_BACK, else the user can't close this window.
        */
       virtual void onAction(Action* action);
       // on control is not actually on Window in the api but is called
       //  into Python anyway. This must result in a problem when 
       virtual void onControl(Control* control);
       virtual void onClick(int controlId);
+      virtual void onDoubleClick(int controlId);
       virtual void onFocus(int controlId);
       virtual void onInit();
 
@@ -178,6 +195,7 @@ namespace XBMCAddon
        * 
        * Shows this window by activating it, calling close() after it wil activate the
        * current window again.
+       *
        * Note, if your script ends this window will be closed to. To show it forever, 
        * make a loop at the end of your script ar use doModal() instead
        */
@@ -185,39 +203,46 @@ namespace XBMCAddon
 
       /**
        * setFocus(self, Control) -- Give the supplied control focus.
-       * Throws: TypeError, if supplied argument is not a Control type
-       *         SystemError, on Internal error
-       *         RuntimeError, if control is not added to a window
+       *
+       * Throws: 
+       *         - TypeError, if supplied argument is not a Control type
+       *         - SystemError, on Internal error
+       *         - RuntimeError, if control is not added to a window
        */
       SWIGHIDDENVIRTUAL void setFocus(Control* pControl) throw (WindowException);
 
       /**
        * setFocusId(self, int) -- Gives the control with the supplied focus.
+       *
        * Throws: 
-       *         SystemError, on Internal error
-       *         RuntimeError, if control is not added to a window
+       *         - SystemError, on Internal error
+       *         - RuntimeError, if control is not added to a window
        */
       SWIGHIDDENVIRTUAL void setFocusId(int iControlId);
 
       /**
        * getFocus(self, Control) -- returns the control which is focused.
-       * Throws: SystemError, on Internal error
-       *         RuntimeError, if no control has focus
+       *
+       * Throws: 
+       *         - SystemError, on Internal error
+       *         - RuntimeError, if no control has focus
        */
       SWIGHIDDENVIRTUAL Control* getFocus() throw (WindowException);
 
       /**
        * getFocusId(self, int) -- returns the id of the control which is focused.
-       * Throws: SystemError, on Internal error
-       *         RuntimeError, if no control has focus
+       * Throws: 
+       *         - SystemError, on Internal error
+       *         - RuntimeError, if no control has focus
        */
       SWIGHIDDENVIRTUAL long getFocusId() throw (WindowException);
 
       /**
        * removeControl(self, Control) -- Removes the control from this window.
        * 
-       * Throws: TypeError, if supplied argument is not a Control type
-       *         RuntimeError, if control is not added to this window
+       * Throws: 
+       *         - TypeError, if supplied argument is not a Control type
+       *         - RuntimeError, if control is not added to this window
        * 
        * This will not delete the control. It is only removed from the window.
        */
@@ -226,8 +251,9 @@ namespace XBMCAddon
       /**
        * removeControls(self, List) -- Removes a list of controls from this window.
        *
-       * Throws: TypeError, if supplied argument is not a Control type
-       *        RuntimeError, if control is not added to this window
+       * Throws:
+       *        - TypeError, if supplied argument is not a Control type
+       *        - RuntimeError, if control is not added to this window
        *
        * This will not delete the controls. They are only removed from the window.
        */
@@ -246,16 +272,16 @@ namespace XBMCAddon
       /**
        * getResolution(self) -- Returns the resolution of the scree
        *  The returned value is one of the following:
-       *    0 - 1080i      (1920x1080)
-       *    1 - 720p       (1280x720)
-       *    2 - 480p 4:3   (720x480)
-       *    3 - 480p 16:9  (720x480)
-       *    4 - NTSC 4:3   (720x480)
-       *    5 - NTSC 16:9  (720x480)
-       *    6 - PAL 4:3    (720x576)
-       *    7 - PAL 16:9   (720x576)
-       *    8 - PAL60 4:3  (720x480)
-       *    9 - PAL60 16:9 (720x480)\n
+       *    - 0 - 1080i      (1920x1080)
+       *    - 1 - 720p       (1280x720)
+       *    - 2 - 480p 4:3   (720x480)
+       *    - 3 - 480p 16:9  (720x480)
+       *    - 4 - NTSC 4:3   (720x480)
+       *    - 5 - NTSC 16:9  (720x480)
+       *    - 6 - PAL 4:3    (720x576)
+       *    - 7 - PAL 16:9   (720x576)
+       *    - 8 - PAL60 4:3  (720x480)
+       *    - 9 - PAL60 16:9 (720x480)n
        */
       SWIGHIDDENVIRTUAL long getResolution();
 
@@ -264,24 +290,25 @@ namespace XBMCAddon
        * that the coordinates of all controls are defined in.  Allows XBMC
        * to scale control positions and width/heights to whatever resolution
        * XBMC is currently using.
+       *
        *  resolution is one of the following:
-       *    0 - 1080i      (1920x1080)
-       *    1 - 720p       (1280x720)
-       *    2 - 480p 4:3   (720x480)
-       *    3 - 480p 16:9  (720x480)
-       *    4 - NTSC 4:3   (720x480)
-       *    5 - NTSC 16:9  (720x480)
-       *    6 - PAL 4:3    (720x576)
-       *    7 - PAL 16:9   (720x576)
-       *    8 - PAL60 4:3  (720x480)
-       *    9 - PAL60 16:9 (720x480)\n
+       *    - 0 - 1080i      (1920x1080)
+       *    - 1 - 720p       (1280x720)
+       *    - 2 - 480p 4:3   (720x480)
+       *    - 3 - 480p 16:9  (720x480)
+       *    - 4 - NTSC 4:3   (720x480)
+       *    - 5 - NTSC 16:9  (720x480)
+       *    - 6 - PAL 4:3    (720x576)
+       *    - 7 - PAL 16:9   (720x576)
+       *    - 8 - PAL60 4:3  (720x480)
+       *    - 9 - PAL60 16:9 (720x480)n
        */
       SWIGHIDDENVIRTUAL void setCoordinateResolution(long res) throw (WindowException);
 
       /**
        * setProperty(key, value) -- Sets a window property, similar to an infolabel.
        * 
-       * key            : string - property name.
+       * key            : string - property name.\n
        * value          : string or unicode - value of property.
        * 
        * *Note, key is NOT case sensitive. Setting value to an empty string is equivalent to clearProperty(key)
@@ -290,7 +317,7 @@ namespace XBMCAddon
        * 
        * example:
        *   - win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
-       *   - win.setProperty('Category', 'Newest')\n
+       *   - win.setProperty('Category', 'Newest')
        */
       SWIGHIDDENVIRTUAL void setProperty(const char* key, const String& value);
 
@@ -320,7 +347,7 @@ namespace XBMCAddon
        * 
        * example:
        *   - win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
-       *   - win.clearProperty('Category')\n
+       *   - win.clearProperty('Category')n
        */
       SWIGHIDDENVIRTUAL void clearProperty(const char* key);
 
@@ -329,7 +356,7 @@ namespace XBMCAddon
        * 
        * example:
        *   - win = xbmcgui.Window(xbmcgui.getCurrentWindowId())
-       *   - win.clearProperties()\n
+       *   - win.clearProperties()n
        */
       SWIGHIDDENVIRTUAL void clearProperties();
 
@@ -349,9 +376,10 @@ namespace XBMCAddon
       /**
        * addControl(self, Control) -- Add a Control to this window.
        * 
-       * Throws: TypeError, if supplied argument is not a Control type
-       *         ReferenceError, if control is already used in another window
-       *         RuntimeError, should not happen :-)
+       * Throws: 
+       *         - TypeError, if supplied argument is not a Control type
+       *         - ReferenceError, if control is already used in another window
+       *         - RuntimeError, should not happen :-)
        * 
        * The next controls can be added to a window atm
        * 
@@ -364,16 +392,17 @@ namespace XBMCAddon
        *   -ControlGroup
        *   -ControlImage
        *   -ControlRadioButton
-       *   -ControlProgress\n
+       *   -ControlProgressn
        */
       SWIGHIDDENVIRTUAL void addControl(Control* pControl) throw (WindowException);
 
       /**
        * addControls(self, List) -- Add a list of Controls to this window.
        *
-       *Throws: TypeError, if supplied argument is not of List type, or a control is not of Control type
-       *        ReferenceError, if control is already used in another window
-       *        RuntimeError, should not happen :-)
+       *Throws:
+       *        - TypeError, if supplied argument is not of List type, or a control is not of Control type
+       *        - ReferenceError, if control is already used in another window
+       *        - RuntimeError, should not happen :-)
        */
       SWIGHIDDENVIRTUAL void addControls(std::vector<Control*> pControls) throw (WindowException);
 

@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -75,6 +75,7 @@ static const CGUIDialogMediaFilter::Filter filterList[] = {
   { "tvshows",      FieldRating,        563,    SettingInfo::RANGE,       CSmartPlaylistRule::OPERATOR_BETWEEN },
   { "tvshows",      FieldInProgress,    575,    SettingInfo::CHECK,       CSmartPlaylistRule::OPERATOR_FALSE },
   { "tvshows",      FieldYear,          562,    SettingInfo::RANGE,       CSmartPlaylistRule::OPERATOR_BETWEEN },
+  { "tvshows",      FieldTag,           20459,  SettingInfo::BUTTON,      CSmartPlaylistRule::OPERATOR_EQUALS },
   { "tvshows",      FieldGenre,         515,    SettingInfo::BUTTON,      CSmartPlaylistRule::OPERATOR_EQUALS },
   { "tvshows",      FieldActor,         20337,  SettingInfo::BUTTON,      CSmartPlaylistRule::OPERATOR_EQUALS },
   { "tvshows",      FieldDirector,      20339,  SettingInfo::BUTTON,      CSmartPlaylistRule::OPERATOR_EQUALS },
@@ -95,6 +96,7 @@ static const CGUIDialogMediaFilter::Filter filterList[] = {
   { "musicvideos",  FieldAlbum,         558,    SettingInfo::BUTTON,      CSmartPlaylistRule::OPERATOR_EQUALS },
   //{ "musicvideos",  FieldTime,          180,    SettingInfo::TODO,        CSmartPlaylistRule::TODO },
   { "musicvideos",  FieldYear,          562,    SettingInfo::RANGE,       CSmartPlaylistRule::OPERATOR_BETWEEN },
+  { "musicvideos",  FieldTag,           20459,  SettingInfo::BUTTON,      CSmartPlaylistRule::OPERATOR_EQUALS },
   { "musicvideos",  FieldGenre,         515,    SettingInfo::BUTTON,      CSmartPlaylistRule::OPERATOR_EQUALS },
   { "musicvideos",  FieldDirector,      20339,  SettingInfo::BUTTON,      CSmartPlaylistRule::OPERATOR_EQUALS },
   { "musicvideos",  FieldStudio,        572,    SettingInfo::BUTTON,      CSmartPlaylistRule::OPERATOR_EQUALS },
@@ -307,7 +309,7 @@ void CGUIDialogMediaFilter::CreateSettings()
 
       case SettingInfo::RANGE:
       {
-        float min, interval, max;
+        float min = 0, interval = 0, max = 0;
         RANGEFORMATFUNCTION format;
         GetRange(filter, min, interval, max, format);
 
@@ -642,7 +644,8 @@ void CGUIDialogMediaFilter::UpdateControls()
         size = (int)items[0]->GetProperty("total").asInteger();
 
       CStdString label = g_localizeStrings.Get(itFilter->second.label);
-      if (size <= 1)
+      if (size <= 0 ||
+         (size == 1 && itFilter->second.field != FieldSet && itFilter->second.field != FieldTag))
         CONTROL_DISABLE(itFilter->second.controlIndex);
       else
       {
@@ -749,7 +752,7 @@ void CGUIDialogMediaFilter::OnBrowse(const Filter &filter, CFileItemList &items,
   }
 
   // sort the items
-  selectItems.Sort(SORT_METHOD_LABEL, SortOrderAscending);
+  selectItems.Sort(SortByLabel, SortOrderAscending);
 
   CGUIDialogSelect* pDialog = (CGUIDialogSelect*)g_windowManager.GetWindow(WINDOW_DIALOG_SELECT);
   pDialog->Reset();

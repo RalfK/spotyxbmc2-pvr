@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,9 +24,7 @@
 #if !defined(AFX_NfoFile_H__641CCF68_6D2A_426E_9204_C0E4BEF12D00__INCLUDED_)
 #define AFX_NfoFile_H__641CCF68_6D2A_426E_9204_C0E4BEF12D00__INCLUDED_
 
-#if _MSC_VER > 1000
 #pragma once
-#endif // _MSC_VER > 1000
 
 #include "utils/XBMCTinyXML.h"
 #include "addons/Scraper.h"
@@ -67,7 +65,7 @@ public:
     if (encoding.IsEmpty())
       g_charsetConverter.unknownToUTF8(strUtf8);
     else
-      g_charsetConverter.stringCharsetToUtf8(encoding, strDoc, strUtf8);
+      g_charsetConverter.ToUtf8(encoding, strDoc, strUtf8);
 
     doc.Clear();
     doc.Parse(strUtf8.c_str(),0,TIXML_ENCODING_UTF8);

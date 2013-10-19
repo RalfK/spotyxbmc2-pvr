@@ -1,4 +1,5 @@
-﻿<window>
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<window>
 	<defaultcontrol>-</defaultcontrol>
 	<allowoverlay>no</allowoverlay>
 	<controls>
@@ -133,7 +134,7 @@
 						<font>font30</font>
 						<align>left</align>
 						<aligny>center</aligny>
-						<label>$INFO[MusicPlayer.Title]</label>
+						<label>$INFO[Player.Title]</label>
 						<textcolor>orange</textcolor>
 						<scroll>true</scroll>
 					</control>

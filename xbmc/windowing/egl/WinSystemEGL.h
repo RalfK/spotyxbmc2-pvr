@@ -4,8 +4,8 @@
 #pragma once
 
 /*
- *      Copyright (C) 2011-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2011-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -58,6 +58,8 @@ public:
   virtual bool  Support3D(int width, int height, uint32_t mode)     const;
   virtual bool  ClampToGUIDisplayLimits(int &width, int &height);
 
+  EGLConfig     GetEGLConfig();
+
 protected:
   virtual bool  PresentRenderImpl(const CDirtyRegionList &dirty);
   virtual void  SetVSyncImpl(bool enable);
@@ -75,7 +77,6 @@ protected:
   EGLConfig             m_config;
 
   CEGLWrapper           *m_egl;
-  bool                  m_iVSyncMode;
   std::string           m_extensions;
 };
 

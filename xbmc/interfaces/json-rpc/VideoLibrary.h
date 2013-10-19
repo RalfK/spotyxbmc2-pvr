@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -73,6 +73,7 @@ namespace JSONRPC
     static JSONRPC_STATUS GetAdditionalEpisodeDetails(const CVariant &parameterObject, CFileItemList &items, CVariant &result, CVideoDatabase &videodatabase, bool limit = true);
     static JSONRPC_STATUS GetAdditionalMusicVideoDetails(const CVariant &parameterObject, CFileItemList &items, CVariant &result, CVideoDatabase &videodatabase, bool limit = true);
     static JSONRPC_STATUS RemoveVideo(const CVariant &parameterObject);
-    static void UpdateVideoTag(const CVariant &parameterObject, CVideoInfoTag& details, std::map<std::string, std::string> &artwork);
+    static void UpdateVideoTag(const CVariant &parameterObject, CVideoInfoTag &details, std::map<std::string, std::string> &artwork);
+    static void UpdateResumePoint(const CVariant &parameterObject, CVideoInfoTag &details, CVideoDatabase &videodatabase);
   };
 }

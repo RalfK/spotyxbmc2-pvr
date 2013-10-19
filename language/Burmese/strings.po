@@ -1,12 +1,12 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
+"Project-Id-Version: XBMC Main\n"
 "Report-Msgid-Bugs-To: http://trac.xbmc.org/\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: XBMC Translation Team\n"
-"Language-Team: Burmese (http://www.transifex.com/projects/p/XBMC-Main-Frodo/language/my/)\n"
+"Language-Team: Burmese (http://www.transifex.com/projects/p/xbmc-main/language/my/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -31,7 +31,7 @@ msgstr "ရုပ်ရှင်များ"
 
 msgctxt "#4"
 msgid "TV-Guide"
-msgstr "တီဗီ အစီအစဉ်"
+msgstr "တီဗီ လမ်းညွှန်"
 
 msgctxt "#5"
 msgid "Settings"
@@ -225,6 +225,38 @@ msgctxt "#75"
 msgid "E"
 msgstr "အရှေ့"
 
+msgctxt "#76"
+msgid "ESE"
+msgstr "အရှေ့တောင်အရှေ့"
+
+msgctxt "#77"
+msgid "SE"
+msgstr "အရှေ့တောင်"
+
+msgctxt "#78"
+msgid "SSE"
+msgstr "တောင်တောင်အရှေ့"
+
+msgctxt "#79"
+msgid "S"
+msgstr "တောင်"
+
+msgctxt "#80"
+msgid "SSW"
+msgstr "တောင်တောင်နောက်"
+
+msgctxt "#81"
+msgid "SW"
+msgstr "အနောက်တောင်"
+
+msgctxt "#82"
+msgid "WSW"
+msgstr "အနောက်တောင်အနောက်"
+
+msgctxt "#83"
+msgid "W"
+msgstr "အနောက်"
+
 msgctxt "#88"
 msgid "South"
 msgstr "တောင်"
@@ -257,6 +289,10 @@ msgctxt "#101"
 msgid "View: List"
 msgstr "စာရင်း ပုံစံ"
 
+msgctxt "#102"
+msgid "Scan"
+msgstr "စစ်ဆေးသည်"
+
 msgctxt "#103"
 msgid "Sort by: Name"
 msgstr "နာမည်ဖြင့် စီရန်"
@@ -271,7 +307,7 @@ msgstr "အရွယ်အစားဖြင့် စီရန်"
 
 msgctxt "#106"
 msgid "No"
-msgstr "မဟုတ်ပါ"
+msgstr "မဟုတ်"
 
 msgctxt "#107"
 msgid "Yes"
@@ -323,7 +359,7 @@ msgstr "နာမည်ပြင်ရန်"
 
 msgctxt "#119"
 msgid "New folder"
-msgstr "ဖိုဒါ အသစ်"
+msgstr "ဖိုင်တွဲ အသစ်"
 
 msgctxt "#120"
 msgid "Confirm file copy"
@@ -365,6 +401,14 @@ msgctxt "#129"
 msgid "Slideshow"
 msgstr "Slideshow"
 
+msgctxt "#130"
+msgid "System info"
+msgstr "စနစ် အချက်အလက်"
+
+msgctxt "#131"
+msgid "Display"
+msgstr "ပြသမှု"
+
 msgctxt "#132"
 msgid "Albums"
 msgstr "အယ်လဘမ်များ"
@@ -377,6 +421,10 @@ msgctxt "#134"
 msgid "Songs"
 msgstr "သီချင်းများ"
 
+msgctxt "#135"
+msgid "Genres"
+msgstr "အမျိုးအစား"
+
 msgctxt "#136"
 msgid "Playlists"
 msgstr "ဖွင့်မည့်စာရင်း"
@@ -385,13 +433,17 @@ msgctxt "#137"
 msgid "Search"
 msgstr "ရှာဖွေမည်"
 
+msgctxt "#138"
+msgid "System Information"
+msgstr "စနစ် အချက်အလက်များ"
+
 msgctxt "#139"
 msgid "Temperatures:"
-msgstr "အပူချိန်-"
+msgstr "အပူချိန် -"
 
 msgctxt "#140"
 msgid "CPU:"
-msgstr "CPU:"
+msgstr "CPU -"
 
 msgctxt "#141"
 msgid "GPU:"
@@ -407,11 +459,11 @@ msgstr "ယခု -"
 
 msgctxt "#144"
 msgid "Build:"
-msgstr "Build:"
+msgstr "တည်ဆောက်မှု -"
 
 msgctxt "#145"
 msgid "Network:"
-msgstr "Network -"
+msgstr "ကွန်ရက် -"
 
 msgctxt "#146"
 msgid "Type:"
@@ -431,7 +483,11 @@ msgstr "MAC လိပ်စာ"
 
 msgctxt "#150"
 msgid "IP address"
-msgstr "IP address"
+msgstr "IP လိပ်စာ"
+
+msgctxt "#151"
+msgid "Link:"
+msgstr "ချိတ်ဆက်:"
 
 msgctxt "#152"
 msgid "Half duplex"
@@ -445,9 +501,29 @@ msgctxt "#154"
 msgid "Storage"
 msgstr "သိမ်းဆည်းမှု့"
 
+msgctxt "#155"
+msgid "Drive"
+msgstr "Drive"
+
+msgctxt "#156"
+msgid "Free"
+msgstr "အလွတ်"
+
 msgctxt "#157"
 msgid "Video"
 msgstr "ဗွီဒီယို"
+
+msgctxt "#158"
+msgid "Free memory"
+msgstr "အားနေသော memory"
+
+msgctxt "#159"
+msgid "No link"
+msgstr "ချိတ်ဆက်မှု မရှိ"
+
+msgctxt "#160"
+msgid "Free"
+msgstr "အလွတ်"
 
 msgctxt "#161"
 msgid "Unavailable"
@@ -465,13 +541,25 @@ msgctxt "#165"
 msgid "Disc present"
 msgstr "အခွေ့ရှိပါသည်"
 
+msgctxt "#166"
+msgid "Skin"
+msgstr "အသွင်အပြင်ပုံစံ"
+
+msgctxt "#167"
+msgid "Cancel file operations"
+msgstr "ဖိုင် လုပ်ငန်းဆောင်ရွက် နေခြင်းကို မလုပ်တော့ပါ"
+
+msgctxt "#168"
+msgid "%s- %s"
+msgstr "%s- %s"
+
 msgctxt "#169"
 msgid "Resolution"
 msgstr "Resolution"
 
 msgctxt "#172"
 msgid "Release date"
-msgstr "ထုတ်သည့်ရက်စွဲ"
+msgstr "ထုတ်သည့် ရက်စွဲ"
 
 msgctxt "#176"
 msgid "Styles"
@@ -511,11 +599,15 @@ msgstr "အားလုံကိုရွေးပါ"
 
 msgctxt "#190"
 msgid "Save"
-msgstr "သိမ်းဆည်းမည်"
+msgstr "သိမ်းမည်"
 
 msgctxt "#192"
 msgid "Clear"
 msgstr "ရှင်းလင်းမည်"
+
+msgctxt "#193"
+msgid "Scan"
+msgstr "စစ်ဆေးသည်"
 
 msgctxt "#194"
 msgid "Searching..."
@@ -523,7 +615,7 @@ msgstr "ရှာနေသည်"
 
 msgctxt "#195"
 msgid "No info found!"
-msgstr "အချကအလက်များမတွေ့ပါ"
+msgstr "အချက်အလက်များ မတွေ့ပါ"
 
 msgctxt "#196"
 msgid "Select movie:"
@@ -532,6 +624,10 @@ msgstr "ရုပ်ရှင်ကိုရွေးပါ -"
 msgctxt "#198"
 msgid "Loading movie details"
 msgstr "ရုပ်ရှင်အချက်အလက်များဖွင့်နေသည်"
+
+msgctxt "#199"
+msgid "Web interface"
+msgstr "Web အသွင်အပြင်"
 
 msgctxt "#203"
 msgid "Plot outline"
@@ -585,6 +681,10 @@ msgctxt "#231"
 msgid "None"
 msgstr "ဘာမှမဟုတ်"
 
+msgctxt "#232"
+msgid "Point"
+msgstr "ပွိုင့်"
+
 msgctxt "#234"
 msgid "Anisotropic"
 msgstr "Anisotropic"
@@ -605,6 +705,10 @@ msgctxt "#241"
 msgid "Full Screen #%d"
 msgstr "မျက်နှာပြင်အပြည့် #%d"
 
+msgctxt "#243"
+msgid "Refresh Rate"
+msgstr "Refresh နှုန်း"
+
 msgctxt "#244"
 msgid "Full screen"
 msgstr "မျက်နှာပြင်အပြည့် "
@@ -620,10 +724,6 @@ msgstr "သီချင်း"
 msgctxt "#253"
 msgid "Number of channels"
 msgstr "ချယ်နယ်များအရေအတွက်"
-
-msgctxt "#254"
-msgid "- DTS capable receiver"
-msgstr "- DTS capable receiver"
 
 msgctxt "#255"
 msgid "CDDB"
@@ -675,7 +775,7 @@ msgstr "စီရန် - အယ်လ်ဘမ်အရ"
 
 msgctxt "#271"
 msgid "Top 100"
-msgstr "ထပ်ဆုံး ၁၀၀"
+msgstr "ထိပ်ဆုံး 100"
 
 msgctxt "#274"
 msgid "Subtitle positioning"
@@ -722,8 +822,8 @@ msgid "Font"
 msgstr "စာလုံးပုံစံ"
 
 msgctxt "#289"
-msgid "- Size"
-msgstr "- အရွယ်အစား"
+msgid "Size"
+msgstr "အရွယ်အစား"
 
 msgctxt "#291"
 msgid "Video"
@@ -752,22 +852,6 @@ msgstr "Audio offset"
 msgctxt "#298"
 msgid "Bookmarks"
 msgstr "Bookmarks"
-
-msgctxt "#299"
-msgid "- AAC capable receiver"
-msgstr "- AAC capable receiver"
-
-msgctxt "#300"
-msgid "- MP1 capable receiver"
-msgstr "- MP1 capable receiver"
-
-msgctxt "#301"
-msgid "- MP2 capable receiver"
-msgstr "- MP2 capable receiver"
-
-msgctxt "#302"
-msgid "- MP3 capable receiver"
-msgstr "- MP3 capable receiver"
 
 msgctxt "#303"
 msgid "Delay"
@@ -869,10 +953,6 @@ msgctxt "#337"
 msgid "Audio output"
 msgstr "audio ထွက်ရှိမှု့"
 
-msgctxt "#338"
-msgid "Analog"
-msgstr "Analog"
-
 msgctxt "#339"
 msgid "Optical/Coax"
 msgstr "Optical/Coax"
@@ -900,18 +980,6 @@ msgstr "မင်းသားများ"
 msgctxt "#345"
 msgid "Year"
 msgstr "နှစ်"
-
-msgctxt "#347"
-msgid "- DTS-HD capable receiver"
-msgstr "- DTS-HD capable receiver"
-
-msgctxt "#348"
-msgid "- Multichannel LPCM capable receiver"
-msgstr "- Multichannel LPCM capable receiver"
-
-msgctxt "#349"
-msgid "- TrueHD capable receiver"
-msgstr "- TrueHD capable receiver"
 
 msgctxt "#350"
 msgid "Programs"
@@ -956,10 +1024,6 @@ msgstr "Screensaver မှေးမှိန်စေနိုင်သော �
 msgctxt "#363"
 msgid "Sort by: File"
 msgstr "စီရန် - ဖိုင်အရ"
-
-msgctxt "#364"
-msgid "- Dolby Digital (AC3) capable receiver"
-msgstr "- Dolby Digital (AC3) capable receiver"
 
 msgctxt "#365"
 msgid "Sort by: Name"
@@ -1008,6 +1072,14 @@ msgstr "မိုးရွာသော"
 msgctxt "#377"
 msgid "Light"
 msgstr "အလင်း"
+
+msgctxt "#378"
+msgid "AM"
+msgstr "AM"
+
+msgctxt "#379"
+msgid "PM"
+msgstr "PM"
 
 msgctxt "#381"
 msgid "Few"
@@ -1201,10 +1273,6 @@ msgctxt "#439"
 msgid "Cache"
 msgstr "Cache"
 
-msgctxt "#440"
-msgid "Harddisk"
-msgstr "Harddisk"
-
 msgctxt "#441"
 msgid "UDF"
 msgstr "UDF"
@@ -1228,10 +1296,6 @@ msgstr "အသံ"
 msgctxt "#446"
 msgid "DVD"
 msgstr "ဒီဗွီဒီ"
-
-msgctxt "#448"
-msgid "LCD"
-msgstr "LCD"
 
 msgctxt "#449"
 msgid "Enabled"
@@ -1260,6 +1324,10 @@ msgstr "တန်း ၄ လိပ်စာ"
 msgctxt "#455"
 msgid "Rows"
 msgstr "တန်းများ"
+
+msgctxt "#456"
+msgid "Mode"
+msgstr "အခြေအနေ"
 
 msgctxt "#462"
 msgid "Subtitle"
@@ -1323,7 +1391,7 @@ msgstr "တစ်ခေါက်ပြန်ဖွင့်မည်"
 
 msgctxt "#488"
 msgid "Repeat folder"
-msgstr "ဖိုလ်ဒါလ်အလိုက်ပြန်ဖွင့်မည်"
+msgstr "ဖိုင်တွဲ အလိုက်ပြန်ဖွင့်မည်"
 
 msgctxt "#489"
 msgid "Play the next song automatically"
@@ -1412,6 +1480,10 @@ msgstr "genre ရွေးမည်"
 msgctxt "#531"
 msgid "New genre"
 msgstr "genre အသစ်"
+
+msgctxt "#532"
+msgid "Manual addition"
+msgstr "မိမိ ကိုယ်တိုင် ထည့်သွင်းမည်"
 
 msgctxt "#533"
 msgid "Enter genre"
@@ -1573,6 +1645,10 @@ msgctxt "#581"
 msgid "Sort method"
 msgstr "စီမည့်နည်းလမ်း"
 
+msgctxt "#583"
+msgid "Remember views for different folders"
+msgstr "ဖိုင်တွဲ အမျိုးမျိုး ရဲ့ ပုံသဏ္ဍန်ကို မှတ်ထားရန်"
+
 msgctxt "#586"
 msgid "Edit playlist"
 msgstr "ဖွင့်မည့်စာရင်းကိုပြင်ဆင်မည်"
@@ -1648,6 +1724,10 @@ msgstr "အပုဒ်နံပါတ်အပါအဝင်"
 msgctxt "#625"
 msgid "All songs of"
 msgstr "သီချင်းများအားလုံး၏"
+
+msgctxt "#626"
+msgid "In progress TV shows"
+msgstr "တီဗီ အစီအစဉ် လုပ်ဆောင်နေဆဲ"
 
 msgctxt "#630"
 msgid "Normal"
@@ -1729,10 +1809,6 @@ msgctxt "#705"
 msgid "Network"
 msgstr "ကွန်ရက်"
 
-msgctxt "#706"
-msgid "- Server"
-msgstr "- ဆာဗာ"
-
 msgctxt "#708"
 msgid "Use an HTTP proxy server to access the internet"
 msgstr "အင်တာနက်ကိုသုံးရန်အတွက် HTTP proxy server တစ်ခုကိုသုံးပါ။"
@@ -1749,10 +1825,6 @@ msgctxt "#713"
 msgid "HTTP proxy"
 msgstr "HTTP proxy"
 
-msgctxt "#715"
-msgid "- Assignment"
-msgstr "- Assignment"
-
 msgctxt "#716"
 msgid "Automatic (DHCP)"
 msgstr "အလိုအလျောက် (DHCP)"
@@ -1762,20 +1834,8 @@ msgid "Manual (Static)"
 msgstr "Manual (Static)"
 
 msgctxt "#719"
-msgid "- IP address"
-msgstr "- IP address"
-
-msgctxt "#720"
-msgid "- Netmask"
-msgstr "- Netmask"
-
-msgctxt "#721"
-msgid "- Default gateway"
-msgstr "- Default gateway"
-
-msgctxt "#722"
-msgid "- DNS server"
-msgstr "- DNS server"
+msgid "IP address"
+msgstr "IP address"
 
 msgctxt "#723"
 msgid "Save & restart"
@@ -1798,28 +1858,16 @@ msgid "FTP server"
 msgstr "FTP server"
 
 msgctxt "#730"
-msgid "- Port"
-msgstr "- Port"
+msgid "Port"
+msgstr "Port"
 
 msgctxt "#732"
 msgid "Save & apply"
 msgstr "Save & apply"
 
 msgctxt "#733"
-msgid "- Password"
-msgstr "- စကားဝှက်"
-
-msgctxt "#735"
-msgid "- Character set"
-msgstr "- Character set"
-
-msgctxt "#736"
-msgid "- Style"
-msgstr "- စတိုင်"
-
-msgctxt "#737"
-msgid "- Colour"
-msgstr "- အရောင်"
+msgid "Password"
+msgstr "စကားဝှက်"
 
 msgctxt "#738"
 msgid "Normal"
@@ -1897,6 +1945,10 @@ msgctxt "#767"
 msgid "Grey"
 msgstr "အညို"
 
+msgctxt "#772"
+msgid "Audio output"
+msgstr "audio ထွက်ရှိမှု့"
+
 msgctxt "#773"
 msgid "Seeking"
 msgstr "ရှာနေသည်"
@@ -1909,13 +1961,9 @@ msgctxt "#775"
 msgid "Network interface"
 msgstr "Network interface"
 
-msgctxt "#777"
-msgid "- Wireless password"
-msgstr "- Wireless စကားဝှက်"
-
-msgctxt "#778"
-msgid "- Wireless security"
-msgstr "- Wireless လုံခြုံရေး"
+msgctxt "#776"
+msgid "Wireless network name (ESSID)"
+msgstr "Wireless network name (ESSID)"
 
 msgctxt "#781"
 msgid "WEP"
@@ -1957,6 +2005,10 @@ msgctxt "#790"
 msgid "Remote control"
 msgstr "အဝေးမှထိန်းချုပ်ခြင်း"
 
+msgctxt "#792"
+msgid "Port"
+msgstr "Port"
+
 msgctxt "#801"
 msgid "Would you like to scan now?"
 msgstr "သင်ယခု စစ်ဆေးချင်လား"
@@ -1968,10 +2020,6 @@ msgstr "ဂီတများပေါင်းထည့်မည်"
 msgctxt "#999"
 msgid "Add Videos..."
 msgstr "ရုပ်ရှင်များပေါင်းထည့်မည်"
-
-msgctxt "#1000"
-msgid "- Preview"
-msgstr "- ကြိုတင်ကြည့်ရှု့"
 
 msgctxt "#1001"
 msgid "Unable to connect"
@@ -2071,15 +2119,15 @@ msgstr "အကြိုက်နှစ်သက်ဆုံး"
 
 msgctxt "#1037"
 msgid "Video Add-ons"
-msgstr "Video Add-ons"
+msgstr "ရုပ်ရှင် Add-on များ"
 
 msgctxt "#1038"
 msgid "Music Add-ons"
-msgstr "Music Add-ons"
+msgstr "သီချင်း Add-on များ"
 
 msgctxt "#1039"
 msgid "Picture Add-ons"
-msgstr "Picture Add-ons"
+msgstr "ဓာတ်ပုံ Add-on များ"
 
 msgctxt "#1040"
 msgid "Loading directory"
@@ -2088,6 +2136,10 @@ msgstr "Loading directory"
 msgctxt "#1043"
 msgid "Program Add-ons"
 msgstr "ပရိုဂရမ် Add-ons"
+
+msgctxt "#1045"
+msgid "Add-on settings"
+msgstr "Add-on များ ပြုပြင်ခြင်း"
 
 msgctxt "#1046"
 msgid "Access points"
@@ -2098,8 +2150,8 @@ msgid "Other..."
 msgstr "တခြား"
 
 msgctxt "#1048"
-msgid "- Username"
-msgstr "-သုံးစွဲသူအမည်"
+msgid "Username"
+msgstr "အသုံးပြုသူအမည်"
 
 msgctxt "#1049"
 msgid "Script settings"
@@ -2237,10 +2289,6 @@ msgctxt "#1271"
 msgid "Device name"
 msgstr "ကိရိယာအမည်"
 
-msgctxt "#1272"
-msgid "- Use password protection"
-msgstr "-စကားဝှက်ကာကွယ်ရေးကိုသုံးမည်"
-
 msgctxt "#1273"
 msgid "AirPlay"
 msgstr "AirPlay"
@@ -2281,9 +2329,29 @@ msgctxt "#1414"
 msgid "Thunderstorm"
 msgstr "မုန်တိုင်း"
 
+msgctxt "#1418"
+msgid "Thunderstorms"
+msgstr "မုန်တိုင်း"
+
 msgctxt "#1438"
 msgid "Small"
 msgstr "သေးငယ်သော"
+
+msgctxt "#1439"
+msgid "and"
+msgstr "နှင့်"
+
+msgctxt "#1441"
+msgid "with"
+msgstr "နှင့်"
+
+msgctxt "#1443"
+msgid "of"
+msgstr "၏"
+
+msgctxt "#1446"
+msgid "Unknown"
+msgstr "မသိရှိသော"
 
 msgctxt "#10000"
 msgid "Home"
@@ -2300,6 +2368,10 @@ msgstr "ပုံများ"
 msgctxt "#10003"
 msgid "File manager"
 msgstr "ဖိုင် မန်နေဂျာ"
+
+msgctxt "#10004"
+msgid "Settings"
+msgstr "ပြုပြင်ရန်"
 
 msgctxt "#10005"
 msgid "Music"
@@ -2345,6 +2417,22 @@ msgctxt "#10029"
 msgid "Login screen"
 msgstr "ဝင်ရောက်သည့်စခရင်"
 
+msgctxt "#10131"
+msgid "Lock settings"
+msgstr "Lock settings"
+
+msgctxt "#10134"
+msgid "Favourites"
+msgstr "အကြိုက်နှစ်သက်ဆုံး"
+
+msgctxt "#10140"
+msgid "Add-on settings"
+msgstr "Add-on ပြုပြင်ခြင်း"
+
+msgctxt "#10146"
+msgid "Add-ons/Info"
+msgstr "Add-on များ / အချက်အလက်"
+
 msgctxt "#10210"
 msgid "Looking for subtitles..."
 msgstr "စာတန်းထိုးများကိုရှာနေသည်"
@@ -2381,6 +2469,10 @@ msgctxt "#10510"
 msgid "Extensions"
 msgstr "Extensions"
 
+msgctxt "#10511"
+msgid "System info"
+msgstr "စနစ် အချက်အလက်"
+
 msgctxt "#10516"
 msgid "Music - Library"
 msgstr "Music - Library"
@@ -2396,10 +2488,6 @@ msgstr "ယခုဖွင့်ထားသည် - ဗွီဒီယိုမ
 msgctxt "#10524"
 msgid "Movie info"
 msgstr "ရုပ်ရှင်အချက်အလက်"
-
-msgctxt "#12000"
-msgid "Select dialog"
-msgstr "dialog ရွေးမည်"
 
 msgctxt "#12003"
 msgid "Videos/Info"
@@ -2581,6 +2669,10 @@ msgctxt "#12900"
 msgid "Screensaver"
 msgstr "Screensaver"
 
+msgctxt "#13000"
+msgid "System"
+msgstr "စနစ်"
+
 msgctxt "#13002"
 msgid "Video only"
 msgstr "ဗွီဒီယိုသာလျှင်"
@@ -2600,10 +2692,6 @@ msgstr "ထွက်မည်"
 msgctxt "#13013"
 msgid "Reboot"
 msgstr "ပြန်စမည်"
-
-msgctxt "#13014"
-msgid "Minimize"
-msgstr "ချုံ့မည်"
 
 msgctxt "#13015"
 msgid "Power button action"
@@ -2821,10 +2909,6 @@ msgctxt "#13301"
 msgid "Auto temperature control"
 msgstr "အလိုအလျောက် အပူချိန်ထိန်း"
 
-msgctxt "#13303"
-msgid "- Fonts"
-msgstr "- စာလုံးပုံစံ"
-
 msgctxt "#13305"
 msgid "Show RSS news feeds"
 msgstr "RSS news feeds ကိုပြမည်"
@@ -2997,6 +3081,10 @@ msgctxt "#13420"
 msgid "Remove safely"
 msgstr "သေချာစွာဖြုတ်မည်"
 
+msgctxt "#13421"
+msgid "VDPAU"
+msgstr "VDPAU"
+
 msgctxt "#13422"
 msgid "Start slideshow here"
 msgstr "Slideshow ကိုဒီနေရာမှစမည်"
@@ -3069,6 +3157,10 @@ msgctxt "#13610"
 msgid "Disabled"
 msgstr "ပိတ်ထားမည်"
 
+msgctxt "#13611"
+msgid "Standard"
+msgstr "စံ"
+
 msgctxt "#14003"
 msgid "Downloading playlist file..."
 msgstr "ဖွင့်မည့်စာရင်းဖိုင်ကိုဒေါင်းလုတ်ဆွဲနေသည်"
@@ -3097,17 +3189,13 @@ msgctxt "#14024"
 msgid "Enter the nearest large town"
 msgstr "အနီးဆုံးကျယ်သည့်မြို့ထဲသို့ဝင်မည်"
 
-msgctxt "#14027"
-msgid "- Local Network"
-msgstr "- Local Network"
-
 msgctxt "#14028"
-msgid "- Internet"
-msgstr "- Internet"
+msgid "Internet"
+msgstr "အင်တာနက်"
 
 msgctxt "#14032"
-msgid "- Internet"
-msgstr "- အင်တာနက်"
+msgid "Internet"
+msgstr "အင်တာနက်"
 
 msgctxt "#14036"
 msgid "Services"
@@ -3209,10 +3297,6 @@ msgctxt "#14077"
 msgid "Remove from favourites"
 msgstr "အကြိုက်ဆုံးထဲမှဖြုတ်မည်"
 
-msgctxt "#14078"
-msgid "- Colours"
-msgstr "- Colours"
-
 msgctxt "#14079"
 msgid "Timezone country"
 msgstr "အချိန်ဇုံ နိုင်ငံ"
@@ -3313,26 +3397,6 @@ msgctxt "#15200"
 msgid "Last.fm"
 msgstr "Last.fm"
 
-msgctxt "#15201"
-msgid "Submit songs to Last.fm"
-msgstr "Last.fm သို့သီချင်းများသွင်းမည်"
-
-msgctxt "#15202"
-msgid "Last.fm username"
-msgstr "Last.fm သုံးစွဲသူအမည်"
-
-msgctxt "#15203"
-msgid "Last.fm password"
-msgstr "Last.fm စကားဝှက်"
-
-msgctxt "#15205"
-msgid "Please update XBMC"
-msgstr "ကျေးဇူးပြု၍ XBMC ကို update ပြုလုပ်ပါ။"
-
-msgctxt "#15206"
-msgid "Bad authorization: Check username and password"
-msgstr "ခွင့်ပြုချက်မအောင်မြင်ပါ။ - သု့းစွဲသူအမည်နှင့်စကားဝှက်ကိုစစ်ကြည့်ပါ။"
-
 msgctxt "#15207"
 msgid "Connected"
 msgstr "ချိတ်ဆက်ပြီးသွားပါပြီ။"
@@ -3341,61 +3405,9 @@ msgctxt "#15208"
 msgid "Not connected"
 msgstr "မချိတ်ဆက်မိပါ။"
 
-msgctxt "#15211"
-msgid "Submitting..."
-msgstr "ထည့်သွင်းနေပါသည်။"
-
 msgctxt "#15213"
 msgid "Play using..."
 msgstr "သုံးပြီးဖွင့်မည့်"
-
-msgctxt "#15217"
-msgid "Submit songs to Libre.fm"
-msgstr "Submit songs to Libre.fm"
-
-msgctxt "#15218"
-msgid "Libre.fm username"
-msgstr "Libre.fm အသုံးပြုသူအမည်"
-
-msgctxt "#15219"
-msgid "Libre.fm password"
-msgstr "Libre.fm password"
-
-msgctxt "#15220"
-msgid "Libre.fm"
-msgstr "Libre.fm"
-
-msgctxt "#15221"
-msgid "Song submission"
-msgstr "သီချင်းထည့်သွင်းခြင်း"
-
-msgctxt "#15251"
-msgid "Connecting to Last.fm..."
-msgstr "Last.fm သို့ချိတ်ဆက်နေသည်"
-
-msgctxt "#15255"
-msgid "Your profile (%name%)"
-msgstr "သင်၏ profile (%name%)"
-
-msgctxt "#15288"
-msgid "Do you want to ban the current track?"
-msgstr "ယခုအပုဒ်ကို ပယ်သည့်စာရင်းထဲ"
-
-msgctxt "#15291"
-msgid "Banned: '%s'."
-msgstr "တားမြစ်ထားသော - '%s'"
-
-msgctxt "#15292"
-msgid "Could not ban '%s'."
-msgstr "မတားမြစ်နိုင်ပါ'%s'"
-
-msgctxt "#15296"
-msgid "Un-ban"
-msgstr "မတားမြစ်တော့ပါ"
-
-msgctxt "#15298"
-msgid "Do you want to un-ban this track?"
-msgstr "ဒီအပုဒ်ကို မတားမြစ်တော့မှာသေချာပြီလား"
 
 msgctxt "#15302"
 msgid "No servers found"
@@ -3468,6 +3480,10 @@ msgstr "Bob"
 msgctxt "#16025"
 msgid "Enter the artist name"
 msgstr "အနုပညာရှင်အမည်ကိုရိုက်ထည့်ပါ"
+
+msgctxt "#16026"
+msgid "Playback failed"
+msgstr "Playback မအောင်မြင်ပါ"
 
 msgctxt "#16028"
 msgid "Enter value"
@@ -3549,6 +3565,10 @@ msgctxt "#16301"
 msgid "Nearest neighbour"
 msgstr "အနီးဆုံးအိမ်နီးချင်း"
 
+msgctxt "#16303"
+msgid "Bicubic"
+msgstr "Bicubic"
+
 msgctxt "#16304"
 msgid "Lanczos2"
 msgstr "Lanczos2"
@@ -3608,10 +3628,6 @@ msgstr "DXVA Best"
 msgctxt "#16322"
 msgid "Spline36"
 msgstr "Spline36"
-
-msgctxt "#16323"
-msgid "Spline36 optimized"
-msgstr "Spline36 optimized"
 
 msgctxt "#17997"
 msgid "%i MByte"
@@ -3751,7 +3767,7 @@ msgstr "အမည် -"
 
 msgctxt "#19076"
 msgid "Folder:"
-msgstr "ဖိုလ်ဒါလ်-"
+msgstr "ဖိုင်တွဲ -"
 
 msgctxt "#19077"
 msgid "Radio:"
@@ -3824,6 +3840,10 @@ msgstr "__-__-__-__-__-နေ-နွေ"
 msgctxt "#19098"
 msgid "Warning"
 msgstr "သတိပေးချက်"
+
+msgctxt "#19104"
+msgid "Enter the name of the folder for the recording"
+msgstr "ကူးယူရန် ဖိုင်တွဲ အမည် ထည့်ပါ"
 
 msgctxt "#19114"
 msgid "Version"
@@ -3937,6 +3957,10 @@ msgctxt "#19160"
 msgid "to"
 msgstr "သို့"
 
+msgctxt "#19163"
+msgid "Recordings"
+msgstr "အသံသွင်းခြင်း"
+
 msgctxt "#19165"
 msgid "Switch"
 msgstr "ပြောင်းမည်"
@@ -3988,6 +4012,10 @@ msgstr "PIN မမှန်ကန်ပါ"
 msgctxt "#19265"
 msgid "The entered PIN number was incorrect."
 msgstr "ရိုက်ထည့်သော PIN နံပါတ်မှားယွင်းနေသည်"
+
+msgctxt "#19271"
+msgid "No PVR add-ons could be found"
+msgstr "PVR add-on ရှာမတွေ့ပါ"
 
 msgctxt "#19274"
 msgid "Please visit xbmc.org/pvr to learn more."
@@ -4056,6 +4084,14 @@ msgstr "external DVD player ကိုသုံးမည်"
 msgctxt "#20002"
 msgid "External DVD player"
 msgstr "External DVD player"
+
+msgctxt "#20004"
+msgid "Screenshot folder"
+msgstr "စကင်ဖမ်းပြီးထည့်ရန် ဖိုင်တွဲ"
+
+msgctxt "#20006"
+msgid "Playlists folder"
+msgstr "ဖွင့်မည့်စာရင်း ဖိုင်တွဲ"
 
 msgctxt "#20007"
 msgid "Recordings"
@@ -4136,6 +4172,14 @@ msgstr "thumbnail ကိုဖြုတ်မည်"
 msgctxt "#20058"
 msgid "Add profile..."
 msgstr "Add profile..."
+
+msgctxt "#20060"
+msgid "Media info"
+msgstr "မီဒီယာအချက်အလက်"
+
+msgctxt "#20061"
+msgid "Separate"
+msgstr "သီးခြားခွဲထွက်သော"
 
 msgctxt "#20065"
 msgid "Profile picture"
@@ -4463,7 +4507,7 @@ msgstr "DHCP server:"
 
 msgctxt "#20309"
 msgid "Make new folder"
-msgstr "ဖိုလ်ဒါလ်အသစ်တစ်ခုဖန်တီးမည်"
+msgstr "ဖိုင်တွဲ အသစ်တစ်ခုဖန်တီးမည်"
 
 msgctxt "#20316"
 msgid "Sort by: ID"
@@ -4519,7 +4563,7 @@ msgstr "မဲများ"
 
 msgctxt "#20351"
 msgid "TV show information"
-msgstr "TV show အချက်အလက်"
+msgstr "တီဗီ အစီအစဉ် အချက်အလက်"
 
 msgctxt "#20352"
 msgid "Episode information"
@@ -4695,7 +4739,7 @@ msgstr "TuxBox device"
 
 msgctxt "#21366"
 msgid "Subtitle folder"
-msgstr "စာတန်းထိုး ဖိုလ်ဒါလ်"
+msgstr "စာတန်းထိုး ဖိုင်တွဲ"
 
 msgctxt "#21371"
 msgid "Thumbnail"
@@ -4708,6 +4752,10 @@ msgstr "ပုံမှန်"
 msgctxt "#21381"
 msgid "Enter name of new playlist"
 msgstr "ဖွင့်မည့်စာရင်းအသစ်၏အမည်ကိုရိုက်ထည့်ပါ"
+
+msgctxt "#21382"
+msgid "Show \"Add source\" buttons in file lists"
+msgstr "\"ရင်းမြစ် အသစ်ထည့်သွင်းမည်\" ခလုတ်ကို ဖိုလ် စာရင်းတွင် ပြရန်"
 
 msgctxt "#21385"
 msgid "Open"
@@ -4774,8 +4822,8 @@ msgid "Default movie scraper"
 msgstr "Default movie scraper"
 
 msgctxt "#21417"
-msgid "- Settings"
-msgstr "- Settings"
+msgid "Settings"
+msgstr "ပြုပြင်ရန်"
 
 msgctxt "#21418"
 msgid "Multilingual"
@@ -4810,8 +4858,8 @@ msgid "Subtitle language"
 msgstr "စာတန်းထိုးရန်ဘာသာစကား"
 
 msgctxt "#21450"
-msgid "- Edit"
-msgstr "- Edit"
+msgid "Edit"
+msgstr "ပြင်ဆင်ရန်"
 
 msgctxt "#21451"
 msgid "Internet connection required."
@@ -4977,10 +5025,6 @@ msgctxt "#21897"
 msgid "Died"
 msgstr "သေဆုံးခြင်း"
 
-msgctxt "#22002"
-msgid "- DNS suffix"
-msgstr "- DNS suffix"
-
 msgctxt "#22003"
 msgid "%2.3fs"
 msgstr "%2.3fs"
@@ -5026,16 +5070,8 @@ msgid "Font"
 msgstr "စာလုံးပုံစံ"
 
 msgctxt "#22031"
-msgid "- Size"
-msgstr "- Size"
-
-msgctxt "#22032"
-msgid "- Colours"
-msgstr "- အရောင်များ"
-
-msgctxt "#22033"
-msgid "- Charset"
-msgstr "- Charset"
+msgid "Size"
+msgstr "အရွယ်အစား"
 
 msgctxt "#22040"
 msgid "white/green"
@@ -5087,11 +5123,15 @@ msgstr "Add-on"
 
 msgctxt "#24001"
 msgid "Add-ons"
-msgstr "Add-onများ"
+msgstr "Add-on များ"
+
+msgctxt "#24002"
+msgid "Add-on options"
+msgstr "Add-on အတွင်း ပြင်ဆင်မှု"
 
 msgctxt "#24003"
 msgid "Add-on Information"
-msgstr "Add-on Information"
+msgstr "Add-on အချက်အလက်များ"
 
 msgctxt "#24007"
 msgid "Movie information"
@@ -5104,6 +5144,10 @@ msgstr "Screensaver"
 msgctxt "#24009"
 msgid "Script"
 msgstr "Script"
+
+msgctxt "#24011"
+msgid "Add-on repository"
+msgstr "Add-on သိမ်းဆည်းထားသည့်နေရာ"
 
 msgctxt "#24012"
 msgid "Subtitles"
@@ -5163,11 +5207,11 @@ msgstr "Error loading settings"
 
 msgctxt "#24032"
 msgid "All Add-ons"
-msgstr "All Add-ons"
+msgstr "Add-on အကုန်"
 
 msgctxt "#24033"
 msgid "Get Add-ons"
-msgstr "Get Add-ons"
+msgstr "Add-on များ ရယူရန်"
 
 msgctxt "#24034"
 msgid "Check for updates"
@@ -5187,7 +5231,7 @@ msgstr "သွင်းမည်"
 
 msgctxt "#24039"
 msgid "Disabled Add-ons"
-msgstr "Add-ons ကိုပိတ်ထားမည်"
+msgstr "ပိတ်ထားသည့် Add-on များ"
 
 msgctxt "#24040"
 msgid "(Clear the current setting)"
@@ -5231,7 +5275,7 @@ msgstr "Add-on update available!"
 
 msgctxt "#24062"
 msgid "Enabled Add-ons"
-msgstr "Add-on များဖွင့်ထားမည်"
+msgstr "အသုံးပြုထားသည့် Add-on များ"
 
 msgctxt "#24063"
 msgid "Auto update"
@@ -5239,7 +5283,7 @@ msgstr "အလိုအလျောက် update"
 
 msgctxt "#24067"
 msgid "Currently downloading Add-ons"
-msgstr "ယခုဒေါင်းလုတ်ဆွဲနေသည် Add-onများ"
+msgstr "ယခု Download ဆွဲနေသည့် Add-onများ"
 
 msgctxt "#24068"
 msgid "Update available"
@@ -5284,6 +5328,10 @@ msgstr "Add-on restarts"
 msgctxt "#24094"
 msgid "(current)"
 msgstr "(ယခု)"
+
+msgctxt "#24096"
+msgid "Add-on has been marked as broken in repository."
+msgstr "သိမ်းဆည်းထားသော နေရာရှိ Add-on သည် သုံးမရတော့ပါ။"
 
 msgctxt "#24098"
 msgid "Broken"
@@ -5577,10 +5625,6 @@ msgctxt "#34202"
 msgid "Can't find a previous item to play"
 msgstr "ဖွင့်ရန်အတွက် အရှေ့ကအမျိုးအစားကို မရှာတွေ့ပါ"
 
-msgctxt "#34300"
-msgid "Failed to start zeroconf"
-msgstr "zeroconf ကိုမစနိုင်ပါ"
-
 msgctxt "#34403"
 msgid "Check your audiosettings"
 msgstr "သင်၏ audiosettings ကိုစစ်ဆေးပါ"
@@ -5605,10 +5649,6 @@ msgctxt "#35504"
 msgid "Product ID"
 msgstr "ထုတ်ကုန် ID"
 
-msgctxt "#36006"
-msgid "Could not open the adapter"
-msgstr "adapter ကိုမဖွင့်နိုင်ပါ"
-
 msgctxt "#36015"
 msgid "HDMI port number"
 msgstr "HDMI port နံပါတ်"
@@ -5632,3 +5672,39 @@ msgstr "အမြဲတမ်း"
 msgctxt "#36037"
 msgid "TV"
 msgstr "TV"
+
+msgctxt "#36126"
+msgid "Show the add source button from root sections of the user interface."
+msgstr "user interface ၏ root sections မှ ရင်းမြစ်ထည့်သွင်း ခလုတ်ကို ဖော်ပြရန်"
+
+msgctxt "#36198"
+msgid "Select the default movie information source. See the Add-ons Manager for options."
+msgstr "ရုပ်ရှင် အချက်အလက် များ ပုံမှန် ရယူမည့် ရင်းမြစ် ရွေးချယ်ပါ။ ပြုပြင်ပြောင်းလဲ လို့ရသည်များကို Add-ons မန်နေဂျာ တွင် ကြည့်ပါ။"
+
+msgctxt "#36199"
+msgid "Select the default TV show information source. See the Add-ons Manager for options."
+msgstr "တီဗီ အစီအစဉ် အချက်အလက် များ ပုံမှန် ရယူမည့် ရင်းမြစ် ရွေးချယ်ပါ။ ပြုပြင်ပြောင်းလဲ လို့ရသည်များကို Add-ons မန်နေဂျာ တွင် ကြည့်ပါ။"
+
+msgctxt "#36235"
+msgid "Priority of the recording. Higher number means higher priority. Defaults to 50. Not supported by all add-ons and backends."
+msgstr "ကူးယူမည့် ဦးစားပေး အစီအစဉ်။ နံပတ် အများဆုံးသည် အမြင့်ဆုံး ဦးစားပေးဖြစ်သည်။ ပုံမှန်သည် 50 ဖြစ်သည်။ Add-ons အားလုံး နှင့် backends များမှ အထောက်အပံ့ မပေးပါ။"
+
+msgctxt "#36236"
+msgid "Delete recording after this time. Defaults to 99 days. Not supported by all add-ons and backends."
+msgstr "ဒီ အချိန် ရောက်လျှင် ကူးထားသည်များကို ဖျက်ပါ။ ပုံမှန် အချိန် သည် 99 ရက်ဖြစ်သည်။ Add-on များ နှင့် backends မှ  အထောက်အပံ့ မပေးပါ။"
+
+msgctxt "#36237"
+msgid "Start recordings before the actual time. Defaults to 2 minutes. Not supported by all add-ons and backends."
+msgstr "တကယ့်အချိန် မစခင်မှာ စပြီး ကူးယူပါ။ ပုံမှန် သည် 2 မိနစ်ဖြစ်သည်။ Add-on များ နှင့် backends မှ  အထောက်အပံ့ မပေးပါ။"
+
+msgctxt "#36238"
+msgid "End recordings after the actual time. Defaults to 10 minutes. Not supported by all add-ons and backends."
+msgstr "ပြီးသွားသော်လျှင် ဒီ အချိန်ရောက်မှ ကူးတာကို ရပ်ပါ။ ပုံမှန် သည် 10 မိနစ် ဖြစ်သည်။ Add-on များ နှင့် backends မှ  အထောက်အပံ့ မပေးပါ။"
+
+msgctxt "#36258"
+msgid "Select the default artist information source. See the Add-ons Manager for options."
+msgstr "အဆိုတော် အချက်အလက် ပုံမှန် ရယူမည့် ရင်းမြစ်ကို ရွေးပါ။ ပြုပြင်ပြောင်းလဲလို့ရသည်များကို Add-ons မန်နေဂျာတွင် ကြည့်ပါ။"
+
+msgctxt "#36318"
+msgid "Specify the default weather information source. See the Add-ons Manager for options."
+msgstr "ရာသီဥတု အချက်အလက် ပုံမှန် ရယူမည့် ရင်းမြစ်ကို ရွေးပါ။ ပြုပြင်ပြောင်းလဲလို့ ရသည်များကို Add-ons မန်နေဂျာတွင် ကြည့်ပါ။"

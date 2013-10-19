@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,12 +50,25 @@ bool CFileItemHandler::GetField(const std::string &field, const CVariant &info, 
   if (result.isMember(field) && !result[field].empty())
     return true;
 
+  // overwrite serialized values
+  if (item)
+  {
+    if (field == "mimetype" && item->GetMimeType().empty())
+    {
+      item->FillInMimeType(false);
+      result[field] = item->GetMimeType();
+      return true;
+    }
+  }
+
+  // check for serialized values
   if (info.isMember(field) && !info[field].isNull())
   {
     result[field] = info[field];
     return true;
   }
 
+  // check if the field requires special handling
   if (item)
   {
     if (item->IsAlbum())
@@ -99,7 +112,7 @@ bool CFileItemHandler::GetField(const std::string &field, const CVariant &info, 
 
       CGUIListItem::ArtMap artMap = item->GetArt();
       CVariant artObj(CVariant::VariantTypeObject);
-      for (CGUIListItem::ArtMap::const_iterator artIt = artMap.begin(); artIt != artMap.end(); artIt++)
+      for (CGUIListItem::ArtMap::const_iterator artIt = artMap.begin(); artIt != artMap.end(); ++artIt)
       {
         if (!artIt->second.empty())
           artObj[artIt->first] = CTextureCache::GetWrappedImageURL(artIt->second);
@@ -187,7 +200,7 @@ void CFileItemHandler::FillDetails(const ISerializable *info, const CFileItemPtr
 
   std::set<std::string> originalFields = fields;
 
-  for (std::set<std::string>::const_iterator fieldIt = originalFields.begin(); fieldIt != originalFields.end(); fieldIt++)
+  for (std::set<std::string>::const_iterator fieldIt = originalFields.begin(); fieldIt != originalFields.end(); ++fieldIt)
   {
     if (GetField(*fieldIt, serialization, item, result, fetchedArt, thumbLoader) && result.isMember(*fieldIt) && !result[*fieldIt].empty())
       fields.erase(*fieldIt);
@@ -221,7 +234,7 @@ void CFileItemHandler::HandleFileItemList(const char *ID, bool allowFile, const 
       thumbLoader = new CMusicThumbLoader();
 
     if (thumbLoader != NULL)
-      thumbLoader->Initialize();
+      thumbLoader->OnLoaderStart();
   }
 
   std::set<std::string> fields;
@@ -233,7 +246,6 @@ void CFileItemHandler::HandleFileItemList(const char *ID, bool allowFile, const 
 
   for (int i = start; i < end; i++)
   {
-    CVariant object;
     CFileItemPtr item = items.Get(i);
     HandleFileItem(ID, allowFile, resultname, item, parameterObject, fields, result, true, thumbLoader);
   }
@@ -289,11 +301,13 @@ void CFileItemHandler::HandleFileItem(const char *ID, bool allowFile, const char
       {
         if (item->HasPVRChannelInfoTag())
           object["type"] = "channel";
-        else if (item->HasMusicInfoTag() && !item->GetMusicInfoTag()->GetType().empty())
+        else if (item->HasMusicInfoTag())
         {
           std::string type = item->GetMusicInfoTag()->GetType();
-          if (type == "album" || type == "song")
+          if (type == "album" || type == "song" || type == "artist")
             object["type"] = type;
+          else
+            object["type"] = "song";
         }
         else if (item->HasVideoInfoTag() && !item->GetVideoInfoTag()->m_type.empty())
         {
@@ -306,6 +320,14 @@ void CFileItemHandler::HandleFileItem(const char *ID, bool allowFile, const char
 
         if (!object.isMember("type"))
           object["type"] = "unknown";
+
+        if (fields.find("filetype") != fields.end())
+        {
+          if (item->m_bIsFolder)
+            object["filetype"] = "directory";
+          else 
+            object["filetype"] = "file";
+        }
       }
     }
 
@@ -320,7 +342,7 @@ void CFileItemHandler::HandleFileItem(const char *ID, bool allowFile, const char
       if (thumbLoader != NULL)
       {
         deleteThumbloader = true;
-        thumbLoader->Initialize();
+        thumbLoader->OnLoaderStart();
       }
     }
 
@@ -380,8 +402,12 @@ bool CFileItemHandler::FillFileItemList(const CVariant &parameterObject, CFileIt
         picture.Load(item->GetPath());
         *item->GetPictureInfoTag() = picture;
       }
-      if (item->GetLabel().IsEmpty())
+      if (item->GetLabel().empty())
+      {
         item->SetLabel(CUtil::GetTitleFromPath(file, false));
+        if (item->GetLabel().empty())
+          item->SetLabel(URIUtils::GetFileName(file));
+      }
       list.Add(item);
     }
   }

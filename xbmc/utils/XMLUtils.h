@@ -1,8 +1,8 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ public:
   static bool GetInt(const TiXmlNode* pRootNode, const char* strTag, int& iIntValue);
   static bool GetBoolean(const TiXmlNode* pRootNode, const char* strTag, bool& bBoolValue);
   static bool GetString(const TiXmlNode* pRootNode, const char* strTag, CStdString& strStringValue);
+  static bool GetString(const TiXmlNode* pRootNode, const char* strTag, std::string& strStringValue);
   /*! \brief Get multiple tags, concatenating the values together.
    Transforms
      <tag>value1</tag>
@@ -54,7 +55,7 @@ public:
    \param clear       if true, clears the string prior to adding tags, if tags are available. Defaults to false.
    */
   static bool GetAdditiveString(const TiXmlNode* rootNode, const char* tag, const CStdString& separator, CStdString& value, bool clear = false);
-  static bool GetStringArray(const TiXmlNode* rootNode, const char* tag, std::vector<std::string>& arrayValue, bool clear = false, const std::string separator = "");
+  static bool GetStringArray(const TiXmlNode* rootNode, const char* tag, std::vector<std::string>& arrayValue, bool clear = false, const std::string& separator = "");
   static bool GetEncoding(const CXBMCTinyXML* pDoc, CStdString& strEncoding);
   static bool GetPath(const TiXmlNode* pRootNode, const char* strTag, CStdString& strStringValue);
   static bool GetFloat(const TiXmlNode* pRootNode, const char* strTag, float& value, const float min, const float max);

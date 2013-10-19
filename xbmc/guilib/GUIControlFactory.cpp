@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
  *
  */
 
+#include "system.h"
 #include "GUIControlFactory.h"
 #include "LocalizeStrings.h"
 #include "GUIButtonControl.h"
@@ -59,9 +60,10 @@
 #include "utils/XMLUtils.h"
 #include "GUIFontManager.h"
 #include "GUIColorManager.h"
-#include "settings/Settings.h"
+#include "utils/RssManager.h"
 #include "utils/StringUtils.h"
 #include "GUIAction.h"
+#include "utils/RssReader.h"
 
 using namespace std;
 using namespace EPG;
@@ -253,6 +255,7 @@ bool CGUIControlFactory::GetTexture(const TiXmlNode* pRootNode, const char* strT
   const char *flipY = pNode->Attribute("flipy");
   if (flipY && strcmpi(flipY, "true") == 0) image.orientation = 3 - image.orientation;  // either 3 or 2
   image.diffuse = pNode->Attribute("diffuse");
+  image.diffuseColor.Parse(pNode->Attribute("colordiffuse"), 0);
   const char *background = pNode->Attribute("background");
   if (background && strnicmp(background, "true", 4) == 0)
     image.useLarge = true;
@@ -614,7 +617,8 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   CTextureInfo textureCheckMark, textureCheckMarkNF;
   CTextureInfo textureFocus, textureNoFocus;
   CTextureInfo textureAltFocus, textureAltNoFocus;
-  CTextureInfo textureRadioOn, textureRadioOff;
+  CTextureInfo textureRadioOnFocus, textureRadioOnNoFocus;
+  CTextureInfo textureRadioOffFocus, textureRadioOffNoFocus;
   CTextureInfo imageNoFocus, imageFocus;
   CGUIInfoLabel texturePath;
   CRect borderSize;
@@ -754,6 +758,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   GetInfoColor(pControlNode, "disabledcolor", labelInfo.disabledColor, parentID);
   GetInfoColor(pControlNode, "shadowcolor", labelInfo.shadowColor, parentID);
   GetInfoColor(pControlNode, "selectedcolor", labelInfo.selectedColor, parentID);
+  GetInfoColor(pControlNode, "invalidcolor", labelInfo.invalidColor, parentID);
   XMLUtils::GetFloat(pControlNode, "textoffsetx", labelInfo.offsetX);
   XMLUtils::GetFloat(pControlNode, "textoffsety", labelInfo.offsetY);
   int angle = 0;  // use the negative angle to compensate for our vertically flipped cartesian plane
@@ -815,10 +820,18 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   XMLUtils::GetFloat(pControlNode, "sliderheight", sliderHeight);
   GetTexture(pControlNode, "texturecheckmark", textureCheckMark);
   GetTexture(pControlNode, "texturecheckmarknofocus", textureCheckMarkNF);
-  GetTexture(pControlNode, "textureradiofocus", textureRadioOn);    // backward compatibility
-  GetTexture(pControlNode, "textureradionofocus", textureRadioOff);
-  GetTexture(pControlNode, "textureradioon", textureRadioOn);
-  GetTexture(pControlNode, "textureradiooff", textureRadioOff);
+  if (!GetTexture(pControlNode, "textureradioonfocus", textureRadioOnFocus) || !GetTexture(pControlNode, "textureradioonnofocus", textureRadioOnNoFocus))
+  {
+    GetTexture(pControlNode, "textureradiofocus", textureRadioOnFocus);    // backward compatibility
+    GetTexture(pControlNode, "textureradioon", textureRadioOnFocus);
+    textureRadioOnNoFocus = textureRadioOnFocus;
+  }
+  if (!GetTexture(pControlNode, "textureradioofffocus", textureRadioOffFocus) || !GetTexture(pControlNode, "textureradiooffnofocus", textureRadioOffNoFocus))
+  {
+    GetTexture(pControlNode, "textureradionofocus", textureRadioOffFocus);    // backward compatibility
+    GetTexture(pControlNode, "textureradiooff", textureRadioOffFocus);
+    textureRadioOffNoFocus = textureRadioOffFocus;
+  }
 
   GetTexture(pControlNode, "texturesliderbackground", textureBackground);
   GetTexture(pControlNode, "texturesliderbar", textureBar);
@@ -1063,15 +1076,9 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
     control = new CGUIRSSControl(
       parentID, id, posX, posY, width, height,
       labelInfo, textColor3, headlineColor, strRSSTags);
-
-    std::map<int,CSettings::RssSet>::iterator iter=g_settings.m_mapRssUrls.find(iUrlSet);
-    if (iter != g_settings.m_mapRssUrls.end())
-    {
-      ((CGUIRSSControl *)control)->SetUrls(iter->second.url,iter->second.rtl);
-      ((CGUIRSSControl *)control)->SetIntervals(iter->second.interval);
-    }
-    else
-      CLog::Log(LOGERROR,"invalid rss url set referenced in skin");
+    RssUrls::const_iterator iter = CRssManager::Get().GetUrls().find(iUrlSet);
+    if (iter != CRssManager::Get().GetUrls().end())
+      ((CGUIRSSControl *)control)->SetUrlSet(iUrlSet);
   }
   else if (type == CGUIControl::GUICONTROL_BUTTON)
   {
@@ -1116,7 +1123,7 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
       parentID, id, posX, posY, width, height,
       textureFocus, textureNoFocus,
       labelInfo,
-      textureRadioOn, textureRadioOff);
+      textureRadioOnFocus, textureRadioOnNoFocus, textureRadioOffFocus, textureRadioOffNoFocus);
 
     ((CGUIRadioButtonControl *)control)->SetLabel(strLabel);
     ((CGUIRadioButtonControl *)control)->SetRadioDimensions(radioPosX, radioPosY, radioWidth, radioHeight);
@@ -1322,6 +1329,10 @@ CGUIControl* CGUIControlFactory::Create(int parentID, const CRect &rect, TiXmlEl
   else if (type == CGUIControl::GUICONTROL_VISUALISATION)
   {
     control = new CGUIVisualisationControl(parentID, id, posX, posY, width, height);
+  }
+  else if (type == CGUIControl::GUICONTROL_RENDERADDON)
+  {
+    control = new CGUIRenderingControl(parentID, id, posX, posY, width, height);
   }
 
   // things that apply to all controls

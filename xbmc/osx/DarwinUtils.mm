@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2010-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2010-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,6 +66,10 @@ enum iosPlatform
   iPhone4S,
   iPhone5,
   iPhone5GSMCDMA, 
+  iPhone5CGSM,
+  iPhone5CGlobal,
+  iPhone5SGSM,
+  iPhone5SGlobal,
   iPodTouch4G,
   iPodTouch5G,  
   iPad3WIFI,
@@ -76,6 +80,7 @@ enum iosPlatform
   iPad4GSMCDMA,  
 };
 
+// platform strings are based on http://theiphonewiki.com/wiki/Models
 enum iosPlatform getIosPlatform()
 {
 #if defined(TARGET_DARWIN_IOS)
@@ -96,6 +101,10 @@ enum iosPlatform getIosPlatform()
   if ([platform isEqualToString:@"iPhone4,1"])    return iPhone4S;
   if ([platform isEqualToString:@"iPhone5,1"])    return iPhone5;
   if ([platform isEqualToString:@"iPhone5,2"])    return iPhone5GSMCDMA;
+  if ([platform isEqualToString:@"iPhone5,3"])    return iPhone5CGSM;
+  if ([platform isEqualToString:@"iPhone5,4"])    return iPhone5CGlobal;
+  if ([platform isEqualToString:@"iPhone6,1"])    return iPhone5SGSM;
+  if ([platform isEqualToString:@"iPhone6,2"])    return iPhone5SGlobal;
   
   if ([platform isEqualToString:@"iPod1,1"])      return iPodTouch1G;
   if ([platform isEqualToString:@"iPod2,1"])      return iPodTouch2G;
@@ -362,7 +371,7 @@ int DarwinBatteryLevel(void)
     powerSourceVal = CFDictionaryGetValue(powerSource, CFSTR(kIOPSMaxCapacityKey));
     CFNumberGetValue((CFNumberRef)powerSourceVal, kCFNumberSInt32Type, &maxLevel);
 
-    batteryLevel = (int)((double)curLevel/(double)maxLevel);
+    batteryLevel = (double)curLevel/(double)maxLevel;
   }
 #endif
   return batteryLevel * 100;  
@@ -379,7 +388,7 @@ void DarwinSetScheduling(int message)
   policy = SCHED_OTHER;
   thread_extended_policy_data_t theFixedPolicy={true};
 
-  if (message == GUI_MSG_PLAYBACK_STARTED && g_application.IsPlayingVideo())
+  if (message == GUI_MSG_PLAYBACK_STARTED && g_application.m_pPlayer->IsPlayingVideo())
   {
     policy = SCHED_RR;
     theFixedPolicy.timeshare = false;

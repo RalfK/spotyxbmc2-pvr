@@ -3,12 +3,12 @@
  * Many concepts and protocol specification in this code are taken from
  * the Boxee project. http://www.boxee.tv
  *
- *      Copyright (C) 2011-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2011-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; either version 2, or (at your option)
+ *  the Free Software Foundation; either version 2.1, or (at your option)
  *  any later version.
  *
  *  This Program is distributed in the hope that it will be useful,
@@ -46,8 +46,11 @@ public:
   //AirPlayServer impl.
   static bool StartServer(int port, bool nonlocal);
   static void StopServer(bool bWait);
+  static bool IsRunning();
   static bool SetCredentials(bool usePassword, const CStdString& password);
   static bool IsPlaying(){ return m_isPlaying > 0;}
+  static void backupVolume();
+  static void restoreVolume();
   static int m_isPlaying;
 
 protected:
@@ -78,7 +81,7 @@ private:
     void Disconnect();
 
     int m_socket;
-    struct sockaddr m_cliaddr;
+    struct sockaddr_storage m_cliaddr;
     socklen_t m_addrlen;
     CCriticalSection m_critSection;
     int  m_sessionCounter;
@@ -107,6 +110,7 @@ private:
   bool m_nonlocal;
   bool m_usePassword;
   CStdString m_password;
+  int m_origVolume;
 
   static CAirPlayServer *ServerInstance;
 };

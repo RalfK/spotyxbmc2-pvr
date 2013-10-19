@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,9 +25,7 @@
 
 #include "threads/SystemClock.h"
 #include "system.h"
-#include "Application.h"
 #include "ShoutcastFile.h"
-#include "settings/GUISettings.h"
 #include "guilib/GUIWindowManager.h"
 #include "URL.h"
 #include "utils/RegExp.h"
@@ -43,7 +41,7 @@ using namespace XFILE;
 using namespace MUSIC_INFO;
 
 CShoutcastFile::CShoutcastFile() :
-  IFile(), CThread("Shoutcast file")
+  IFile(), CThread("ShoutcastFile")
 {
   m_discarded = 0;
   m_currint = 0;
@@ -71,7 +69,7 @@ int64_t CShoutcastFile::GetLength()
 bool CShoutcastFile::Open(const CURL& url)
 {
   CURL url2(url);
-  url2.SetProtocolOptions("noshout=true&Icy-MetaData=1");
+  url2.SetProtocolOptions(url2.GetProtocolOptions()+"&noshout=true&Icy-MetaData=1");
   url2.SetProtocol("http");
 
   bool result=false;
@@ -155,7 +153,7 @@ bool CShoutcastFile::ExtractTagInfo(const char* buf)
 
   if (reTitle.RegFind(strBuffer.c_str()) != -1)
   {
-    std::string newtitle = reTitle.GetReplaceString("\\1");
+    std::string newtitle(reTitle.GetMatch(1));
     result = (m_tag.GetTitle() != newtitle);
     m_tag.SetTitle(newtitle);
   }

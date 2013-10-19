@@ -1,6 +1,6 @@
 /*
-*      Copyright (C) 2005-2012 Team XBMC
-*      http://www.xbmc.org
+*      Copyright (C) 2005-2013 Team XBMC
+*      http://xbmc.org
 *
 *  This Program is free software; you can redistribute it and/or modify
 *  it under the terms of the GNU General Public License as published by
@@ -158,13 +158,13 @@ CScraper::CScraper(const cp_extension_t *ext) : CAddon(ext), m_fLoaded(false)
   }
 }
 
-AddonPtr CScraper::Clone(const AddonPtr &self) const
+AddonPtr CScraper::Clone() const
 {
-  return AddonPtr(new CScraper(*this, self));
+  return AddonPtr(new CScraper(*this));
 }
 
-CScraper::CScraper(const CScraper &rhs, const AddonPtr &self)
-  : CAddon(rhs, self), m_fLoaded(false)
+CScraper::CScraper(const CScraper &rhs)
+  : CAddon(rhs), m_fLoaded(false)
 {
   m_pathContent = rhs.m_pathContent;
   m_persistence = rhs.m_persistence;
@@ -248,7 +248,7 @@ vector<CStdString> CScraper::Run(const CStdString& function,
   CStdString strXML = InternalRun(function,scrURL,http,extras);
   if (strXML.IsEmpty())
   {
-    if (function != "NfoUrl")
+    if (function != "NfoUrl" && function != "ResolveIDToUrl")
       CLog::Log(LOGERROR, "%s: Unable to parse web site",__FUNCTION__);
     throw CScraperError();
   }
@@ -412,11 +412,22 @@ bool CScraper::IsInUse() const
   return false;
 }
 
+bool CScraper::IsNoop()
+{
+    if (!Load())
+      throw CScraperError();
+
+    return m_parser.IsNoop();
+}
+
 // pass in contents of .nfo file; returns URL (possibly empty if none found)
 // and may populate strId, or throws CScraperError on error
 CScraperUrl CScraper::NfoUrl(const CStdString &sNfoContent)
 {
   CScraperUrl scurlRet;
+
+  if (IsNoop())
+    return scurlRet;
 
   // scraper function takes contents of .nfo file, returns XML (see below)
   vector<CStdString> vcsIn;
@@ -476,6 +487,68 @@ CScraperUrl CScraper::NfoUrl(const CStdString &sNfoContent)
   return scurlRet;
 }
 
+CScraperUrl CScraper::ResolveIDToUrl(const CStdString& externalID)
+{
+  CScraperUrl scurlRet;
+  
+  // scraper function takes an external ID, returns XML (see below)
+  vector<CStdString> vcsIn;
+  vcsIn.push_back(externalID);
+  CScraperUrl scurl;
+  CCurlFile fcurl;
+  vector<CStdString> vcsOut = Run("ResolveIDToUrl", scurl, fcurl, &vcsIn);
+  if (vcsOut.empty() || vcsOut[0].empty())
+    return scurlRet;
+  if (vcsOut.size() > 1)
+    CLog::Log(LOGWARNING, "%s: scraper returned multiple results; using first", __FUNCTION__);
+
+  // parse returned XML: either <error> element on error, blank on failure,
+  // or <url>...</url> or <url>...</url><id>...</id> on success
+  for (unsigned int i=0; i < vcsOut.size(); ++i)
+  {
+    CXBMCTinyXML doc;
+    doc.Parse(vcsOut[i], 0, TIXML_ENCODING_UTF8);
+    CheckScraperError(doc.RootElement());
+
+    if (doc.RootElement())
+    {
+      /*
+       NOTE: Scrapers might return invalid xml with some loose
+       elements (eg. '<url>http://some.url</url><id>123</id>').
+       Since XMLUtils::GetString() is assuming well formed xml
+       with start and end-tags we're not able to use it.
+       Check for the desired Elements instead.
+       */
+      TiXmlElement* pxeUrl=NULL;
+      TiXmlElement* pId=NULL;
+      if (!strcmp(doc.RootElement()->Value(),"details"))
+      {
+        pxeUrl = doc.RootElement()->FirstChildElement("url");
+        pId = doc.RootElement()->FirstChildElement("id");
+      }
+      else
+      {
+        pId = doc.FirstChildElement("id");
+        pxeUrl = doc.FirstChildElement("url");
+      }
+      if (pId && pId->FirstChild())
+        scurlRet.strId = pId->FirstChild()->Value();
+
+      if (pxeUrl && pxeUrl->Attribute("function"))
+        continue;
+
+      if (pxeUrl)
+        scurlRet.ParseElement(pxeUrl);
+      else if (!strcmp(doc.RootElement()->Value(), "url"))
+        scurlRet.ParseElement(doc.RootElement());
+      else
+        continue;
+      break;
+    }
+  }
+  return scurlRet;
+}
+
 static bool RelevanceSortFunction(const CScraperUrl &left, const CScraperUrl &right)
 {
   return left.relevance > right.relevance;
@@ -490,13 +563,17 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl, const CStd
   CStdString sTitle, sTitleYear, sYear;
   CUtil::CleanString(sMovie, sTitle, sTitleYear, sYear, true/*fRemoveExt*/, fFirst);
 
-  if (!fFirst)
-    sTitle.Replace("-"," ");
-
   CLog::Log(LOGDEBUG, "%s: Searching for '%s' using %s scraper "
     "(path: '%s', content: '%s', version: '%s')", __FUNCTION__, sTitle.c_str(),
     Name().c_str(), Path().c_str(),
     ADDON::TranslateContent(Content()).c_str(), Version().c_str());
+
+  std::vector<CScraperUrl> vcscurl;
+  if (IsNoop())
+    return vcscurl;
+
+  if (!fFirst)
+    sTitle.Replace("-"," ");
 
   sTitle.ToLower();
 
@@ -509,7 +586,6 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl, const CStd
   // request a search URL from the title/filename/etc.
   CScraperUrl scurl;
   vector<CStdString> vcsOut = Run("CreateSearchUrl", scurl, fcurl, &vcsIn);
-  std::vector<CScraperUrl> vcscurl;
   if (vcsOut.empty())
   {
     CLog::Log(LOGDEBUG, "%s: CreateSearchUrl failed", __FUNCTION__);
@@ -587,7 +663,7 @@ std::vector<CScraperUrl> CScraper::FindMovie(XFILE::CCurlFile &fcurl, const CStd
           scurlMovie.strTitle.AppendFormat(" (%s)", sCompareYear.c_str());
 
         CStdString sLanguage;
-        if (XMLUtils::GetString(pxeMovie, "language", sLanguage))
+        if (XMLUtils::GetString(pxeMovie, "language", sLanguage) && !sLanguage.empty())
           scurlMovie.strTitle.AppendFormat(" (%s)", sLanguage.c_str());
 
         // filter for dupes from naughty scrapers
@@ -616,6 +692,10 @@ std::vector<CMusicAlbumInfo> CScraper::FindAlbum(CCurlFile &fcurl, const CStdStr
     sAlbum.c_str(), Name().c_str(), Path().c_str(),
     ADDON::TranslateContent(Content()).c_str(), Version().c_str());
 
+  std::vector<CMusicAlbumInfo> vcali;
+  if (IsNoop())
+    return vcali;
+
   // scraper function is given the album and artist as parameters and
   // returns an XML <url> element parseable by CScraperUrl
   std::vector<CStdString> extras(2);
@@ -628,7 +708,6 @@ std::vector<CMusicAlbumInfo> CScraper::FindAlbum(CCurlFile &fcurl, const CStdStr
   if (vcsOut.size() > 1)
     CLog::Log(LOGWARNING, "%s: scraper returned multiple results; using first", __FUNCTION__);
 
-  std::vector<CMusicAlbumInfo> vcali;
   if (vcsOut.empty() || vcsOut[0].empty())
     return vcali;
   scurl.ParseString(vcsOut[0]);
@@ -658,17 +737,17 @@ std::vector<CMusicAlbumInfo> CScraper::FindAlbum(CCurlFile &fcurl, const CStdStr
       pxeAlbum; pxeAlbum = pxeAlbum->NextSiblingElement())
     {
       CStdString sTitle;
-      if (XMLUtils::GetString(pxeAlbum, "title", sTitle))
+      if (XMLUtils::GetString(pxeAlbum, "title", sTitle) && !sTitle.empty())
       {
         CStdString sArtist;
         CStdString sAlbumName;
-        if (XMLUtils::GetString(pxeAlbum, "artist", sArtist))
+        if (XMLUtils::GetString(pxeAlbum, "artist", sArtist) && !sArtist.empty())
           sAlbumName.Format("%s - %s", sArtist.c_str(), sTitle.c_str());
         else
           sAlbumName = sTitle;
 
         CStdString sYear;
-        if (XMLUtils::GetString(pxeAlbum, "year", sYear))
+        if (XMLUtils::GetString(pxeAlbum, "year", sYear) && !sYear.empty())
           sAlbumName.Format("%s (%s)", sAlbumName.c_str(), sYear.c_str());
 
         // if no URL is provided, use the URL we got back from CreateAlbumSearchUrl
@@ -710,6 +789,10 @@ std::vector<CMusicArtistInfo> CScraper::FindArtist(CCurlFile &fcurl,
     Name().c_str(), Path().c_str(),
     ADDON::TranslateContent(Content()).c_str(), Version().c_str());
 
+  std::vector<CMusicArtistInfo> vcari;
+  if (IsNoop())
+    return vcari;
+
   // scraper function is given the artist as parameter and
   // returns an XML <url> element parseable by CScraperUrl
   std::vector<CStdString> extras(1);
@@ -718,7 +801,6 @@ std::vector<CMusicArtistInfo> CScraper::FindArtist(CCurlFile &fcurl,
   CScraperUrl scurl;
   vector<CStdString> vcsOut = RunNoThrow("CreateArtistSearchUrl", scurl, fcurl, &extras);
 
-  std::vector<CMusicArtistInfo> vcari;
   if (vcsOut.empty() || vcsOut[0].empty())
     return vcari;
   scurl.ParseString(vcsOut[0]);
@@ -813,13 +895,13 @@ EPISODELIST CScraper::GetEpisodeList(XFILE::CCurlFile &fcurl, const CScraperUrl 
       TiXmlElement *pxeLink = pxeMovie->FirstChildElement("url");
       CStdString strEpNum;
       if (pxeLink && XMLUtils::GetInt(pxeMovie, "season", ep.iSeason) &&
-        XMLUtils::GetString(pxeMovie, "epnum", strEpNum))
+        XMLUtils::GetString(pxeMovie, "epnum", strEpNum) && !strEpNum.empty())
       {
         CScraperUrl &scurlEp(ep.cScraperUrl);
         int dot = strEpNum.Find(".");
         ep.iEpisode = atoi(strEpNum.c_str());
         ep.iSubepisode = (dot > -1) ? atoi(strEpNum.Mid(dot + 1).c_str()) : 0;
-        if (!XMLUtils::GetString(pxeMovie, "title", scurlEp.strTitle))
+        if (!XMLUtils::GetString(pxeMovie, "title", scurlEp.strTitle) || scurlEp.strTitle.empty() )
             scurlEp.strTitle = g_localizeStrings.Get(416);
         XMLUtils::GetString(pxeMovie, "id", scurlEp.strId);
 

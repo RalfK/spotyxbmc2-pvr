@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <window>
 	<defaultcontrol>1</defaultcontrol>
 	<visible>[Player.Seeking | Player.DisplayAfterSeek | Player.Paused | Player.Forwarding | Player.Rewinding] + ![Window.IsVisible(VideoOSD) | Window.IsVisible(MusicOSD)]</visible>
@@ -230,7 +231,7 @@
 				<aligny>center</aligny>
 				<font>font10_title</font>
 				<textcolor>blue</textcolor>
-				<label>[B]$LOCALIZE[773][/B]</label>
+				<label>$LOCALIZE[31046]</label>
 				<visible>Player.Seeking</visible>
 			</control>
 			<control type="label">
@@ -243,7 +244,7 @@
 				<aligny>center</aligny>
 				<font>font10_title</font>
 				<textcolor>blue</textcolor>
-				<label>[B]$LOCALIZE[773][/B][COLOR=grey] $INFO[Player.SeekOffset][/COLOR]</label>
+				<label>$LOCALIZE[31046][COLOR=grey] $INFO[Player.SeekOffset][/COLOR]</label>
 				<visible>Player.DisplayAfterSeek + ![player.forwarding | player.rewinding]</visible>
 			</control>
 			<control type="label">

@@ -1,8 +1,8 @@
 #pragma once
 
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,14 +22,16 @@
 
 #include "DVDInputStream.h"
 
-class CDVDInputStreamFFmpeg : public CDVDInputStream
+class CDVDInputStreamFFmpeg
+  : public CDVDInputStream
+  , public CDVDInputStream::ISeekable
 {
 public:
   CDVDInputStreamFFmpeg();
   virtual ~CDVDInputStreamFFmpeg();
   virtual bool Open(const char* strFile, const std::string &content);
   virtual void Close();
-  virtual int Read(BYTE* buf, int buf_size);
+  virtual int Read(uint8_t* buf, int buf_size);
   virtual int64_t Seek(int64_t offset, int whence);
   virtual bool Pause(double dTime) { return false; };
   virtual bool IsEOF();
@@ -38,6 +40,11 @@ public:
   virtual void    Abort()    { m_aborted = true;  }
   bool            Aborted()  { return m_aborted;  }
 
+  bool            CanSeek()  { return m_can_seek; }
+  bool            CanPause() { return m_can_pause; }
+
 protected:
+  bool m_can_pause;
+  bool m_can_seek;
   bool m_aborted;
 };

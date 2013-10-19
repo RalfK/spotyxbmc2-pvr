@@ -1,6 +1,6 @@
  /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -86,6 +85,7 @@ namespace XBMCAddon
       SWIGHIDDENVIRTUAL void      AllocResources(bool forceLoad = false);
       SWIGHIDDENVIRTUAL void      FreeResources(bool forceUnLoad = false);
       SWIGHIDDENVIRTUAL bool      OnClick(int iItem);
+      SWIGHIDDENVIRTUAL bool      OnDoubleClick(int iItem);
       SWIGHIDDENVIRTUAL void      Process(unsigned int currentTime, CDirtyRegionList &dirtyregions);
 
       SWIGHIDDENVIRTUAL bool IsMediaWindow() const { TRACE; return true; };
@@ -105,8 +105,6 @@ namespace XBMCAddon
       SWIGHIDDENVIRTUAL void     GetContextButtons(int itemNumber, CContextButtons &buttons);
       SWIGHIDDENVIRTUAL bool     Update(const String &strPath);
 
-      unsigned int     LoadScriptStrings();
-      void             ClearScriptStrings();
       void             SetupShares();
       String       m_scriptPath;
       String       m_mediaDir;
@@ -115,21 +113,20 @@ namespace XBMCAddon
 #endif
     };
 
-    /**
-     * Ideally what we want here is a Dialog/Media Window. The problem is that these
-     *  are two orthogonal discriminations of CGUIWindow and there wasn't a previous
-     *  accounting for this possibility through the use of making CGUIWindow a 
-     *  virtual base class of the pertinent subclasses. So now we're left with
-     *  no good solution.
-     *
-     * <strike>So here we're going to have the 'main' hierarchy (the one visible to SWIG)
-     *  go the way intended - through WindowXML, but we're going to borrow dialog 
-     *  functionality from CGUIDialog by using it as a Mixin.</strike>
-     *
-     * jmarshall says that this class has no reason to inherit from CGUIMediaWindow.
-     *  At some point this entire hierarchy needs to be reworked. The XML handling
-     *  routines should be put in a mixin.
-     */
+    // Ideally what we want here is a Dialog/Media Window. The problem is that these
+    //  are two orthogonal discriminations of CGUIWindow and there wasn't a previous
+    //  accounting for this possibility through the use of making CGUIWindow a 
+    //  virtual base class of the pertinent subclasses. So now we're left with
+    //  no good solution.
+    //
+    // <strike>So here we're going to have the 'main' hierarchy (the one visible to SWIG)
+    //  go the way intended - through WindowXML, but we're going to borrow dialog 
+    //  functionality from CGUIDialog by using it as a Mixin.</strike>
+    //
+    // jmarshall says that this class has no reason to inherit from CGUIMediaWindow.
+    //  At some point this entire hierarchy needs to be reworked. The XML handling
+    //  routines should be put in a mixin.
+
     class WindowXMLDialog : public WindowXML, private WindowDialogMixin
     {
     public:

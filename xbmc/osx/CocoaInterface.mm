@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -256,8 +256,8 @@ char* Cocoa_MountPoint2DeviceName(char *path)
         break;
       }
     }
-    free(strDVDDevice);
   }
+  free(strDVDDevice);
   return path;
 }
 
@@ -373,46 +373,6 @@ void Cocoa_ShowMouse()
 }
 
 //---------------------------------------------------------------------------------
-static char strVersion[32];
-
-const char* Cocoa_GetAppVersion()
-{
-  // Get the main bundle for the app and return the version.
-  CFBundleRef mainBundle = CFBundleGetMainBundle();
-  CFStringRef versStr = (CFStringRef)CFBundleGetValueForInfoDictionaryKey(mainBundle, kCFBundleVersionKey);
-  
-  memset(strVersion,0,32);
-  
-  if (versStr != NULL && CFGetTypeID(versStr) == CFStringGetTypeID())
-  {
-    bool res = CFStringGetCString(versStr, strVersion, 32,kCFStringEncodingUTF8);
-    if (!res)
-    {
-      printf("Error converting version string\n");      
-      strcpy(strVersion, "SVN");
-    }
-  }
-  else
-    strcpy(strVersion, "SVN");
-  
-  return strVersion;
-}
-
-bool Cocoa_HasVDADecoder()
-{
-  static int result = -1;
-
-  if (result == -1)
-  {
-    if (Cocoa_GetOSVersion() >= 0x1063)
-      result = (access(DLL_PATH_LIBVDADECODER, 0) == 0) ? 1:0;
-    else
-      result = 0;
-  }
-
-  return (result == 1);
-}
-
 bool Cocoa_GPUForDisplayIsNvidiaPureVideo3()
 {
   bool result = false;

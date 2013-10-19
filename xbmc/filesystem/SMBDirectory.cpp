@@ -1,7 +1,7 @@
 
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@
 #include "SMBDirectory.h"
 #include "Util.h"
 #include "guilib/LocalizeStrings.h"
-#include "Application.h"
 #include "FileItem.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/StringUtils.h"
@@ -63,14 +62,14 @@ using namespace std;
 
 CSMBDirectory::CSMBDirectory(void)
 {
-#ifdef _LINUX
+#ifdef TARGET_POSIX
   smb.AddActiveConnection();
 #endif
 }
 
 CSMBDirectory::~CSMBDirectory(void)
 {
-#ifdef _LINUX
+#ifdef TARGET_POSIX
   smb.AddIdleConnection();
 #endif
 }
@@ -126,7 +125,7 @@ bool CSMBDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
     strFile = aDir.name;
 
     if (!strFile.Equals(".") && !strFile.Equals("..")
-      && !strFile.Equals("lost+found")
+      && !strFile.Equals("lost+found") && !strFile.empty()
       && aDir.type != SMBC_PRINTER_SHARE && aDir.type != SMBC_IPC_SHARE)
     {
      int64_t iSize = 0;
@@ -134,7 +133,7 @@ bool CSMBDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items
       int64_t lTimeDate = 0;
       bool hidden = false;
 
-      if(strFile.Right(1).Equals("$") && aDir.type == SMBC_FILE_SHARE )
+      if(StringUtils::EndsWith(strFile, "$") && aDir.type == SMBC_FILE_SHARE )
         continue;
 
       // only stat files that can give proper responses
@@ -402,7 +401,7 @@ bool CSMBDirectory::Exists(const char* strPath)
 CStdString CSMBDirectory::MountShare(const CStdString &smbPath, const CStdString &strType, const CStdString &strName,
     const CStdString &strUser, const CStdString &strPass)
 {
-#ifdef _LINUX
+#ifdef TARGET_POSIX
   UnMountShare(strType, strName);
 
   CStdString strMountPoint = GetMountPoint(strType, strName);
@@ -469,7 +468,7 @@ void CSMBDirectory::UnMountShare(const CStdString &strType, const CStdString &st
 
   // Execute command.
   CUtil::Command(args);
-#elif defined(_LINUX)
+#elif defined(TARGET_POSIX)
   CStdString strCmd = "umount " + GetMountPoint(strType, strName);
   CUtil::SudoCommand(strCmd);
 #endif

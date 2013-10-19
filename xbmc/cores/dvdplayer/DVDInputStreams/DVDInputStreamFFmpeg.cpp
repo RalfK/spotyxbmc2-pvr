@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,8 @@ using namespace XFILE;
 
 CDVDInputStreamFFmpeg::CDVDInputStreamFFmpeg()
   : CDVDInputStream(DVDSTREAM_TYPE_FFMPEG)
+  , m_can_pause(false)
+  , m_can_seek(false)
   , m_aborted(false)
 {
 
@@ -47,7 +49,22 @@ bool CDVDInputStreamFFmpeg::Open(const char* strFile, const std::string& content
   if (!CDVDInputStream::Open(strFile, content))
     return false;
 
+  m_can_pause = true;
+  m_can_seek  = true;
   m_aborted   = false;
+
+  if(strnicmp(strFile, "udp://", 6) == 0
+  || strnicmp(strFile, "rtp://", 6) == 0)
+  {
+    m_can_pause = false;
+    m_can_seek  = false;
+  }
+
+  if(strnicmp(strFile, "tcp://", 6) == 0)
+  {
+    m_can_pause = true;
+    m_can_seek  = false;
+  }
   return true;
 }
 
@@ -57,7 +74,7 @@ void CDVDInputStreamFFmpeg::Close()
   CDVDInputStream::Close();
 }
 
-int CDVDInputStreamFFmpeg::Read(BYTE* buf, int buf_size)
+int CDVDInputStreamFFmpeg::Read(uint8_t* buf, int buf_size)
 {
   return -1;
 }

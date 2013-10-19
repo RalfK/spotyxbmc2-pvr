@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,7 +26,6 @@
 #include "GUIControlFactory.h"
 #include "GUIControlGroup.h"
 #include "GUIControlProfiler.h"
-#include "settings/Settings.h"
 #ifdef PRE_SKIN_VERSION_9_10_COMPATIBILITY
 #include "GUIEditControl.h"
 #endif
@@ -327,10 +326,9 @@ void CGUIWindow::CenterWindow()
 void CGUIWindow::DoProcess(unsigned int currentTime, CDirtyRegionList &dirtyregions)
 {
   g_graphicsContext.SetRenderingResolution(m_coordsRes, m_needsScaling);
-  unsigned int size = g_graphicsContext.AddGUITransform();
+  g_graphicsContext.AddGUITransform();
   CGUIControlGroup::DoProcess(currentTime, dirtyregions);
-  if (size != g_graphicsContext.RemoveTransform())
-    CLog::Log(LOGERROR, "Unbalanced UI transforms (was %d)", size);
+  g_graphicsContext.RemoveTransform();
 
   // check if currently focused control can have it
   // and fallback to default control if not
@@ -349,10 +347,9 @@ void CGUIWindow::DoRender()
 
   g_graphicsContext.SetRenderingResolution(m_coordsRes, m_needsScaling);
 
-  unsigned int size = g_graphicsContext.AddGUITransform();
+  g_graphicsContext.AddGUITransform();
   CGUIControlGroup::DoRender();
-  if (size != g_graphicsContext.RemoveTransform())
-    CLog::Log(LOGERROR, "Unbalanced UI transforms (was %d)", size);
+  g_graphicsContext.RemoveTransform();
 
   if (CGUIControlProfiler::IsRunning()) CGUIControlProfiler::Instance().EndFrame();
 }
@@ -391,7 +388,7 @@ void CGUIWindow::Close_Internal(bool forceClose /*= false*/, int nextWindowID /*
   }
 
   m_closing = false;
-  CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0);
+  CGUIMessage msg(GUI_MSG_WINDOW_DEINIT, 0, 0, nextWindowID);
   OnMessage(msg);
 }
 
@@ -494,7 +491,7 @@ void CGUIWindow::OnInitWindow()
     g_audioManager.PlayWindowSound(GetID(), SOUND_INIT);
 
   // set our rendered state
-  m_hasRendered = false;
+  m_hasProcessed = false;
   m_closing = false;
   m_active = true;
   ResetAnimations();  // we need to reset our animations as those windows that don't dynamically allocate
@@ -587,7 +584,6 @@ bool CGUIWindow::OnMessage(CGUIMessage& message)
         CLog::Log(LOGDEBUG, "Unfocus WindowID: %i, ControlID: %i",GetID(), control->GetID());
       }
       return true;
-    break;
     }
 
   case GUI_MSG_SELCHANGED:
@@ -820,7 +816,7 @@ bool CGUIWindow::CheckAnimation(ANIMATION_TYPE animType)
   // special cases first
   if (animType == ANIM_TYPE_WINDOW_CLOSE)
   {
-    if (!m_bAllocated || !m_hasRendered) // can't render an animation if we aren't allocated or haven't rendered
+    if (!m_bAllocated || !HasProcessed()) // can't process an animation if we aren't allocated or haven't processed
       return false;
     // make sure we update our visibility prior to queuing the window close anim
     for (unsigned int i = 0; i < m_children.size(); i++)
@@ -1076,7 +1072,7 @@ void CGUIWindow::SetID(int id)
 
 bool CGUIWindow::HasID(int controlID) const
 {
-  for (std::vector<int>::const_iterator it = m_idRange.begin(); it != m_idRange.end() ; it++)
+  for (std::vector<int>::const_iterator it = m_idRange.begin(); it != m_idRange.end() ; ++it)
   {
     if (controlID == *it)
       return true;

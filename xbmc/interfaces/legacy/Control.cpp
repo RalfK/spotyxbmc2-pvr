@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -13,9 +13,8 @@
  *  GNU General Public License for more details.
  *
  *  You should have received a copy of the GNU General Public License
- *  along with XBMC; see the file COPYING.  If not, write to
- *  the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *  http://www.gnu.org/copyleft/gpl.html
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
  *
  */
 
@@ -536,13 +535,13 @@ namespace XBMCAddon
 
     float ControlSlider::getPercent() throw (UnimplementedException)
     {
-      return (pGUIControl) ? (float)((CGUISliderControl*)pGUIControl)->GetPercentage() : 0.0f;
+      return (pGUIControl) ? ((CGUISliderControl*)pGUIControl)->GetPercentage() : 0.0f;
     }
 
     void ControlSlider::setPercent(float pct) throw (UnimplementedException)
     {
       if (pGUIControl)
-        ((CGUISliderControl*)pGUIControl)->SetPercentage((int)pct);
+        ((CGUISliderControl*)pGUIControl)->SetPercentage(pct);
     }
 
     CGUIControl* ControlSlider::Create () throw (WindowException)
@@ -584,7 +583,9 @@ namespace XBMCAddon
     // ============================================================
     // ============================================================
     ControlRadioButton::ControlRadioButton(long x, long y, long width, long height, const String& label,
-                                           const char* focusTexture, const char* noFocusTexture, 
+                                           const char* focusOnTexture,  const char* noFocusOnTexture,
+                                           const char* focusOffTexture, const char* noFocusOffTexture,
+                                           const char* focusTexture,    const char* noFocusTexture, 
                                            long _textOffsetX, long _textOffsetY, 
                                            long alignment, const char* font, const char* _textColor,
                                            const char* _disabledColor, long angle,
@@ -606,11 +607,29 @@ namespace XBMCAddon
         XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturefocus", (char*)"button-focus.png");
       strTextureNoFocus = noFocusTexture ? noFocusTexture :
         XBMCAddonUtils::getDefaultImage((char*)"button", (char*)"texturenofocus", (char*)"button-nofocus.jpg");
-      strTextureRadioFocus = TextureRadioFocus ? TextureRadioFocus :
-        XBMCAddonUtils::getDefaultImage((char*)"radiobutton", (char*)"textureradiofocus", (char*)"radiobutton-focus.png");
-      strTextureRadioNoFocus = TextureRadioNoFocus ? TextureRadioNoFocus :
-        XBMCAddonUtils::getDefaultImage((char*)"radiobutton", (char*)"textureradionofocus", (char*)"radiobutton-nofocus.jpg");
-      
+
+      if (focusOnTexture && noFocusOnTexture)
+      {
+        strTextureRadioOnFocus = focusOnTexture;
+        strTextureRadioOnNoFocus = noFocusOnTexture;
+      }
+      else
+      {
+        strTextureRadioOnFocus = strTextureRadioOnNoFocus = focusTexture ? focusTexture :
+          XBMCAddonUtils::getDefaultImage((char*)"radiobutton", (char*)"textureradiofocus", (char*)"radiobutton-focus.png");
+      }
+
+      if (focusOffTexture && noFocusOffTexture)
+      {
+        strTextureRadioOffFocus = focusOffTexture;
+        strTextureRadioOffNoFocus = noFocusOffTexture;
+      }
+      else
+      {
+        strTextureRadioOffFocus = strTextureRadioOffNoFocus = noFocusTexture ? noFocusTexture :
+          XBMCAddonUtils::getDefaultImage((char*)"radiobutton", (char*)"textureradiofocus", (char*)"radiobutton-focus.png");
+      }
+
       if (font) strFont = font;
       if (_textColor) sscanf( _textColor, "%x", &textColor );
       if (_disabledColor) sscanf( _disabledColor, "%x", &disabledColor );
@@ -698,8 +717,10 @@ namespace XBMCAddon
         (CStdString)strTextureFocus,
         (CStdString)strTextureNoFocus,
         label,
-        (CStdString)strTextureRadioFocus,
-        (CStdString)strTextureRadioNoFocus);
+        (CStdString)strTextureRadioOnFocus,
+        (CStdString)strTextureRadioOnNoFocus,
+        (CStdString)strTextureRadioOffFocus,
+        (CStdString)strTextureRadioOffNoFocus);
 
       CGUIRadioButtonControl* pGuiButtonControl =
         (CGUIRadioButtonControl*)pGUIControl;
@@ -1013,7 +1034,7 @@ namespace XBMCAddon
     {
       if (!pGUIControl) 
         return NULL;
-      return strText.c_str();
+      return strText;
     }
     // ============================================================
 
@@ -1079,7 +1100,7 @@ namespace XBMCAddon
     {
       if (!pGUIControl) 
         return NULL;
-      return strText.c_str();
+      return strText;
     }
 
     void ControlEdit::setText(const String& text) throw(UnimplementedException)
@@ -1223,6 +1244,16 @@ namespace XBMCAddon
 
       // send message
       g_windowManager.SendThreadMessage(msg, iParentId);
+    }
+
+    void ControlList::removeItem(int index) throw(UnimplementedException,WindowException)
+    {
+      if (index < 0 || index >= (int)vecItems.size())
+        throw WindowException("Index out of range");
+
+      vecItems.erase(vecItems.begin() + index);
+
+      sendLabelBind(vecItems.size());
     }
 
     void ControlList::reset() throw(UnimplementedException)

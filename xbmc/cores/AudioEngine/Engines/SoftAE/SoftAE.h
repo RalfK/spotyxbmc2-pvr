@@ -1,6 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2010-2012 Team XBMC
+ *      Copyright (C) 2010-2013 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -27,10 +27,11 @@
 #include "threads/Thread.h"
 #include "threads/CriticalSection.h"
 #include "threads/SharedSection.h"
+#include "threads/SystemClock.h"
 
 #include "Interfaces/ThreadedAE.h"
 #include "Utils/AEBuffer.h"
-#include "AEAudioFormat.h"
+#include "Utils/AEAudioFormat.h"
 #include "AESinkFactory.h"
 
 #include "SoftAEStream.h"
@@ -140,7 +141,7 @@ private:
   bool             m_sinkIsSuspended; /* The sink is in unusable state, e.g. SoftSuspended */
   bool             m_isSuspended;      /* engine suspended by external function to release audio context */
   bool             m_softSuspend;      /* latches after last stream or sound played for timer below for idle */
-  unsigned int     m_softSuspendTimer; /* time in milliseconds to hold sink open before soft suspend for idle */
+  XbmcThreads::EndTime m_softSuspendTimeout; /* timer to hold sink open before soft suspend for idle */
   CEvent           m_reOpenEvent;
   CEvent           m_wake;
   CEvent           m_saveSuspend;
@@ -157,19 +158,19 @@ private:
   bool                m_muted;
   CAEChannelInfo      m_chLayout;
   unsigned int        m_frameSize;
+  double              m_frameSizeMul;
 
   /* the sink, its format information, and conversion function */
   AESinkInfoList            m_sinkInfoList;
   IAESink                  *m_sink;
   AEAudioFormat             m_sinkFormat;
   double                    m_sinkFormatSampleRateMul;
-  double                    m_sinkFormatFrameSizeMul;
   unsigned int              m_sinkBlockSize;
+  unsigned int              m_sinkBlockTime;
   bool                      m_sinkHandlesVolume;
   AEAudioFormat             m_encoderFormat;
   double                    m_encoderFrameSizeMul;
   double                    m_encoderInitSampleRateMul;
-  double                    m_encoderInitFrameSizeMul;
   unsigned int              m_bytesPerSample;
   CAEConvert::AEConvertFrFn m_convertFn;
 
@@ -246,5 +247,7 @@ private:
 
   void         RemoveStream(StreamList &streams, CSoftAEStream *stream);
   void         PrintSinks();
+
+  unsigned int WriteSink(CAEBuffer& src, unsigned int src_len, uint8_t *data, bool hasAudio);
 };
 

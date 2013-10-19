@@ -1,12 +1,12 @@
 # XBMC Media Center language file
 msgid ""
 msgstr ""
-"Project-Id-Version: XBMC Main Translation Project (Frodo)\n"
+"Project-Id-Version: XBMC Main\n"
 "Report-Msgid-Bugs-To: http://trac.xbmc.org/\n"
 "POT-Creation-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: XBMC Translation Team\n"
-"Language-Team: Welsh (http://www.transifex.com/projects/p/XBMC-Main-Frodo/language/cy/)\n"
+"Language-Team: Welsh (http://www.transifex.com/projects/p/xbmc-main/language/cy/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -853,10 +853,6 @@ msgctxt "#249"
 msgid "Music"
 msgstr "Cerddoriaeth"
 
-msgctxt "#250"
-msgid "Visualization"
-msgstr "Delweddiad"
-
 msgctxt "#251"
 msgid "Select destination directory"
 msgstr "Dewis cyfeiriadur targed"
@@ -868,10 +864,6 @@ msgstr "Allbynnu stereo i bob seinydd"
 msgctxt "#253"
 msgid "Number of channels"
 msgstr "Nifer o sianeli"
-
-msgctxt "#254"
-msgid "- DTS capable receiver"
-msgstr "- Derbynnydd DTS"
 
 msgctxt "#255"
 msgid "CDDB"
@@ -1010,8 +1002,8 @@ msgid "Font"
 msgstr "Ffont"
 
 msgctxt "#289"
-msgid "- Size"
-msgstr "- Maint"
+msgid "Size"
+msgstr "Maint"
 
 msgctxt "#290"
 msgid "Dynamic range compression"
@@ -1045,22 +1037,6 @@ msgctxt "#298"
 msgid "Bookmarks"
 msgstr "Nodau Tudalen"
 
-msgctxt "#299"
-msgid "- AAC capable receiver"
-msgstr "- Derbynnydd AAC"
-
-msgctxt "#300"
-msgid "- MP1 capable receiver"
-msgstr "- Derbynnydd MP1"
-
-msgctxt "#301"
-msgid "- MP2 capable receiver"
-msgstr "- Derbynnydd MP2"
-
-msgctxt "#302"
-msgid "- MP3 capable receiver"
-msgstr "- Derbynnydd MP3"
-
 msgctxt "#303"
 msgid "Delay"
 msgstr "Oediad"
@@ -1091,7 +1067,7 @@ msgstr "(0=auto)"
 
 msgctxt "#313"
 msgid "Cleaning database"
-msgstr "Glanhau'r rhyngwyneb"
+msgstr "Glanhau'r gronfa ddata"
 
 msgctxt "#314"
 msgid "Preparing..."
@@ -1189,10 +1165,6 @@ msgctxt "#337"
 msgid "Audio output"
 msgstr "Allbwn sain"
 
-msgctxt "#338"
-msgid "Analog"
-msgstr "Analog"
-
 msgctxt "#339"
 msgid "Optical/Coax"
 msgstr "Optegol/Coax"
@@ -1224,18 +1196,6 @@ msgstr "Blwyddyn"
 msgctxt "#346"
 msgid "Boost volume level on downmix"
 msgstr "Codi lefel sain wrth gymysgu i lawr"
-
-msgctxt "#347"
-msgid "- DTS-HD capable receiver"
-msgstr "- Derbynnydd DTS-HD"
-
-msgctxt "#348"
-msgid "- Multichannel LPCM capable receiver"
-msgstr "- Derbynnydd LPCM sianeli lluosog"
-
-msgctxt "#349"
-msgid "- TrueHD capable receiver"
-msgstr "- Derbynnydd TrueHD"
 
 msgctxt "#350"
 msgid "Programs"
@@ -1292,10 +1252,6 @@ msgstr "Lefel pylu arbedwr sgrin"
 msgctxt "#363"
 msgid "Sort by: File"
 msgstr "Trefnu: Ffeil"
-
-msgctxt "#364"
-msgid "- Dolby Digital (AC3) capable receiver"
-msgstr "- Derbynnydd Dolby Digital (AC3)"
 
 msgctxt "#365"
 msgid "Sort by: Name"
@@ -1585,10 +1541,6 @@ msgctxt "#439"
 msgid "Cache"
 msgstr "Storfa"
 
-msgctxt "#440"
-msgid "Harddisk"
-msgstr "Disg Caled"
-
 msgctxt "#441"
 msgid "UDF"
 msgstr "UDF"
@@ -1616,10 +1568,6 @@ msgstr "DVD"
 msgctxt "#447"
 msgid "Autorun media"
 msgstr "Cyfrwng awtoredeg"
-
-msgctxt "#448"
-msgid "LCD"
-msgstr "LCD"
 
 msgctxt "#449"
 msgid "Enabled"
@@ -1828,10 +1776,6 @@ msgstr "Llwytho gwybodaeth cyfrwng o ffeiliau..."
 msgctxt "#507"
 msgid "Sort by: Usage"
 msgstr "Trefnu: Defnydd"
-
-msgctxt "#510"
-msgid "Enable visualizations"
-msgstr "Galluogi delweddu"
 
 msgctxt "#511"
 msgid "Enable video mode switching"
@@ -2269,14 +2213,6 @@ msgctxt "#636"
 msgid "Custom"
 msgstr "Cyfaddas"
 
-msgctxt "#637"
-msgid "Replay gain"
-msgstr "Ailchwarae cynnydd"
-
-msgctxt "#638"
-msgid "Replaygain volume adjustments"
-msgstr "Newid maint sain chwarae eto"
-
 msgctxt "#639"
 msgid "Use track levels"
 msgstr "Defnyddio lefelau trac"
@@ -2284,18 +2220,6 @@ msgstr "Defnyddio lefelau trac"
 msgctxt "#640"
 msgid "Use album levels"
 msgstr "Defnyddio lefelau albwm"
-
-msgctxt "#641"
-msgid "PreAmp Level - Replay gained files"
-msgstr "Lefel PreAmp - Ailchwarae ffeiliau cynnydd"
-
-msgctxt "#642"
-msgid "PreAmp Level - Non replay gained files"
-msgstr "Lefel PreAmp - Ffeiliau cynydd heb eu hailchwarae"
-
-msgctxt "#643"
-msgid "Avoid clipping on replay gained files"
-msgstr "Osgoi clipio ar ffeiliau cynnydd ailchwarae"
 
 msgctxt "#644"
 msgid "Crop black bars"
@@ -2401,10 +2325,6 @@ msgctxt "#705"
 msgid "Network"
 msgstr "Rhwydwaith"
 
-msgctxt "#706"
-msgid "- Server"
-msgstr "- Gweinydd"
-
 msgctxt "#708"
 msgid "Use an HTTP proxy server to access the internet"
 msgstr "Defnyddio gweinydd dirprwyol HTTP i gael mynediad at y rhyngrwyd"
@@ -2421,10 +2341,6 @@ msgctxt "#713"
 msgid "HTTP proxy"
 msgstr "Dirprwy HTTP"
 
-msgctxt "#715"
-msgid "- Assignment"
-msgstr "- Neilltuad"
-
 msgctxt "#716"
 msgid "Automatic (DHCP)"
 msgstr "Awtomatig (DHCP)"
@@ -2434,20 +2350,8 @@ msgid "Manual (Static)"
 msgstr "Gyda llaw (Statig)"
 
 msgctxt "#719"
-msgid "- IP address"
-msgstr "- Cyfeiriad IP"
-
-msgctxt "#720"
-msgid "- Netmask"
-msgstr "- Masg Rhwydwaith"
-
-msgctxt "#721"
-msgid "- Default gateway"
-msgstr "- Porth rhagosodedig"
-
-msgctxt "#722"
-msgid "- DNS server"
-msgstr "- Gweinydd DNS"
+msgid "IP address"
+msgstr "Cyfeiriad IP"
 
 msgctxt "#723"
 msgid "Save & restart"
@@ -2474,32 +2378,24 @@ msgid "FTP server"
 msgstr "Gweinydd FTP"
 
 msgctxt "#730"
-msgid "- Port"
-msgstr "- Porth"
+msgid "Port"
+msgstr "Porth"
 
 msgctxt "#732"
 msgid "Save & apply"
 msgstr "Gadw a gosod"
 
 msgctxt "#733"
-msgid "- Password"
-msgstr "- Cyfrinair"
+msgid "Password"
+msgstr "Cyfrinair"
 
 msgctxt "#734"
 msgid "No pass"
 msgstr "Dim parhau"
 
 msgctxt "#735"
-msgid "- Character set"
-msgstr "- Set nodau"
-
-msgctxt "#736"
-msgid "- Style"
-msgstr "- Arddull"
-
-msgctxt "#737"
-msgid "- Colour"
-msgstr "- Lliw"
+msgid "Character set"
+msgstr "Set nod"
 
 msgctxt "#738"
 msgid "Normal"
@@ -2630,16 +2526,8 @@ msgid "Network interface"
 msgstr "Rhyngwyneb rhwydwaith"
 
 msgctxt "#776"
-msgid "- Wireless network name (ESSID)"
-msgstr "- Enw rhwydwaith diwyfr (ESSID)"
-
-msgctxt "#777"
-msgid "- Wireless password"
-msgstr "- Cyfrinair diwyfr"
-
-msgctxt "#778"
-msgid "- Wireless security"
-msgstr "- Diogelwch diwyfr"
+msgid "Wireless network name (ESSID)"
+msgstr "Enw rhwydwaith diwyfr (ESSID)"
 
 msgctxt "#779"
 msgid "Save and apply network interface settings"
@@ -2725,10 +2613,6 @@ msgctxt "#799"
 msgid "Library Update"
 msgstr "Diweddaru Llyfrgell"
 
-msgctxt "#800"
-msgid "Music library needs to rescan art from tags"
-msgstr "Mae'r Llyfrgell Cerddoriaeth angen ailsganio'r celf o'r tagiau"
-
 msgctxt "#801"
 msgid "Would you like to scan now?"
 msgstr "Hoffech chi sganio nawr?"
@@ -2752,10 +2636,6 @@ msgstr "Ychwanegu Cerddoriaeth..."
 msgctxt "#999"
 msgid "Add Videos..."
 msgstr "Ychwnanegu Fideo..."
-
-msgctxt "#1000"
-msgid "- Preview"
-msgstr "- Rhagolwg"
 
 msgctxt "#1001"
 msgid "Unable to connect"
@@ -2942,8 +2822,8 @@ msgid "Other..."
 msgstr "Eraill..."
 
 msgctxt "#1048"
-msgid "- Username"
-msgstr "- Enw Defnyddiwr"
+msgid "Username"
+msgstr "Enw defnyddiwr"
 
 msgctxt "#1049"
 msgid "Script settings"
@@ -3092,10 +2972,6 @@ msgstr "Caniatáu i XBMC dderbyn cynnwys AirPlay"
 msgctxt "#1271"
 msgid "Device name"
 msgstr "Enw dyfais"
-
-msgctxt "#1272"
-msgid "- Use password protection"
-msgstr "- Defnyddio diogelwch cyfrinair"
 
 msgctxt "#1273"
 msgid "AirPlay"
@@ -3353,10 +3229,6 @@ msgctxt "#2101"
 msgid "Newer version needed - See log"
 msgstr "Mae angen y fersiwn diweddarach - Gw. cofnod"
 
-msgctxt "#4501"
-msgid "Enable LCD/VFD"
-msgstr "Galluogi LCD/VFD"
-
 msgctxt "#10000"
 msgid "Home"
 msgstr "Cartref"
@@ -3461,17 +3333,17 @@ msgctxt "#10034"
 msgid "Settings - Profiles"
 msgstr "Gosodiadau - Proffiliau"
 
-msgctxt "#10040"
-msgid "Addon browser"
-msgstr "Porwr ychwanegyn"
+msgctxt "#10131"
+msgid "Lock settings"
+msgstr "Gosodiadau cloi"
 
-msgctxt "#10100"
-msgid "Yes/No dialog"
-msgstr "Deialog Iawn/Na"
+msgctxt "#10134"
+msgid "Favourites"
+msgstr "Ffefrynnau"
 
-msgctxt "#10101"
-msgid "Progress dialog"
-msgstr "Deialog cynnydd"
+msgctxt "#10140"
+msgid "Add-on settings"
+msgstr "Gosodidau ychwanegion"
 
 msgctxt "#10210"
 msgid "Looking for subtitles..."
@@ -3561,17 +3433,9 @@ msgctxt "#10524"
 msgid "Movie info"
 msgstr "Gwybodaeth ffilm"
 
-msgctxt "#12000"
-msgid "Select dialog"
-msgstr "Dewis deialog"
-
 msgctxt "#12001"
 msgid "Music/Info"
 msgstr "Cerddoriaeth/Gwybodaeth"
-
-msgctxt "#12002"
-msgid "Dialog OK"
-msgstr "Deialog Iawn"
 
 msgctxt "#12003"
 msgid "Videos/Info"
@@ -3584,14 +3448,6 @@ msgstr "Sgriptiau/Gwybodaeth"
 msgctxt "#12005"
 msgid "Fullscreen video"
 msgstr "Fideo sgrin lawn"
-
-msgctxt "#12006"
-msgid "Audio visualization"
-msgstr "Delweddu sain"
-
-msgctxt "#12008"
-msgid "File stacking dialog"
-msgstr "Deialog stacio ffeil"
 
 msgctxt "#12009"
 msgid "Rebuild index..."
@@ -3929,10 +3785,6 @@ msgctxt "#13013"
 msgid "Reboot"
 msgstr "Ailgychwyn"
 
-msgctxt "#13014"
-msgid "Minimize"
-msgstr "Lleihau"
-
 msgctxt "#13015"
 msgid "Power button action"
 msgstr "Gweithred botwm pŵer"
@@ -4053,10 +3905,6 @@ msgctxt "#13121"
 msgid "VDPAU HQ Upscaling level"
 msgstr "Lefel Uwchraddio VDPAU HQ"
 
-msgctxt "#13122"
-msgid "VDPAU Studio level color conversion"
-msgstr "Trosiad lliw lefel Stiwdio VDPAU"
-
 msgctxt "#13130"
 msgid "Blank other displays"
 msgstr "Gwagio dangosyddion eraill"
@@ -4108,10 +3956,6 @@ msgstr "Porth"
 msgctxt "#13161"
 msgid "Primary DNS"
 msgstr "DNS Cynradd"
-
-msgctxt "#13162"
-msgid "Initialize failed"
-msgstr "Methodd y cychwyn"
 
 msgctxt "#13170"
 msgid "Never"
@@ -4293,10 +4137,6 @@ msgctxt "#13302"
 msgid "Fan speed override"
 msgstr "Rheolwr cyflymder gwyntyll"
 
-msgctxt "#13303"
-msgid "- Fonts"
-msgstr "- Ffontiau"
-
 msgctxt "#13304"
 msgid "Enable flipping bi-directional strings"
 msgstr "Galluogi newid llinynnau dau gyfeiriad"
@@ -4356,10 +4196,6 @@ msgstr "Gweld sioe sleidiau"
 msgctxt "#13318"
 msgid "Recursive slideshow"
 msgstr "Ailadrodd sioe sleidiau"
-
-msgctxt "#13319"
-msgid "Randomize"
-msgstr "Ar hap"
 
 msgctxt "#13320"
 msgid "Stereo"
@@ -4573,21 +4409,9 @@ msgctxt "#13388"
 msgid "Preset"
 msgstr "Rhagosodyn"
 
-msgctxt "#13389"
-msgid "There are no presets available\nfor this visualization"
-msgstr "Nid oes rhagosodiaid ar gael\nar gyfer y delweddu hwn"
-
-msgctxt "#13390"
-msgid "There are no settings available\nfor this visualization"
-msgstr "Nid oes gosodiadau ar gael\nar gyfer y delweddu hwn"
-
 msgctxt "#13391"
 msgid "Eject/Load"
 msgstr "Bwrw Allan/Llwytho"
-
-msgctxt "#13392"
-msgid "Use visualization if playing audio"
-msgstr "Delweddu wrth chwarae cerddoriaeth"
 
 msgctxt "#13393"
 msgid "Calculate size"
@@ -4772,10 +4596,6 @@ msgstr "Cloc fideo (Sain Drop/Dupe)"
 msgctxt "#13503"
 msgid "Video clock (Resample audio)"
 msgstr "Cloc fideo (Ailsamplo'r sain)"
-
-msgctxt "#13504"
-msgid "Maximum resample amount (%)"
-msgstr "Maint mwyaf ailsamplo (%)"
 
 msgctxt "#13505"
 msgid "Resample quality"
@@ -4965,41 +4785,25 @@ msgctxt "#14024"
 msgid "Enter the nearest large town"
 msgstr "Rhowch enw'r dref agosaf"
 
-msgctxt "#14025"
-msgid "Video/Audio/DVD cache - Harddisk"
-msgstr "Storfa Fideo/Sain/DVD - Disg caled"
-
 msgctxt "#14026"
 msgid "Video cache - DVD-ROM"
 msgstr "Storfa Fideo - DVD-ROM"
 
-msgctxt "#14027"
-msgid "- Local Network"
-msgstr "- Rhwydwaith Leol"
-
 msgctxt "#14028"
-msgid "- Internet"
-msgstr "- Rhyngrwyd"
+msgid "Internet"
+msgstr "Rhyngrwyd"
 
 msgctxt "#14030"
 msgid "Audio cache - DVD-ROM"
 msgstr "Storfa Sain - DVD-ROM"
 
-msgctxt "#14031"
-msgid "- Local Network"
-msgstr "- Rhwydwaith Lafar"
-
 msgctxt "#14032"
-msgid "- Internet"
-msgstr "- Rhyngrwyd"
+msgid "Internet"
+msgstr "Rhyngrwyd"
 
 msgctxt "#14034"
 msgid "DVD cache - DVD-ROM"
 msgstr "Storfa DVD - DVD-ROM"
-
-msgctxt "#14035"
-msgid "- Local Network"
-msgstr "- Rhwydwaith Leol"
 
 msgctxt "#14036"
 msgid "Services"
@@ -5149,10 +4953,6 @@ msgctxt "#14077"
 msgid "Remove from favourites"
 msgstr "Tynnu o'r ffefrynnau"
 
-msgctxt "#14078"
-msgid "- Colours"
-msgstr "- Lliwiau"
-
 msgctxt "#14079"
 msgid "Timezone country"
 msgstr "Gwlad y cylch amser"
@@ -5289,10 +5089,6 @@ msgctxt "#15109"
 msgid "Skin default"
 msgstr "Croen rhagosodedig"
 
-msgctxt "#15111"
-msgid "- Theme"
-msgstr "- Thema"
-
 msgctxt "#15112"
 msgid "Default theme"
 msgstr "Thema ragosodedig"
@@ -5300,30 +5096,6 @@ msgstr "Thema ragosodedig"
 msgctxt "#15200"
 msgid "Last.fm"
 msgstr "Last.fm"
-
-msgctxt "#15201"
-msgid "Submit songs to Last.fm"
-msgstr "Cyflwyno caneuon Last.fm"
-
-msgctxt "#15202"
-msgid "Last.fm username"
-msgstr "Enw defnyddiwr Last.fm"
-
-msgctxt "#15203"
-msgid "Last.fm password"
-msgstr "Cyfrinair Last.fm"
-
-msgctxt "#15204"
-msgid "Unable to handshake: sleeping..."
-msgstr "Methu ysgwyd llaw: cysgu..."
-
-msgctxt "#15205"
-msgid "Please update XBMC"
-msgstr "Diweddarwch XBMC"
-
-msgctxt "#15206"
-msgid "Bad authorization: Check username and password"
-msgstr "Awdurdodi gwael: Gwiriwch enw defnyddiwr a chyfrinair"
 
 msgctxt "#15207"
 msgid "Connected"
@@ -5333,29 +5105,9 @@ msgctxt "#15208"
 msgid "Not connected"
 msgstr "Heb gysylltu"
 
-msgctxt "#15209"
-msgid "Submit interval %i"
-msgstr "Cynnig egwyl %i"
-
-msgctxt "#15210"
-msgid "Cached %i songs"
-msgstr "Caneuon storiwyd %i"
-
-msgctxt "#15211"
-msgid "Submitting..."
-msgstr "Cyflwyno..."
-
-msgctxt "#15212"
-msgid "Submitting in %i secs"
-msgstr "Cyflwyno o fewn %i eiliad"
-
 msgctxt "#15213"
 msgid "Play using..."
 msgstr "Chwarae gan ddefnyddio..."
-
-msgctxt "#15214"
-msgid "Use smoothed A/V synchronization"
-msgstr "Defnyddio cydweddiad A/V llyfn"
 
 msgctxt "#15215"
 msgid "Hide file names in thumbs view"
@@ -5364,218 +5116,6 @@ msgstr "Cuddio enwau ffeil yn golwg lluniau bach"
 msgctxt "#15216"
 msgid "Play in party mode"
 msgstr "Chwarae ym modd parti"
-
-msgctxt "#15217"
-msgid "Submit songs to Libre.fm"
-msgstr "Cyflwyno caneuon i Libre.fm"
-
-msgctxt "#15218"
-msgid "Libre.fm username"
-msgstr "Enw defnyddiwr Libre.fm"
-
-msgctxt "#15219"
-msgid "Libre.fm password"
-msgstr "Cyfrinair Libre.fm"
-
-msgctxt "#15220"
-msgid "Libre.fm"
-msgstr "Libre.fm"
-
-msgctxt "#15221"
-msgid "Song submission"
-msgstr "Cyflwyno caneuon"
-
-msgctxt "#15250"
-msgid "Submit Last.fm radio to Last.fm"
-msgstr "Cyflwyno radio Last.fm i Last.fm"
-
-msgctxt "#15251"
-msgid "Connecting to Last.fm..."
-msgstr "Cysylltu â Last.fm..."
-
-msgctxt "#15252"
-msgid "Selecting station..."
-msgstr "Dewis gorsaf..."
-
-msgctxt "#15253"
-msgid "Search similar artists..."
-msgstr "Chwilio am artistiaid tebyg..."
-
-msgctxt "#15254"
-msgid "Search similar tags..."
-msgstr "Chwilioam dagiau tebyg..."
-
-msgctxt "#15255"
-msgid "Your profile (%name%)"
-msgstr "Eich proffil (%name%)"
-
-msgctxt "#15256"
-msgid "Overall top tags"
-msgstr "Prif dagiau cyffredinol"
-
-msgctxt "#15257"
-msgid "Top artists for tag %name%"
-msgstr "Prif artistiaid tag %name%"
-
-msgctxt "#15258"
-msgid "Top albums for tag %name%"
-msgstr "Prif albwm tag %name%"
-
-msgctxt "#15259"
-msgid "Top tracks for tag %name%"
-msgstr "Prif drac tag %name%"
-
-msgctxt "#15260"
-msgid "Listen to tag %name% Last.fm radio"
-msgstr "Gwrando ar dag %name% radio Last.fm"
-
-msgctxt "#15261"
-msgid "Similar artists as %name%"
-msgstr "Artistiaid tebyg i %name%"
-
-msgctxt "#15262"
-msgid "Top %name% albums"
-msgstr "Prif albwm %name%"
-
-msgctxt "#15263"
-msgid "Top %name% tracks"
-msgstr "Prif drac %name%"
-
-msgctxt "#15264"
-msgid "Top %name% tags"
-msgstr "Prif dag %name%"
-
-msgctxt "#15265"
-msgid "Biggest fans of %name%"
-msgstr "Cefnogwyr gorau %name%"
-
-msgctxt "#15266"
-msgid "Listen to %name% fans Last.fm radio"
-msgstr "Gwrando ar gefnogwyr %name% ar Last.fm"
-
-msgctxt "#15267"
-msgid "Listen to %name% similar artists Last.fm radio"
-msgstr "Gwrando ar artistiaid tebyg %name% radio Last.fm"
-
-msgctxt "#15268"
-msgid "Top artists for user %name%"
-msgstr "Hoff artistiaid defnyddiwr %name%"
-
-msgctxt "#15269"
-msgid "Top albums for user %name%"
-msgstr "Hoff albymau defnyddiwr %name%"
-
-msgctxt "#15270"
-msgid "Top tracks for user %name%"
-msgstr "Hoff draciau defnyddiwr %name%"
-
-msgctxt "#15271"
-msgid "Friends of user %name%"
-msgstr "Ffrindiau defnyddiwr %name%"
-
-msgctxt "#15272"
-msgid "Neighbours of user %name%"
-msgstr "Cymdogion defnyddiwr %name%"
-
-msgctxt "#15273"
-msgid "Weekly artist chart for %name%"
-msgstr "Siart artistiaid wythnosol %name%"
-
-msgctxt "#15274"
-msgid "Weekly album chart for %name%"
-msgstr "Siart albymau wythnosol %name%"
-
-msgctxt "#15275"
-msgid "Weekly track chart for %name%"
-msgstr "Siart trac wythnosol %name%"
-
-msgctxt "#15276"
-msgid "Listen to %name%'s neighbours Last.fm radio"
-msgstr "Gwrando ar radio Last.fm cymdogion %name%"
-
-msgctxt "#15277"
-msgid "Listen to %name%'s personal Last.fm radio"
-msgstr "Gwrando ar radio Last.fm personol %name%"
-
-msgctxt "#15278"
-msgid "Listen to %name%'s mix Last.fm radio"
-msgstr "Gwrando ar radio Last.fm %name%"
-
-msgctxt "#15279"
-msgid "Retrieving list from Last.fm..."
-msgstr "Estyn rhestr o Last.fm..."
-
-msgctxt "#15280"
-msgid "Can't retrieve list from Last.fm..."
-msgstr "Methu estyn rhestr o Last.fm..."
-
-msgctxt "#15281"
-msgid "Enter an artist name to find related ones"
-msgstr "Rhowch enw artist i ganfod un sy'n perthyn"
-
-msgctxt "#15282"
-msgid "Enter a tag name to find similar ones"
-msgstr "Rhowch enw tag i ganfod un tebyg"
-
-msgctxt "#15283"
-msgid "Tracks recently listened by %name%"
-msgstr "Traciau bu %name% yn gwrando arnyn nhw'n ddiweddar"
-
-msgctxt "#15284"
-msgid "Listen to %name%'s recommendations Last.fm radio"
-msgstr "Gwrando ar argymhellion Last.fm %name%"
-
-msgctxt "#15285"
-msgid "Top tags for user %name%"
-msgstr "Prif dagiau %name%"
-
-msgctxt "#15287"
-msgid "Do you want to add the current track to your loved tracks?"
-msgstr "Hoffech chi ychwanegu'r trac yma i'ch hoff draciau?"
-
-msgctxt "#15288"
-msgid "Do you want to ban the current track?"
-msgstr "Hoffech chi rwystro'r trac yma?"
-
-msgctxt "#15289"
-msgid "Added to your loved tracks: '%s'."
-msgstr "Ychwanegwyd at eich hoff draciau: '%s'."
-
-msgctxt "#15290"
-msgid "Could not add '%s' to your loved tracks."
-msgstr "Methu ychwanegu '%s' i'ch hoff draciau."
-
-msgctxt "#15291"
-msgid "Banned: '%s'."
-msgstr "Gwaharddwyd: '%s'."
-
-msgctxt "#15292"
-msgid "Could not ban '%s'."
-msgstr "Methu â gosod '%s'."
-
-msgctxt "#15293"
-msgid "Tracks recently loved by %name%"
-msgstr "Traciau wedi eu hoffi gan %name%"
-
-msgctxt "#15294"
-msgid "Tracks recently banned by %name%"
-msgstr "Traciau wedi eu gwahardd yn ddiweddar gan %name%"
-
-msgctxt "#15295"
-msgid "Remove from loved tracks"
-msgstr "Tynnu'r o'r hoff draciau"
-
-msgctxt "#15296"
-msgid "Un-ban"
-msgstr "Dadwahardd"
-
-msgctxt "#15297"
-msgid "Do you want to remove this track from your loved tracks?"
-msgstr "Hoffech chi dynu'r trac yma o'ch hoff draciau?"
-
-msgctxt "#15298"
-msgid "Do you want to un-ban this track?"
-msgstr "Hoffech chi ddadwahardd y trac yma?"
 
 msgctxt "#15300"
 msgid "Path not found or invalid"
@@ -5708,10 +5248,6 @@ msgstr "Ataliwyd y modd parti."
 msgctxt "#16031"
 msgid "No matching songs in the library."
 msgstr "Dim caneuon yn cydweddu yn y lyfrgell."
-
-msgctxt "#16032"
-msgid "Could not initialize database."
-msgstr "Methu cychwyn y gronfa ddata."
 
 msgctxt "#16033"
 msgid "Could not open database."
@@ -5861,10 +5397,6 @@ msgctxt "#16314"
 msgid "Inverse Telecine"
 msgstr "Telcine yn groes"
 
-msgctxt "#16315"
-msgid "Lanczos3 optimized"
-msgstr "Lanczos3 ar ei orau"
-
 msgctxt "#16316"
 msgid "Auto"
 msgstr "Awto"
@@ -5893,17 +5425,9 @@ msgctxt "#16322"
 msgid "Spline36"
 msgstr "Spline36"
 
-msgctxt "#16323"
-msgid "Spline36 optimized"
-msgstr "Spline36 gorau"
-
 msgctxt "#16324"
 msgid "Software Blend"
 msgstr "Cymysgedd Meddalwedd"
-
-msgctxt "#16325"
-msgid "Auto - ION Optimized"
-msgstr "Awto - ION gorau"
 
 msgctxt "#16400"
 msgid "Post-processing"
@@ -6064,10 +5588,6 @@ msgstr "Gwybodaeth"
 msgctxt "#19034"
 msgid "Already started recording on this channel"
 msgstr "Eisoes wedi cychwyn recordio ar y sianel"
-
-msgctxt "#19035"
-msgid "This channel cannot be played. Check the log for details."
-msgstr "Nid oes modd chwarae'r sianel yma. Darllenwch y cofnod am wybodaeth bellach."
 
 msgctxt "#19036"
 msgid "This recording cannot be played. Check the log for details."
@@ -6557,10 +6077,6 @@ msgctxt "#19170"
 msgid "Timeout when starting playback"
 msgstr "Amser allan wrth gychwyn chwarae"
 
-msgctxt "#19171"
-msgid "Start playback minimized"
-msgstr "Cychwyn chwarae'n fach"
-
 msgctxt "#19172"
 msgid "Instant recording duration"
 msgstr "Hyd recordio cyflym"
@@ -6628,10 +6144,6 @@ msgstr "Mae'r Amserlenydd yn cael ei ailosod"
 msgctxt "#19189"
 msgid "Continue last channel on startup"
 msgstr "Parhau ar y sianel diwethaf wrth gychwyn"
-
-msgctxt "#19190"
-msgid "Minimized"
-msgstr "Yn fach"
 
 msgctxt "#19191"
 msgid "PVR service"
@@ -6789,10 +6301,6 @@ msgctxt "#19229"
 msgid "Close channel OSD after switching channels"
 msgstr "Cau Dangosydd ar Sgrin y sianel ar ôl newid sianel"
 
-msgctxt "#19230"
-msgid "Prevent EPG updates while playing a TV stream"
-msgstr "Peidio diweddaru'r Amserlenydd wrth ffrydio'r teledu"
-
 msgctxt "#19231"
 msgid "Always use the channel order from the backend(s)"
 msgstr "Defnyddio trefn sianeli yr offer cefn bob tro"
@@ -6804,10 +6312,6 @@ msgstr "Clirio canlyniadau chwilio"
 msgctxt "#19233"
 msgid "Display a notification on timer updates"
 msgstr "Hysbysu am ddiweddaru amseryddion"
-
-msgctxt "#19234"
-msgid "Use backend channels numbers (only works with 1 enabled PVR addon)"
-msgstr "Defnyddio rhifau sianeli offer cefn (1 ychwanegyn Recordydd yn unig)"
 
 msgctxt "#19235"
 msgid "PVR manager is starting up"
@@ -7633,14 +7137,6 @@ msgctxt "#20085"
 msgid "Show system info"
 msgstr "Dangos gwybodaeth system"
 
-msgctxt "#20086"
-msgid "Show available disc space C: E: F:"
-msgstr "Dangos gofod disg sydd ar gael C: E: F:"
-
-msgctxt "#20087"
-msgid "Show available disc space E: F: G:"
-msgstr "Dangos gofod disg sydd ar gael E: F: G:"
-
 msgctxt "#20088"
 msgid "Weather info"
 msgstr "Gwybodaeth tywydd"
@@ -7726,8 +7222,8 @@ msgid "Root"
 msgstr "Gwraidd"
 
 msgctxt "#20109"
-msgid "- Zoom"
-msgstr "- Chwyddo"
+msgid "Zoom"
+msgstr "Chwyddo"
 
 msgctxt "#20110"
 msgid "UPnP settings"
@@ -8185,17 +7681,9 @@ msgctxt "#20309"
 msgid "Make new folder"
 msgstr "Creu ffolder newydd"
 
-msgctxt "#20310"
-msgid "Dim LCD on playback"
-msgstr "Dim LCD wrth chwarae"
-
 msgctxt "#20311"
 msgid "Unknown or onboard (protected)"
 msgstr "Anhysbys neu yn gynnwysiedig (diogelwyd)"
-
-msgctxt "#20312"
-msgid "Dim LCD on paused"
-msgstr "Dim LCD wrth oedi"
 
 msgctxt "#20314"
 msgid "Videos - Library"
@@ -8580,10 +8068,6 @@ msgstr "Gwastatáu rhaglenni teledu"
 msgctxt "#20413"
 msgid "Get fanart"
 msgstr "Estyn celf selogion"
-
-msgctxt "#20414"
-msgid "Show Fanart in video and music libraries"
-msgstr "Dangos Celf Selogion mewn llyfrgelloedd fideo a cherddoriaeth"
 
 msgctxt "#20415"
 msgid "Scanning for new content"
@@ -9022,8 +8506,8 @@ msgid "Default music video scraper"
 msgstr "Crafwr fideo cerddoriaeth rhagosodedig"
 
 msgctxt "#21417"
-msgid "- Settings"
-msgstr "- Gosodiadau"
+msgid "Settings"
+msgstr "Gosodiadau"
 
 msgctxt "#21418"
 msgid "Multilingual"
@@ -9154,8 +8638,8 @@ msgid "Remote control sends keyboard presses"
 msgstr "Rheolwr pell yn efelychu pwyso bysellfwrdd"
 
 msgctxt "#21450"
-msgid "- Edit"
-msgstr "- Golygu"
+msgid "Edit"
+msgstr "Golygu"
 
 msgctxt "#21451"
 msgid "Internet connection required."
@@ -9425,10 +8909,6 @@ msgctxt "#21877"
 msgid "Date created"
 msgstr "Dyddiad crëwyd"
 
-msgctxt "#21878"
-msgid "Copyright flag"
-msgstr "Banner hawlfraint"
-
 msgctxt "#21879"
 msgid "Country code"
 msgstr "Cod gwlad"
@@ -9525,10 +9005,6 @@ msgctxt "#22001"
 msgid "Hide progress of library updates"
 msgstr "Cuddio cynnydd diweddaru'r llyfrgell"
 
-msgctxt "#22002"
-msgid "- DNS suffix"
-msgstr "- Ol-ddodiad DNS"
-
 msgctxt "#22003"
 msgid "%2.3fs"
 msgstr "%2.3fs"
@@ -9601,10 +9077,6 @@ msgctxt "#22020"
 msgid "Guide"
 msgstr "Canllaw"
 
-msgctxt "#22021"
-msgid "Allowed error in aspect ratio to minimize black bars"
-msgstr "Caniatáu gwall yn y gymhareb agwedd i leihau'r barau duon"
-
 msgctxt "#22022"
 msgid "Show video files in listings"
 msgstr "Dangos ffeiliau fideo yn y rhestrau"
@@ -9622,16 +9094,8 @@ msgid "Font"
 msgstr "Ffont"
 
 msgctxt "#22031"
-msgid "- Size"
-msgstr "- Maint"
-
-msgctxt "#22032"
-msgid "- Colours"
-msgstr "- Lliwiau"
-
-msgctxt "#22033"
-msgid "- Charset"
-msgstr "- Set nodau"
+msgid "Size"
+msgstr "Maint"
 
 msgctxt "#22034"
 msgid "Export karaoke titles as HTML"
@@ -9764,10 +9228,6 @@ msgstr "Arbedwr sgrin"
 msgctxt "#24009"
 msgid "Script"
 msgstr "Sgript"
-
-msgctxt "#24010"
-msgid "Visualization"
-msgstr "Delweddu"
 
 msgctxt "#24011"
 msgid "Add-on repository"
@@ -10493,10 +9953,6 @@ msgctxt "#34202"
 msgid "Can't find a previous item to play"
 msgstr "Methu canfod yr eitem flaenoro i'w chwarae"
 
-msgctxt "#34300"
-msgid "Failed to start zeroconf"
-msgstr "Methwyd cychwyn zeroconf"
-
 msgctxt "#34301"
 msgid "Is Apple's Bonjour Service installed? See log for more info."
 msgstr "A yw gwasanaeth Apple Bonjour wedi ei osod? Gw. cofnod am ragor o wybodaeth."
@@ -10508,10 +9964,6 @@ msgstr "Rendro Fideo"
 msgctxt "#34401"
 msgid "Failed to init video filters/scalers, falling back to bilinear scaling"
 msgstr "Methwyd ymgychwyn hidlau/graddwyr fideo, mynd nôl at raddio deulinellol"
-
-msgctxt "#34402"
-msgid "Failed to initialize audio device"
-msgstr "Methwyd ymgychwyn dyfais sain"
 
 msgctxt "#34403"
 msgid "Check your audiosettings"
@@ -10545,10 +9997,6 @@ msgctxt "#35001"
 msgid "Generic HID device"
 msgstr "Dyfais HID generig"
 
-msgctxt "#35002"
-msgid "Generic network adapter"
-msgstr "Addasydd rhwydwaith generig"
-
 msgctxt "#35003"
 msgid "Generic disk"
 msgstr "Disg generig"
@@ -10581,10 +10029,6 @@ msgctxt "#35100"
 msgid "Enable joystick and gamepad support"
 msgstr "Galluogi cynnal ffon hwyl a pad gemau"
 
-msgctxt "#35102"
-msgid "Disable joystick when device is present"
-msgstr "Analluogi ffon hwyl pan fo'r ddyfais ar gal"
-
 msgctxt "#35500"
 msgid "Location"
 msgstr "Lleoliad"
@@ -10604,10 +10048,6 @@ msgstr "Gwerthwr"
 msgctxt "#35504"
 msgid "Product ID"
 msgstr "Enw Cynnyrch"
-
-msgctxt "#36000"
-msgid "Pulse-Eight CEC adapter"
-msgstr "Addasydd Pulse-Eight CEC"
 
 msgctxt "#36001"
 msgid "Pulse-Eight Nyxboard"
@@ -10629,10 +10069,6 @@ msgctxt "#36005"
 msgid "Enable switch side commands"
 msgstr "Galluogi gorchymyn newid och"
 
-msgctxt "#36006"
-msgid "Could not open the adapter"
-msgstr "Methwyd agor yr addasydd"
-
 msgctxt "#36007"
 msgid "Devices to power on when starting XBMC"
 msgstr "Dyfais i gychwyn wrth gychwyn XBMC"
@@ -10649,10 +10085,6 @@ msgctxt "#36011"
 msgid "Could not detect the CEC com port. Set it up manually."
 msgstr "Methu canfod y porth CEC com. Ei osod gyda llaw."
 
-msgctxt "#36012"
-msgid "Could not initialise the CEC adapter. Please check your settings."
-msgstr "Methu ymgychwyn yr addasydd CEC. Gwiriwch eich gosodiadau."
-
 msgctxt "#36015"
 msgid "HDMI port number"
 msgstr "Rhif porth HDMI"
@@ -10660,10 +10092,6 @@ msgstr "Rhif porth HDMI"
 msgctxt "#36016"
 msgid "Connected"
 msgstr "Cysylltwyd"
-
-msgctxt "#36017"
-msgid "Could not initialise the CEC adapter: libCEC was not found on your system."
-msgstr "Methu ymgychwyn yr addasydd CEC: nid yw libCEC ar eich system."
 
 msgctxt "#36018"
 msgid "Use the TV's language setting"
@@ -10716,14 +10144,6 @@ msgstr "Pan mae'r teledu wedi ei diffodd"
 msgctxt "#36030"
 msgid "Connection lost"
 msgstr "Collwyd y cysylltiad"
-
-msgctxt "#36031"
-msgid "This user does not have permissions to open the CEC adapter"
-msgstr "Nid oes gan y defnyddiwr hwn hawl i agor yr addasydd CEC"
-
-msgctxt "#36032"
-msgid "The port is busy. Only one program can access the CEC adapter"
-msgstr "Mae'r porth yn brysur. Dim ond un rhaglen gall gael mynediad i'r addasydd CEC"
 
 msgctxt "#36033"
 msgid "Pause playback when switching to another source"

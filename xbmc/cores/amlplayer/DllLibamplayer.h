@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,8 +25,8 @@
 
 extern "C"
 {
-#include <player_type.h>
-#include <player_error.h>
+#include <amplayer/player_type.h>
+#include <amplayer/player_error.h>
 }
 
 struct AML_URLProtocol;
@@ -62,9 +62,13 @@ public:
   virtual int player_register_update_callback(callback_t *cb,update_state_fun_t up_fn,int interval_s)=0;
   virtual char* player_status2str(player_status status)=0;
 
-  virtual int audio_set_volume(int pid,float val)=0;
+#if defined(HAS_AMLPLAYER_AUDIO_SETDELAY)
   virtual int audio_set_delay(int pid, int delay)=0;
-  
+#endif
+#if defined(HAS_AMLPLAYER_AUDIO_SETVOLUME)
+  virtual int audio_set_volume(int pid,float val)=0;
+#endif
+
   virtual int codec_open_sub_read(void)=0;
   virtual int codec_close_sub_fd(int sub_fd)=0;
   virtual int codec_get_sub_size_fd(int sub_fd)=0;
@@ -103,8 +107,12 @@ class DllLibAmplayer : public DllDynamic, DllLibAmplayerInterface
   DEFINE_METHOD3(int,            player_register_update_callback, (callback_t *p1, update_state_fun_t p2, int p3))
   DEFINE_METHOD1(char*,          player_status2str,     (player_status p1))
 
-  DEFINE_METHOD2(int,            audio_set_volume,      (int p1, float p2))
+#if defined(HAS_AMLPLAYER_AUDIO_SETDELAY)
   DEFINE_METHOD2(int,            audio_set_delay,       (int p1, int p2))
+#endif
+#if defined(HAS_AMLPLAYER_AUDIO_SETVOLUME)
+  DEFINE_METHOD2(int,            audio_set_volume,      (int p1, float p2))
+#endif
 
   DEFINE_METHOD0(int,            codec_open_sub_read)
   DEFINE_METHOD1(int,            codec_close_sub_fd,    (int p1))
@@ -140,8 +148,12 @@ class DllLibAmplayer : public DllDynamic, DllLibAmplayerInterface
     RESOLVE_METHOD(player_register_update_callback)
     RESOLVE_METHOD(player_status2str)
 
-    RESOLVE_METHOD(audio_set_volume)
+#if defined(HAS_AMLPLAYER_AUDIO_SETDELAY)
     RESOLVE_METHOD(audio_set_delay)
+#endif
+#if defined(HAS_AMLPLAYER_AUDIO_SETVOLUME)
+    RESOLVE_METHOD(audio_set_volume)
+#endif
 
     RESOLVE_METHOD(codec_open_sub_read)
     RESOLVE_METHOD(codec_close_sub_fd)

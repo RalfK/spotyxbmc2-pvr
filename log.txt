@@ -1,0 +1,19 @@
+bgthread OnStartup
+bgthread quiting, spotyxbmc is not enabled or the addon is missing
+exiting process thread
+exiting process thread done
+bgthread OnExit
+bgthread OnStartup
+bgthread quiting, spotyxbmc is not enabled or the addon is missing
+exiting process thread
+exiting process thread done
+bgthread OnExit
+bgthread OnStartup
+bgthread quiting, spotyxbmc is not enabled or the addon is missing
+exiting process thread
+exiting process thread done
+bgthread OnExit
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup

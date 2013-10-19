@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -20,7 +20,6 @@
 
 #include "PeripheralHID.h"
 #include "utils/log.h"
-#include "settings/Settings.h"
 #include "guilib/LocalizeStrings.h"
 #include "input/ButtonTranslator.h"
 

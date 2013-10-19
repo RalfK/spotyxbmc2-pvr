@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2012-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@
 #include "XBMCApp.h"
 #include "guilib/Key.h"
 #include "windowing/WinEvents.h"
+
+#include "AndroidExtra.h"
 
 static KeyMap keyMap[] = {
   { AKEYCODE_UNKNOWN         , XBMCK_LAST },
@@ -81,17 +83,17 @@ static KeyMap keyMap[] = {
   { AKEYCODE_Z               , XBMCK_z },
   { AKEYCODE_COMMA           , XBMCK_COMMA },
   { AKEYCODE_PERIOD          , XBMCK_PERIOD },
-  { AKEYCODE_ALT_LEFT        , XBMCK_LEFT },
-  { AKEYCODE_ALT_RIGHT       , XBMCK_RIGHT },
-  { AKEYCODE_SHIFT_LEFT      , XBMCK_LEFT },
-  { AKEYCODE_SHIFT_RIGHT     , XBMCK_RIGHT },
+  { AKEYCODE_ALT_LEFT        , XBMCK_LALT },
+  { AKEYCODE_ALT_RIGHT       , XBMCK_RALT },
+  { AKEYCODE_SHIFT_LEFT      , XBMCK_LSHIFT },
+  { AKEYCODE_SHIFT_RIGHT     , XBMCK_RSHIFT },
   { AKEYCODE_TAB             , XBMCK_TAB },
   { AKEYCODE_SPACE           , XBMCK_SPACE },
   { AKEYCODE_SYM             , XBMCK_LAST },
   { AKEYCODE_EXPLORER        , XBMCK_LAST },
   { AKEYCODE_ENVELOPE        , XBMCK_LAST },
   { AKEYCODE_ENTER           , XBMCK_RETURN },
-  { AKEYCODE_DEL             , XBMCK_DELETE },
+  { AKEYCODE_DEL             , XBMCK_BACKSPACE },
   { AKEYCODE_GRAVE           , XBMCK_BACKQUOTE },
   { AKEYCODE_MINUS           , XBMCK_MINUS },
   { AKEYCODE_EQUALS          , XBMCK_EQUALS },
@@ -134,7 +136,17 @@ static KeyMap keyMap[] = {
   { AKEYCODE_BUTTON_THUMBR   , XBMCK_LAST },
   { AKEYCODE_BUTTON_START    , XBMCK_LAST },
   { AKEYCODE_BUTTON_SELECT   , XBMCK_LAST },
-  { AKEYCODE_BUTTON_MODE     , XBMCK_LAST }
+  { AKEYCODE_BUTTON_MODE     , XBMCK_LAST },
+  { AKEYCODE_ESCAPE          , XBMCK_ESCAPE },
+  { AKEYCODE_FORWARD_DEL     , XBMCK_DELETE },
+  { AKEYCODE_CTRL_LEFT       , XBMCK_LCTRL },
+  { AKEYCODE_CTRL_RIGHT      , XBMCK_RCTRL },
+  { AKEYCODE_CAPS_LOCK       , XBMCK_CAPSLOCK },
+  { AKEYCODE_SCROLL_LOCK     , XBMCK_SCROLLOCK },
+  { AKEYCODE_INSERT          , XBMCK_INSERT },
+  { AKEYCODE_FORWARD         , XBMCK_FASTFORWARD },
+  { AKEYCODE_MEDIA_PLAY      , XBMCK_MEDIA_PLAY_PAUSE },
+  { AKEYCODE_MEDIA_EJECT     , XBMCK_EJECT },
 };
 
 bool CAndroidKey::onKeyboardEvent(AInputEvent* event)
@@ -160,7 +172,7 @@ bool CAndroidKey::onKeyboardEvent(AInputEvent* event)
   }
   
   // check if this is a key we don't want to handle
-  if (sym == XBMCK_LAST)
+  if (sym == XBMCK_LAST || sym == XBMCK_UNKNOWN)
     return false;
 
   uint16_t modifiers = 0;

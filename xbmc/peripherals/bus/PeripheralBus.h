@@ -1,6 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -33,7 +33,7 @@ namespace PERIPHERALS
 
   /*!
    * @class CPeripheralBus
-   * This represents a bus on the system. By default, this bus instance will scan for changes every second.
+   * This represents a bus on the system. By default, this bus instance will scan for changes every 5 seconds.
    * If this bus only has to be updated after a notification sent by the system, set m_bNeedsPolling to false
    * in the constructor, and implement the OnDeviceAdded(), OnDeviceChanged() and OnDeviceRemoved() methods.
    *
@@ -42,7 +42,7 @@ namespace PERIPHERALS
   class CPeripheralBus : protected CThread
   {
   public:
-    CPeripheralBus(CPeripherals *manager, PeripheralBusType type);
+    CPeripheralBus(const CStdString &threadname, CPeripherals *manager, PeripheralBusType type);
     virtual ~CPeripheralBus(void) { Clear(); }
 
     /*!

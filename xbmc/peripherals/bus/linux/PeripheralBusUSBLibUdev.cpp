@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -77,7 +77,7 @@ extern "C" {
 using namespace PERIPHERALS;
 
 CPeripheralBusUSB::CPeripheralBusUSB(CPeripherals *manager) :
-    CPeripheralBus(manager, PERIPHERAL_BUS_USB)
+    CPeripheralBus("PeripBusUSBUdev", manager, PERIPHERAL_BUS_USB)
 {
   /* the Process() method in this class overrides the one in CPeripheralBus, so leave this set to true */
   m_bNeedsPolling = true;
@@ -221,9 +221,9 @@ void CPeripheralBusUSB::Clear(void)
 
 bool CPeripheralBusUSB::WaitForUpdate()
 {
-  int m_udevFd = udev_monitor_get_fd(m_udevMon);
+  int udevFd = udev_monitor_get_fd(m_udevMon);
 
-  if (m_udevFd < 0)
+  if (udevFd < 0)
   {
     CLog::Log(LOGERROR, "%s - get udev monitor", __FUNCTION__);
     return false;
@@ -231,7 +231,7 @@ bool CPeripheralBusUSB::WaitForUpdate()
 
   /* poll for udev changes */
   struct pollfd pollFd;
-  pollFd.fd = m_udevFd;
+  pollFd.fd = udevFd;
   pollFd.events = POLLIN;
   int iPollResult;
   while (!m_bStop && ((iPollResult = poll(&pollFd, 1, 100)) <= 0))

@@ -1,25 +1,27 @@
 /*
-* UPnP Support for XBMC
-* Copyright (c) 2006 c0diq (Sylvain Rebaud)
-* Portions Copyright (c) by the authors of libPlatinum
-*
-* http://www.plutinosoft.com/blog/category/platinum/
-*
-* This program is free software; you can redistribute it and/or modify
-* it under the terms of the GNU General Public License as published by
-* the Free Software Foundation; either version 2 of the License, or
-* (at your option) any later version.
-*
-* This program is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with this program; if not, write to the Free Software
-* Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/
-
+ * UPnP Support for XBMC
+ *      Copyright (c) 2006 c0diq (Sylvain Rebaud)
+ *      Portions Copyright (c) by the authors of libPlatinum
+ *      http://www.plutinosoft.com/blog/category/platinum/
+ *
+ *      Copyright (C) 2010-2013 Team XBMC
+ *      http://xbmc.org
+ *
+ *  This Program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2, or (at your option)
+ *  any later version.
+ *
+ *  This Program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with XBMC; see the file COPYING.  If not, see
+ *  <http://www.gnu.org/licenses/>.
+ *
+ */
 #include "UPnPDirectory.h"
 #include "URL.h"
 #include "network/upnp/UPnP.h"
@@ -37,23 +39,6 @@ using namespace UPNP;
 
 namespace XFILE
 {
-/*----------------------------------------------------------------------
-|   CResourceFinder
-+---------------------------------------------------------------------*/
-class CResourceFinder {
-public:
-    CResourceFinder(const char* protocol, const char* content = NULL) : m_Protocol(protocol), m_Content(content) {}
-    bool operator()(const PLT_MediaItemResource& resource) const {
-        if (m_Content.IsEmpty())
-            return (resource.m_ProtocolInfo.GetProtocol().Compare(m_Protocol, true) == 0);
-        else
-            return ((resource.m_ProtocolInfo.GetProtocol().Compare(m_Protocol, true) == 0)
-                  && resource.m_ProtocolInfo.GetContentType().StartsWith(m_Content, true));
-    }
-private:
-    NPT_String m_Protocol;
-    NPT_String m_Content;
-};
 
 static CStdString GetContentMapping(NPT_String& objectClass)
 {
@@ -189,78 +174,7 @@ bool CUPnPDirectory::GetResource(const CURL& path, CFileItem &item)
     if (entry == 0)
         return false;
 
-    PLT_MediaItemResource resource;
-
-    // look for a resource with "xbmc-get" protocol
-    // if we can't find one, try to find a valid resource
-    if(NPT_FAILED(NPT_ContainerFind((*entry)->m_Resources,
-                      CResourceFinder("xbmc-get"), resource))) {
-        const char* content = NULL;
-        if ((*entry)->m_ObjectClass.type.StartsWith("object.item.audioItem"))
-             content = "audio";
-        else if ((*entry)->m_ObjectClass.type.StartsWith("object.item.imageItem"))
-             content = "image";
-        else if ((*entry)->m_ObjectClass.type.StartsWith("object.item.videoItem"))
-             content = "video";
-
-        if(NPT_FAILED(NPT_ContainerFind((*entry)->m_Resources,
-                          CResourceFinder("http-get", content), resource))) {
-            if((*entry)->m_Resources.GetItemCount()) {
-                // last attempt to find something suitable
-                resource = (*entry)->m_Resources[0];
-            }
-            else {
-                CLog::Log(LOGERROR, "CUPnPDirectory::GetResource - no resources returned for object %s", object.c_str());
-                return false;
-            }
-        }
-    }
-
-    // store original path so we remember it
-    item.SetProperty("original_listitem_url",  item.GetPath());
-    item.SetProperty("original_listitem_mime", item.GetMimeType(false));
-
-    // if it's an item, path is the first url to the item
-    // we hope the server made the first one reachable for us
-    // (it could be a format we dont know how to play however)
-    item.SetPath((const char*) resource.m_Uri);
-
-    // look for content type in protocol info
-    if (resource.m_ProtocolInfo.IsValid()) {
-        CLog::Log(LOGDEBUG, "CUPnPDirectory::GetResource - resource protocol info '%s'",
-            (const char*)(resource.m_ProtocolInfo.ToString()));
-
-        if (resource.m_ProtocolInfo.GetContentType().Compare("application/octet-stream") != 0) {
-            item.SetMimeType((const char*)resource.m_ProtocolInfo.GetContentType());
-        }
-    } else {
-        CLog::Log(LOGERROR, "CUPnPDirectory::GetResource - invalid protocol info '%s'",
-            (const char*)(resource.m_ProtocolInfo.ToString()));
-    }
-
-    // look for subtitles
-    unsigned subs = 0;
-    for(unsigned r = 0; r < (*entry)->m_Resources.GetItemCount(); r++)
-    {
-        PLT_MediaItemResource& res  = (*entry)->m_Resources[r];
-        PLT_ProtocolInfo&      info = res.m_ProtocolInfo;
-        static const char* allowed[] = { "text/srt"
-                                       , "text/ssa"
-                                       , "text/sub"
-                                       , "text/idx" };
-        for(unsigned type = 0; type < sizeof(allowed)/sizeof(allowed[0]); type++)
-        {
-            if(info.Match(PLT_ProtocolInfo("*", "*", allowed[type], "*")))
-            {
-                CStdString prop;
-                prop.Format("upnp:subtitle:%d", ++subs);
-                item.SetProperty(prop, (const char*)res.m_Uri);
-                break;
-            }
-        }
-    }
-
-    return true;
+  return UPNP::GetResource(*entry, item);
 }
 
 
@@ -403,122 +317,25 @@ CUPnPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
                 }
             }
 
-            NPT_String ObjectClass = (*entry)->m_ObjectClass.type.ToLowercase();
 
             // keep count of classes
             classes[(*entry)->m_ObjectClass.type]++;
+            CFileItemPtr pItem = BuildObject(*entry);
+            if(!pItem) {
+                ++entry;
+                continue;
+            }
 
-            CFileItemPtr pItem(new CFileItem((const char*)(*entry)->m_Title));
-            pItem->SetLabelPreformated(true);
-            pItem->m_strTitle = (const char*)(*entry)->m_Title;
-            pItem->m_bIsFolder = (*entry)->IsContainer();
+            CStdString id;
+            if ((*entry)->m_ReferenceID.IsEmpty())
+                id = (const char*) (*entry)->m_ObjectID;
+            else
+                id = (const char*) (*entry)->m_ReferenceID;
 
-            CStdString id = (char*) (*entry)->m_ObjectID;
             CURL::Encode(id);
             URIUtils::AddSlashAtEnd(id);
             pItem->SetPath(CStdString((const char*) "upnp://" + uuid + "/" + id.c_str()));
 
-            // if it's a container, format a string as upnp://uuid/object_id
-            if (pItem->m_bIsFolder) {
-                pItem->SetPath(pItem->GetPath() + "/");
-
-                // look for metadata
-                if( ObjectClass.StartsWith("object.container.album.videoalbum") ) {
-                    pItem->SetLabelPreformated(false);
-                    UPNP::PopulateTagFromObject(*pItem->GetVideoInfoTag(), *(*entry), NULL);
-
-                } else if( ObjectClass.StartsWith("object.container.album.photoalbum")) {
-                  //CPictureInfoTag* tag = pItem->GetPictureInfoTag();
-
-                } else if( ObjectClass.StartsWith("object.container.album") ) {
-                    pItem->SetLabelPreformated(false);
-                    UPNP::PopulateTagFromObject(*pItem->GetMusicInfoTag(), *(*entry), NULL);
-                }
-
-            } else {
-
-                // set a general content type
-                std::string content;
-                if (ObjectClass.StartsWith("object.item.videoitem")) {
-                    pItem->SetMimeType("video/octet-stream");
-                    content = "video";
-                }
-                else if(ObjectClass.StartsWith("object.item.audioitem")) {
-                    pItem->SetMimeType("audio/octet-stream");
-                    content = "audio";
-                }
-                else if(ObjectClass.StartsWith("object.item.imageitem")) {
-                    pItem->SetMimeType("image/octet-stream");
-                    content = "image";
-                }
-
-                // attempt to find a valid resource (may be multiple)
-                PLT_MediaItemResource resource;
-                if(NPT_SUCCEEDED(NPT_ContainerFind((*entry)->m_Resources,
-                                  CResourceFinder("http-get", content.c_str()), resource))) {
-
-                    // set metadata
-                    if (resource.m_Size != (NPT_LargeSize)-1) {
-                        pItem->m_dwSize  = resource.m_Size;
-                    }
-
-                    // look for metadata
-                    if(content.compare("video") == 0) {
-                        pItem->SetLabelPreformated(false);
-                        UPNP::PopulateTagFromObject(*pItem->GetVideoInfoTag(), *(*entry), &resource);
-
-                    } else if(content.compare("audio") == 0) {
-                        pItem->SetLabelPreformated(false);
-                        UPNP::PopulateTagFromObject(*pItem->GetMusicInfoTag(), *(*entry), &resource);
-
-                    } else if(content.compare("image") == 0) {
-                      //CPictureInfoTag* tag = pItem->GetPictureInfoTag();
-
-                    }
-                }
-            }
-
-            // look for date?
-            if((*entry)->m_Description.date.GetLength()) {
-                SYSTEMTIME time = {};
-                sscanf((*entry)->m_Description.date, "%hu-%hu-%huT%hu:%hu:%hu",
-                       &time.wYear, &time.wMonth, &time.wDay, &time.wHour, &time.wMinute, &time.wSecond);
-                pItem->m_dateTime = time;
-            }
-
-            // if there is a thumbnail available set it here
-            if((*entry)->m_ExtraInfo.album_arts.GetItem(0))
-                // only considers first album art
-                pItem->SetArt("thumb", (const char*) (*entry)->m_ExtraInfo.album_arts.GetItem(0)->uri);
-            else if((*entry)->m_Description.icon_uri.GetLength())
-                pItem->SetArt("thumb", (const char*) (*entry)->m_Description.icon_uri);
-
-            PLT_ProtocolInfo fanart_mask("xbmc.org", "*", "fanart", "*");
-            for(unsigned i = 0; i < (*entry)->m_Resources.GetItemCount(); ++i) {
-                PLT_MediaItemResource& res = (*entry)->m_Resources[i];
-                if(res.m_ProtocolInfo.Match(fanart_mask)) {
-                    pItem->SetArt("fanart", (const char*)res.m_Uri);
-                    break;
-                }
-            }
-            // set the watched overlay, as this will not be set later due to
-            // content set on file item list
-            if (pItem->HasVideoInfoTag()) {
-                int episodes = pItem->GetVideoInfoTag()->m_iEpisode;
-                int played   = pItem->GetVideoInfoTag()->m_playCount;
-                const std::string& type = pItem->GetVideoInfoTag()->m_type;
-                bool watched(false);
-                if (type == "tvshow" || type == "season") {
-                    pItem->SetProperty("totalepisodes", episodes);
-                    pItem->SetProperty("numepisodes", episodes);
-                    pItem->SetProperty("watchedepisodes", played);
-                    pItem->SetProperty("unwatchedepisodes", episodes - played);
-                    watched = (episodes && played == episodes);
-                }
-                else if (type == "episode" || type == "movie")
-                    watched = (played > 0);
-                pItem->SetOverlayImage(CGUIListItem::ICON_OVERLAY_UNWATCHED, watched);
-            }
             items.Add(pItem);
 
             ++entry;
@@ -538,10 +355,10 @@ CUPnPDirectory::GetDirectory(const CStdString& strPath, CFileItemList &items)
         items.SetContent(content);
         if (content == "unknown")
         {
-          items.AddSortMethod(SORT_METHOD_UNSORTED, 571, LABEL_MASKS("%L", "%I", "%L", ""));
-          items.AddSortMethod(SORT_METHOD_LABEL_IGNORE_FOLDERS, 551, LABEL_MASKS("%L", "%I", "%L", ""));
-          items.AddSortMethod(SORT_METHOD_SIZE, 553, LABEL_MASKS("%L", "%I", "%L", "%I"));
-          items.AddSortMethod(SORT_METHOD_DATE, 552, LABEL_MASKS("%L", "%J", "%L", "%J"));
+          items.AddSortMethod(SortByNone, 571, LABEL_MASKS("%L", "%I", "%L", ""));
+          items.AddSortMethod(SortByLabel, SortAttributeIgnoreFolders, 551, LABEL_MASKS("%L", "%I", "%L", ""));
+          items.AddSortMethod(SortBySize, 553, LABEL_MASKS("%L", "%I", "%L", "%I"));
+          items.AddSortMethod(SortByDate, 552, LABEL_MASKS("%L", "%J", "%L", "%J"));
         }
     }
 

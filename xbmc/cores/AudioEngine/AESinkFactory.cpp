@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2010-2012 Team XBMC
+ *      Copyright (C) 2010-2013 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -101,7 +101,7 @@ IAESink *CAESinkFactory::Create(std::string &device, AEAudioFormat &desiredForma
 
 
 #if defined(TARGET_WINDOWS)
-  if ((driver.empty() && g_sysinfo.IsVistaOrHigher() ||
+  if ((driver.empty() ||
     driver == "WASAPI") && !g_advancedSettings.m_audioForceDirectSound)
     TRY_SINK(WASAPI)
   else
@@ -141,7 +141,7 @@ void CAESinkFactory::EnumerateEx(AESinkInfoList &list, bool force)
 {
 #if defined(TARGET_WINDOWS)
   ENUMERATE_SINK(DirectSound, force);
-  if (g_sysinfo.IsVistaOrHigher() && !g_advancedSettings.m_audioForceDirectSound)
+  if (!g_advancedSettings.m_audioForceDirectSound)
     ENUMERATE_SINK(WASAPI, force);
 #elif defined(TARGET_ANDROID)
     ENUMERATE_SINK(AUDIOTRACK, force);

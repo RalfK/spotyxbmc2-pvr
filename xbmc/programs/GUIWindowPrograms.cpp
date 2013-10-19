@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,9 +25,11 @@
 #include "Autorun.h"
 #include "guilib/GUIWindowManager.h"
 #include "FileItem.h"
-#include "settings/Settings.h"
+#include "settings/MediaSourceSettings.h"
+#include "guilib/Key.h"
 #include "guilib/LocalizeStrings.h"
 #include "utils/log.h"
+#include "utils/StringUtils.h"
 
 #define CONTROL_BTNVIEWASICONS 2
 #define CONTROL_BTNSORTBY      3
@@ -64,7 +66,7 @@ bool CGUIWindowPrograms::OnMessage(CGUIMessage& message)
 
       // is this the first time accessing this window?
       if (m_vecItems->GetPath() == "?" && message.GetStringParam().IsEmpty())
-        message.SetStringParam(g_settings.m_defaultProgramSource);
+        message.SetStringParam(CMediaSourceSettings::Get().GetDefaultSource("programs"));
 
       return CGUIMediaWindow::OnMessage(message);
     }
@@ -179,7 +181,7 @@ bool CGUIWindowPrograms::GetDirectory(const CStdString &strDirectory, CFileItemL
     return false;
 
   // don't allow the view state to change these
-  if (strDirectory.Left(9).Equals("addons://"))
+  if (StringUtils::StartsWithNoCase(strDirectory, "addons://"))
   {
     for (int i=0;i<items.Size();++i)
     {

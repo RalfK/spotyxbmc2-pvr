@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,6 +37,8 @@ CRGBRendererV2::CRGBRendererV2(LPDIRECT3DDEVICE8 pDevice)
   m_UVLookup = NULL;
   m_UVErrorLookup = NULL;
   m_motionpass = 5;
+  m_444GeneratedFull = false;
+  m_444RenderBuffer = 0;
   memset(&m_yuvcoef_last, 0, sizeof(YUVCOEF));
   memset(&m_yuvrange_last, 0, sizeof(YUVRANGE));
 }

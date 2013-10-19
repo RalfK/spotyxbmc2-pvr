@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,12 +31,12 @@
 #include "dialogs/GUIDialogTextViewer.h"
 #include "GUIUserMessages.h"
 #include "guilib/GUIWindowManager.h"
+#include "guilib/Key.h"
 #include "utils/JobManager.h"
 #include "utils/FileOperationJob.h"
 #include "utils/StringUtils.h"
 #include "utils/URIUtils.h"
 #include "addons/AddonInstaller.h"
-#include "Application.h"
 #include "pvr/PVRManager.h"
 
 #define CONTROL_BTN_INSTALL          6
@@ -396,7 +396,7 @@ void CGUIDialogAddonInfo::GrabRollbackVersions()
 {
   CFileItemList items;
   XFILE::CDirectory::GetDirectory("special://home/addons/packages/",items,".zip",DIR_FLAG_NO_FILE_DIRS);
-  items.Sort(SORT_METHOD_LABEL, SortOrderAscending);
+  items.Sort(SortByLabel, SortOrderAscending);
   for (int i=0;i<items.Size();++i)
   {
     if (items[i]->m_bIsFolder)

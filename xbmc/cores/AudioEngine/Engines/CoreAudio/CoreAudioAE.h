@@ -1,6 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2011-2012 Team XBMC
+ *      Copyright (C) 2011-2013 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -156,10 +156,11 @@ private:
   unsigned int      m_lastSampleRate;
   unsigned int      m_chLayoutCount;
   bool              m_rawPassthrough;
+  bool              m_transcode;
 
   enum AEStdChLayout m_stdChLayout;
 
-  bool              OpenCoreAudio(unsigned int sampleRate, bool forceRaw, enum AEDataFormat rawDataFormat);
+  bool              OpenCoreAudio(unsigned int sampleRate, bool forceRaw, enum AEDataFormat rawDataFormat, bool forceTranscode);
   void              Deinitialize();
   void              Start();
   void              Stop();

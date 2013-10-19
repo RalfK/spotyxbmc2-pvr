@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,12 +28,11 @@
 #include "threads/SingleLock.h"
 #include "utils/TimeUtils.h"
 
-CGUIDialogCache::CGUIDialogCache(DWORD dwDelay, const CStdString& strHeader, const CStdString& strMsg) : CThread("CGUIDialogCache")
+CGUIDialogCache::CGUIDialogCache(DWORD dwDelay, const CStdString& strHeader, const CStdString& strMsg) : CThread("GUIDialogCache")
 {
   m_strHeader = strHeader;
   m_strLinePrev = strMsg;
   bSentCancel = false;
-  dwDelay = 0;
 
   m_pDlg = (CGUIDialogProgress*)g_windowManager.GetWindow(WINDOW_DIALOG_PROGRESS);
 
@@ -124,7 +123,7 @@ bool CGUIDialogCache::OnFileCallback(void* pContext, int ipercent, float avgSpee
 
 void CGUIDialogCache::Process()
 {
-  if (m_pDlg)
+  if (!m_pDlg)
     return;
 
   while( true )

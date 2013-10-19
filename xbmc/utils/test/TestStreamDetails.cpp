@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -80,5 +80,5 @@ TEST(TestStreamDetails, VideoDimsToResolutionDescription)
 
 TEST(TestStreamDetails, VideoAspectToAspectDescription)
 {
-  EXPECT_STREQ("2.35", CStreamDetails::VideoAspectToAspectDescription(2.39f));
+  EXPECT_STREQ("2.40", CStreamDetails::VideoAspectToAspectDescription(2.39f));
 }

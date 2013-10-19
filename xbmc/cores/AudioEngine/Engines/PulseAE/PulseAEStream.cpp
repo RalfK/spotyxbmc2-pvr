@@ -1,5 +1,5 @@
 /*
- *      Copyright (C) 2010-2012 Team XBMC
+ *      Copyright (C) 2010-2013 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -386,7 +386,7 @@ void CPulseAEStream::Resume()
     m_Paused = Cork(false);
 }
 
-void CPulseAEStream::Drain()
+void CPulseAEStream::Drain(bool wait)
 {
   if (!m_Initialized)
     return;
@@ -614,7 +614,7 @@ void CPulseAEStream::RegisterSlave(IAEStream *stream)
   m_slave = stream;
 }
 
-CPulseAEStream::CLinearFader::CLinearFader(IAEStream *stream) : CThread("AE Stream"), m_stream(stream)
+CPulseAEStream::CLinearFader::CLinearFader(IAEStream *stream) : CThread("AEStream"), m_stream(stream)
 {
   m_from = 0;
   m_target = 0;

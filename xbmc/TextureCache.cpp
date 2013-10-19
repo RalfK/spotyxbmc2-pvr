@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,13 +21,14 @@
 #include "TextureCache.h"
 #include "TextureCacheJob.h"
 #include "filesystem/File.h"
+#include "profiles/ProfilesManager.h"
 #include "threads/SingleLock.h"
 #include "utils/Crc32.h"
-#include "settings/Settings.h"
 #include "settings/AdvancedSettings.h"
 #include "utils/log.h"
 #include "utils/URIUtils.h"
 #include "URL.h"
+#include "utils/StringUtils.h"
 
 using namespace XFILE;
 
@@ -37,7 +38,7 @@ CTextureCache &CTextureCache::Get()
   return s_cache;
 }
 
-CTextureCache::CTextureCache()
+CTextureCache::CTextureCache() : CJobQueue(false, 1, CJob::PRIORITY_LOW_PAUSABLE)
 {
 }
 
@@ -65,7 +66,7 @@ bool CTextureCache::IsCachedImage(const CStdString &url) const
     return true;
   if (URIUtils::IsInPath(url, "special://skin/") ||
       URIUtils::IsInPath(url, "androidapp://")   ||
-      URIUtils::IsInPath(url, g_settings.GetThumbnailsFolder()))
+      URIUtils::IsInPath(url, CProfilesManager::Get().GetThumbnailsFolder()))
     return true;
   return false;
 }
@@ -96,7 +97,7 @@ CStdString CTextureCache::GetCachedImage(const CStdString &image, CTextureDetail
 
 CStdString CTextureCache::GetWrappedImageURL(const CStdString &image, const CStdString &type, const CStdString &options)
 {
-  if (image.compare(0, 8, "image://") == 0)
+  if (StringUtils::StartsWith(image, "image://"))
     return image; // already wrapped
 
   CURL url;
@@ -118,7 +119,7 @@ CStdString CTextureCache::GetWrappedThumbURL(const CStdString &image)
 
 CStdString CTextureCache::UnwrapImageURL(const CStdString &image)
 {
-  if (image.compare(0, 8, "image://") == 0)
+  if (StringUtils::StartsWith(image, "image://"))
   {
     CURL url(image);
     if (url.GetUserName().IsEmpty() && url.GetOptions().IsEmpty())
@@ -270,7 +271,7 @@ CStdString CTextureCache::GetCacheFile(const CStdString &url)
 
 CStdString CTextureCache::GetCachedPath(const CStdString &file)
 {
-  return URIUtils::AddFileToFolder(g_settings.GetThumbnailsFolder(), file);
+  return URIUtils::AddFileToFolder(CProfilesManager::Get().GetThumbnailsFolder(), file);
 }
 
 void CTextureCache::OnCachingComplete(bool success, CTextureCacheJob *job)
@@ -299,14 +300,14 @@ void CTextureCache::OnCachingComplete(bool success, CTextureCacheJob *job)
 
 void CTextureCache::OnJobComplete(unsigned int jobID, bool success, CJob *job)
 {
-  if (strcmp(job->GetType(), "cacheimage") == 0)
+  if (strcmp(job->GetType(), kJobTypeCacheImage) == 0)
     OnCachingComplete(success, (CTextureCacheJob *)job);
   return CJobQueue::OnJobComplete(jobID, success, job);
 }
 
 void CTextureCache::OnJobProgress(unsigned int jobID, unsigned int progress, unsigned int total, const CJob *job)
 {
-  if (strcmp(job->GetType(), "cacheimage") == 0 && !progress)
+  if (strcmp(job->GetType(), kJobTypeCacheImage) == 0 && !progress)
   { // check our processing list
     {
       CSingleLock lock(m_processingSection);

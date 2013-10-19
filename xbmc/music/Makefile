@@ -1,7 +1,6 @@
 SRCS=Album.cpp \
      Artist.cpp \
      GUIViewStateMusic.cpp \
-     LastFmManager.cpp \
      MusicDatabase.cpp \
      MusicDbUrl.cpp \
      MusicInfoLoader.cpp \
@@ -38,7 +37,7 @@ SRCS=Album.cpp \
      spotyXBMC/track/SxTrack.cpp \
      spotyXBMC/track/TrackStore.cpp \
      spotyXBMC/track/TrackContainer.cpp
-
+     
 LIB=music.a
 
 include ../../Makefile.include

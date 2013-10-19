@@ -1,6 +1,6 @@
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,12 +19,13 @@
  */
 
 #include "LabelFormatter.h"
-#include "settings/GUISettings.h"
 #include "settings/AdvancedSettings.h"
+#include "settings/Settings.h"
 #include "RegExp.h"
 #include "Util.h"
 #include "video/VideoInfoTag.h"
 #include "music/tags/MusicInfoTag.h"
+#include "pictures/PictureInfoTag.h"
 #include "FileItem.h"
 #include "StringUtils.h"
 #include "URIUtils.h"
@@ -95,9 +96,11 @@ using namespace MUSIC_INFO;
  *  %Y - Year
  *  %Z - tvshow title
  *  %a - Date Added
+ *  %p - Last Played
+ *  *t - Date Taken (suitable for Pictures)
  */
 
-#define MASK_CHARS "NSATBGYFLDIJRCKMEPHZOQUVXWa"
+#define MASK_CHARS "NSATBGYFLDIJRCKMEPHZOQUVXWapt"
 
 CLabelFormatter::CLabelFormatter(const CStdString &mask, const CStdString &mask2)
 {
@@ -105,7 +108,7 @@ CLabelFormatter::CLabelFormatter(const CStdString &mask, const CStdString &mask2
   AssembleMask(0, mask);
   AssembleMask(1, mask2);
   // save a bool for faster lookups
-  m_hideFileExtensions = !g_guiSettings.GetBool("filelists.showextensions");
+  m_hideFileExtensions = !CSettings::Get().GetBool("filelists.showextensions");
 }
 
 CStdString CLabelFormatter::GetContent(unsigned int label, const CFileItem *item) const
@@ -149,6 +152,7 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
   if (!item) return "";
   const CMusicInfoTag *music = item->GetMusicInfoTag();
   const CVideoInfoTag *movie = item->GetVideoInfoTag();
+  const CPictureInfoTag *pic = item->GetPictureInfoTag();
   CStdString value;
   switch (mask.m_content)
   {
@@ -258,7 +262,7 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
   case 'E':
     if (movie && movie->m_iEpisode > 0)
     { // episode number
-      if (movie->m_iSpecialSortEpisode > 0)
+      if (movie->m_iSeason == 0)
         value.Format("S%02.2i", movie->m_iEpisode);
       else
         value.Format("%02.2i", movie->m_iEpisode);
@@ -271,8 +275,8 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
   case 'H':
     if (movie && movie->m_iEpisode > 0)
     { // season*100+episode number
-      if (movie->m_iSpecialSortSeason > 0)
-        value.Format("Sx%02.2i", movie->m_iEpisode);
+      if (movie->m_iSeason == 0)
+        value.Format("S%02.2i", movie->m_iEpisode);
       else
         value.Format("%ix%02.2i", movie->m_iSeason,movie->m_iEpisode);
     }
@@ -307,6 +311,14 @@ CStdString CLabelFormatter::GetMaskContent(const CMaskString &mask, const CFileI
     if (movie && movie->m_dateAdded.IsValid())
       value = movie->m_dateAdded.GetAsLocalizedDate();
     break;
+  case 'p': // Last played
+    if (movie && movie->m_lastPlayed.IsValid())
+      value = movie->m_lastPlayed.GetAsLocalizedDate();
+    break;
+  case 't': // Date Taken
+    if (pic && pic->GetDateTimeTaken().IsValid())
+      value = pic->GetDateTimeTaken().GetAsLocalizedDate();
+    break;
   }
   if (!value.IsEmpty())
     return mask.m_prefix + value + mask.m_postfix;
@@ -324,7 +336,7 @@ void CLabelFormatter::SplitMask(unsigned int label, const CStdString &mask)
   { // we've found a match
     m_staticContent[label].push_back(work.Left(findStart));
     m_dynamicContent[label].push_back(CMaskString("", 
-          reg.GetReplaceString("\\1")[0], ""));
+          reg.GetMatch(1)[0], ""));
     work = work.Mid(findStart + reg.GetFindLen());
   }
   m_staticContent[label].push_back(work);
@@ -346,11 +358,11 @@ void CLabelFormatter::AssembleMask(unsigned int label, const CStdString& mask)
   while ((findStart = reg.RegFind(work.c_str())) >= 0)
   { // we've found a match for a pre/postfixed string
     // send anything
-    SplitMask(label, work.Left(findStart) + reg.GetReplaceString("\\1").c_str());
+    SplitMask(label, work.Left(findStart) + reg.GetMatch(1).c_str());
     m_dynamicContent[label].push_back(CMaskString(
-            reg.GetReplaceString("\\2"),
-            reg.GetReplaceString("\\4")[0],
-            reg.GetReplaceString("\\5")));
+            reg.GetMatch(2),
+            reg.GetMatch(4)[0],
+            reg.GetMatch(5)));
     work = work.Mid(findStart + reg.GetFindLen());
   }
   SplitMask(label, work);

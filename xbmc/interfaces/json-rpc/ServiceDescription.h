@@ -1,7 +1,7 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2012 Team XBMC
- *      http://www.xbmc.org
+ *      Copyright (C) 2005-2013 Team XBMC
+ *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,8 +21,8 @@
 
 namespace JSONRPC
 {
-  const char* const JSONRPC_SERVICE_ID          = "http://www.xbmc.org/jsonrpc/ServiceDescription.json";
-  const char* const JSONRPC_SERVICE_VERSION     = "6.0.3";
+  const char* const JSONRPC_SERVICE_ID          = "http://xbmc.org/jsonrpc/ServiceDescription.json";
+  const char* const JSONRPC_SERVICE_VERSION     = "6.6.2";
   const char* const JSONRPC_SERVICE_DESCRIPTION = "JSON-RPC API of XBMC";
 
   const char* const JSONRPC_SERVICE_TYPES[] = {  
@@ -174,7 +174,7 @@ namespace JSONRPC
     "\"Playlist.Item\": {"
       "\"type\": ["
         "{ \"type\": \"object\", \"properties\": { \"file\": { \"type\": \"string\", \"description\": \"Path to a file (not a directory) to be added to the playlist\", \"required\": true } }, \"additionalProperties\": false },"
-        "{ \"type\": \"object\", \"properties\": { \"directory\": { \"type\": \"string\", \"required\": true } }, \"additionalProperties\": false },"
+        "{ \"type\": \"object\", \"properties\": { \"directory\": { \"type\": \"string\", \"required\": true }, \"recursive\": { \"type\": \"boolean\", \"default\": false }, \"media\": { \"$ref\": \"Files.Media\", \"default\": \"files\" } }, \"additionalProperties\": false },"
         "{ \"type\": \"object\", \"properties\": { \"movieid\": { \"$ref\": \"Library.Id\", \"required\": true } }, \"additionalProperties\": false },"
         "{ \"type\": \"object\", \"properties\": { \"episodeid\": { \"$ref\": \"Library.Id\", \"required\": true } }, \"additionalProperties\": false },"
         "{ \"type\": \"object\", \"properties\": { \"musicvideoid\": { \"$ref\": \"Library.Id\", \"required\": true } }, \"additionalProperties\": false },"
@@ -225,12 +225,7 @@ namespace JSONRPC
       "\"properties\": {"
         "\"index\": { \"type\": \"integer\", \"minimum\": 0, \"required\": true },"
         "\"name\": { \"type\": \"string\", \"required\": true },"
-        "\"language\": { \"type\": \"string\", \"required\": true }"
-      "}"
-    "}",
-    "\"Player.Audio.Stream.Extended\": {"
-      "\"extends\": \"Player.Audio.Stream\","
-      "\"properties\": {"
+        "\"language\": { \"type\": \"string\", \"required\": true },"
         "\"codec\": { \"type\": \"string\", \"required\": true },"
         "\"bitrate\": { \"type\": \"integer\", \"required\": true },"
         "\"channels\": { \"type\": \"integer\", \"required\": true }"
@@ -272,7 +267,7 @@ namespace JSONRPC
         "\"canrotate\": { \"type\": \"boolean\" },"
         "\"canshuffle\": { \"type\": \"boolean\" },"
         "\"canrepeat\": { \"type\": \"boolean\" },"
-        "\"currentaudiostream\": { \"$ref\": \"Player.Audio.Stream.Extended\" },"
+        "\"currentaudiostream\": { \"$ref\": \"Player.Audio.Stream\" },"
         "\"audiostreams\": { \"type\": \"array\", \"items\": { \"$ref\": \"Player.Audio.Stream\" } },"
         "\"subtitleenabled\": { \"type\": \"boolean\" },"
         "\"currentsubtitle\": { \"$ref\": \"Player.Subtitle\" },"
@@ -413,7 +408,7 @@ namespace JSONRPC
         "\"enum\": [ \"instrument\", \"style\", \"mood\", \"born\", \"formed\","
                   "\"description\", \"genre\", \"died\", \"disbanded\","
                   "\"yearsactive\", \"musicbrainzartistid\", \"fanart\","
-                  "\"thumbnail\" ]"
+                  "\"thumbnail\", \"compilationartist\" ]"
       "}"
     "}",
     "\"Audio.Fields.Album\": {"
@@ -474,6 +469,7 @@ namespace JSONRPC
         "\"died\": { \"type\": \"string\" },"
         "\"disbanded\": { \"type\": \"string\" },"
         "\"yearsactive\": { \"$ref\": \"Array.String\" },"
+        "\"compilationartist\": { \"type\": \"boolean\" },"
         "\"musicbrainzartistid\": { \"type\": \"string\" }"
       "}"
     "}",
@@ -811,6 +807,24 @@ namespace JSONRPC
         "}"
       "}"
     "}",
+    "\"Profiles.Password\": {"
+      "\"type\": \"object\","
+      "\"properties\": {"
+        "\"value\": { \"type\": \"string\", \"required\": true, \"description\": \"Password\" },"
+        "\"encryption\": { \"type\": \"string\", \"description\": \"Password Encryption\", \"default\": \"md5\", \"enum\": [ \"none\", \"md5\" ] }"
+      "}"
+    "}",
+    "\"Profiles.Fields.Profile\": {"
+      "\"extends\": \"Item.Fields.Base\","
+      "\"items\": { \"type\": \"string\", \"enum\": [ \"thumbnail\", \"lockmode\" ] }"
+    "}",
+    "\"Profiles.Details.Profile\": {"
+      "\"extends\": \"Item.Details.Base\","
+      "\"properties\": {"
+        "\"thumbnail\": { \"type\": \"string\" },"
+        "\"lockmode\": { \"type\": \"integer\" }"
+      "}"
+    "}",
     "\"List.Filter.Rule\": {"
       "\"type\": \"object\","
       "\"properties\": {"
@@ -1114,7 +1128,7 @@ namespace JSONRPC
       "\"properties\": {"
         "\"file\": { \"type\": \"string\", \"required\": true },"
         "\"filetype\": { \"type\": \"string\", \"enum\": [ \"file\", \"directory\" ], \"required\": true },"
-        "\"size\": { \"type\": \"integer\", \"description\": \"Size of the file in kB (1000 Byte)\" },"
+        "\"size\": { \"type\": \"integer\", \"description\": \"Size of the file in bytes\" },"
         "\"lastmodified\": { \"type\": \"string\" },"
         "\"mimetype\": { \"type\": \"string\" }"
       "}"
@@ -1245,6 +1259,28 @@ namespace JSONRPC
           "}"
         "}"
       "}"
+    "}",
+    "\"Favourite.Fields.Favourite\": {"
+      "\"extends\": \"Item.Fields.Base\","
+      "\"items\": { \"type\": \"string\","
+        "\"enum\": [ \"window\", \"windowparameter\", \"thumbnail\", \"path\" ]"
+      "}"
+    "}",
+    "\"Favourite.Type\": {"
+      "\"type\": \"string\","
+      "\"enum\": [ \"media\", \"window\", \"script\", \"unknown\" ]"
+    "}",
+    "\"Favourite.Details.Favourite\": {"
+      "\"type\": \"object\","
+      "\"properties\": {"
+        "\"title\": { \"type\": \"string\", \"required\": true },"
+        "\"type\": { \"$ref\": \"Favourite.Type\", \"required\": true },"
+        "\"path\": { \"type\": \"string\" },"
+        "\"window\": { \"type\": \"string\" },"
+        "\"windowparameter\": { \"type\": \"string\" },"
+        "\"thumbnail\": { \"type\": \"string\" }"
+      "},"
+      "\"additionalProperties\": false"
     "}"
   };
 
@@ -1794,7 +1830,8 @@ namespace JSONRPC
         "{ \"name\": \"directory\", \"type\": \"string\", \"required\": true },"
         "{ \"name\": \"media\", \"$ref\": \"Files.Media\", \"default\": \"files\" },"
         "{ \"name\": \"properties\", \"$ref\": \"List.Fields.Files\" },"
-        "{ \"name\": \"sort\", \"$ref\": \"List.Sort\" }"
+        "{ \"name\": \"sort\", \"$ref\": \"List.Sort\" },"
+        "{ \"name\": \"limits\", \"$ref\": \"List.Limits\", \"description\": \"Limits are applied after getting the directory content thus retrieval is not faster when they are applied.\" }"
       "],"
       "\"returns\": {"
         "\"type\": \"object\","
@@ -2525,7 +2562,8 @@ namespace JSONRPC
         "{ \"name\": \"thumbnail\", \"$ref\": \"Optional.String\" },"
         "{ \"name\": \"fanart\", \"$ref\": \"Optional.String\" },"
         "{ \"name\": \"tag\", \"type\": [ \"null\", { \"$ref\": \"Array.String\", \"required\": true } ], \"default\": null },"
-        "{ \"name\": \"art\", \"type\": [ \"null\", { \"$ref\": \"Media.Artwork\", \"required\": true } ], \"default\": null }"
+        "{ \"name\": \"art\", \"type\": [ \"null\", { \"$ref\": \"Media.Artwork\", \"required\": true } ], \"default\": null },"
+        "{ \"name\": \"resume\", \"type\": [ \"null\", { \"$ref\": \"Video.Resume\", \"required\": true } ], \"default\": null }"
       "],"
       "\"returns\": \"string\""
     "}",
@@ -2580,7 +2618,8 @@ namespace JSONRPC
         "{ \"name\": \"originaltitle\", \"$ref\": \"Optional.String\" },"
         "{ \"name\": \"thumbnail\", \"$ref\": \"Optional.String\" },"
         "{ \"name\": \"fanart\", \"$ref\": \"Optional.String\" },"
-        "{ \"name\": \"art\", \"type\": [ \"null\", { \"$ref\": \"Media.Artwork\", \"required\": true } ], \"default\": null }"
+        "{ \"name\": \"art\", \"type\": [ \"null\", { \"$ref\": \"Media.Artwork\", \"required\": true } ], \"default\": null },"
+        "{ \"name\": \"resume\", \"type\": [ \"null\", { \"$ref\": \"Video.Resume\", \"required\": true } ], \"default\": null }"
       "],"
       "\"returns\": \"string\""
     "}",
@@ -2606,7 +2645,8 @@ namespace JSONRPC
         "{ \"name\": \"thumbnail\", \"$ref\": \"Optional.String\" },"
         "{ \"name\": \"fanart\", \"$ref\": \"Optional.String\" },"
         "{ \"name\": \"tag\", \"type\": [ \"null\", { \"$ref\": \"Array.String\", \"required\": true } ], \"default\": null },"
-        "{ \"name\": \"art\", \"type\": [ \"null\", { \"$ref\": \"Media.Artwork\", \"required\": true } ], \"default\": null }"
+        "{ \"name\": \"art\", \"type\": [ \"null\", { \"$ref\": \"Media.Artwork\", \"required\": true } ], \"default\": null },"
+        "{ \"name\": \"resume\", \"type\": [ \"null\", { \"$ref\": \"Video.Resume\", \"required\": true } ], \"default\": null }"
       "],"
       "\"returns\": \"string\""
     "}",
@@ -2910,6 +2950,48 @@ namespace JSONRPC
       "\"params\": [ ],"
       "\"returns\":  \"string\""
     "}",
+    "\"Profiles.GetProfiles\": {"
+      "\"type\": \"method\","
+      "\"description\": \"Retrieve all profiles\","
+      "\"transport\": \"Response\","
+      "\"permission\": \"ReadData\","
+      "\"params\": ["
+        "{ \"name\": \"properties\", \"$ref\": \"Profiles.Fields.Profile\" },"
+        "{ \"name\": \"limits\", \"$ref\": \"List.Limits\" },"
+        "{ \"name\": \"sort\", \"$ref\": \"List.Sort\" }"
+      "],"
+      "\"returns\": {"
+        "\"type\": \"object\","
+        "\"properties\": {"
+          "\"limits\": { \"$ref\": \"List.LimitsReturned\", \"required\": true },"
+          "\"profiles\": { \"type\": \"array\", \"required\": true,"
+            "\"items\": { \"$ref\": \"Profiles.Details.Profile\" }"
+          "}"
+        "}"
+      "}"
+    "}",
+    "\"Profiles.GetCurrentProfile\": {"
+      "\"type\": \"method\","
+      "\"description\": \"Retrieve the current profile\","
+      "\"transport\": \"Response\","
+      "\"permission\": \"ReadData\","
+      "\"params\": ["
+        "{ \"name\": \"properties\", \"$ref\": \"Profiles.Fields.Profile\" }"
+      "],"
+      "\"returns\":  { \"$ref\": \"Profiles.Details.Profile\", \"required\": true }"
+    "}",
+    "\"Profiles.LoadProfile\": {"
+      "\"type\": \"method\","
+      "\"description\": \"Load the specified profile\","
+      "\"transport\": \"Response\","
+      "\"permission\": \"Navigate\","
+      "\"params\": ["
+        "{ \"name\": \"profile\", \"type\": \"string\", \"required\": true, \"description\": \"Profile name\" },"
+        "{ \"name\": \"prompt\", \"type\": \"boolean\", \"description\": \"Prompt for password\" },"
+        "{ \"name\": \"password\", \"$ref\": \"Profiles.Password\" }"
+      "],"
+      "\"returns\": \"string\""
+    "}",
     "\"System.GetProperties\": {"
       "\"type\": \"method\","
       "\"description\": \"Retrieves the values of the given properties\","
@@ -3139,6 +3221,40 @@ namespace JSONRPC
         "\"description\": \"Object containing key-value pairs of the retrieved info booleans\","
         "\"additionalProperties\": { \"type\": \"string\" }"
       "}"
+    "}",
+    "\"Favourites.GetFavourites\": {"
+      "\"type\": \"method\","
+      "\"description\": \"Retrieve all favourites\","
+      "\"transport\": \"Response\","
+      "\"permission\": \"ReadData\","
+      "\"params\": ["
+        "{ \"name\": \"type\", \"type\": [ \"null\", { \"$ref\": \"Favourite.Type\" } ], \"default\": null },"
+        "{ \"name\": \"properties\", \"$ref\": \"Favourite.Fields.Favourite\" }"
+      "],"
+      "\"returns\": {"
+        "\"type\": \"object\","
+        "\"properties\": {"
+          "\"limits\": { \"$ref\": \"List.LimitsReturned\", \"required\": true },"
+          "\"favourites\": { \"type\": \"array\","
+            "\"items\": { \"$ref\": \"Favourite.Details.Favourite\" }"
+          "}"
+        "}"
+      "}"
+    "}",
+    "\"Favourites.AddFavourite\": {"
+      "\"type\": \"method\","
+      "\"description\": \"Add a favourite with the given details\","
+      "\"transport\": \"Response\","
+      "\"permission\": \"UpdateData\","
+      "\"params\": ["
+        "{ \"name\": \"title\", \"type\": \"string\", \"required\": true },"
+        "{ \"name\": \"type\", \"$ref\": \"Favourite.Type\", \"required\": true },"
+        "{ \"name\": \"path\", \"$ref\": \"Optional.String\", \"description\": \"Required for media and script favourites types\" },"
+        "{ \"name\": \"window\", \"$ref\": \"Optional.String\", \"description\": \"Required for window favourite type\" },"
+        "{ \"name\": \"windowparameter\", \"$ref\": \"Optional.String\" },"
+        "{ \"name\": \"thumbnail\", \"$ref\": \"Optional.String\" }"
+      "],"
+      "\"returns\": \"string\""
     "}"
   };
 

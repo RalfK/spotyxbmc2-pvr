@@ -1,6 +1,6 @@
 #pragma once
 /*
- *      Copyright (C) 2005-2012 Team XBMC
+ *      Copyright (C) 2005-2013 Team XBMC
  *      http://xbmc.org
  *
  *  This Program is free software; you can redistribute it and/or modify
@@ -25,9 +25,18 @@
 
 class TiXmlDocument;
 
+class CSetting;
+
 namespace PERIPHERALS
 {
   class CGUIDialogPeripheralSettings;
+
+  typedef enum
+  {
+    STATE_SWITCH_TOGGLE,
+    STATE_ACTIVATE_SOURCE,
+    STATE_STANDBY
+  } CecStateChange;
 
   class CPeripheral
   {
