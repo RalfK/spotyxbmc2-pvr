@@ -37,6 +37,7 @@
 #define TIME_TO_CACHE_NEXT_FILE 5000 /* 5 seconds before end of song, start caching the next song */
 #define FAST_XFADE_TIME           80 /* 80 milliseconds */
 #define MAX_SKIP_XFADE_TIME     2000 /* max 2 seconds crossfade on track skip */
+/* Spotify hack !! When changing defines above, also do it OpenFile and QueueNextFileEx below */
 
 CAEChannelInfo ICodec::GetChannelInfo()
 {
@@ -241,7 +242,26 @@ void PAPlayer::CloseAllStreams(bool fade/* = true */)
 
 bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 {
-  m_defaultCrossfadeMS = CSettings::Get().GetInt("musicplayer.crossfade") * 1000;
+  if (!file.IsSpotify())
+  {
+    m_defaultCrossfadeMS = CSettings::Get().GetInt("musicplayer.crossfade") * 1000;
+    #undef TIME_TO_CACHE_NEXT_FILE //Ensure we have default values
+    #undef FAST_XFADE_TIME
+    #undef MAX_SKIP_XFADE_TIME
+    #define TIME_TO_CACHE_NEXT_FILE 5000
+    #define FAST_XFADE_TIME           80
+    #define MAX_SKIP_XFADE_TIME     2000
+  }
+  else
+  {
+    m_defaultCrossfadeMS = 0;
+    #undef TIME_TO_CACHE_NEXT_FILE
+    #undef FAST_XFADE_TIME
+    #undef MAX_SKIP_XFADE_TIME
+    #define TIME_TO_CACHE_NEXT_FILE 0000
+    #define FAST_XFADE_TIME           00
+    #define MAX_SKIP_XFADE_TIME     0000
+  }
 
   if (m_streams.size() > 1 || !m_defaultCrossfadeMS || m_isPaused)
   {
@@ -277,11 +297,14 @@ bool PAPlayer::OpenFile(const CFileItem& file, const CPlayerOptions &options)
 
 void PAPlayer::UpdateCrossfadeTime(const CFileItem& file)
 {
-  // we explicitely disable crossfading for audio cds
-  if(file.IsCDDA())
-   m_upcomingCrossfadeMS = 0;
-  else
+  if (!file.IsSpotify())
     m_upcomingCrossfadeMS = m_defaultCrossfadeMS = CSettings::Get().GetInt("musicplayer.crossfade") * 1000;
+  else {
+    CLog::Log(LOGDEBUG, "PAPlayer::UpdateCrossfadeTime: Spotify track detected, crossfade is disabled.");
+    m_upcomingCrossfadeMS = m_defaultCrossfadeMS; // Spotify (spotyxbmc) can not handle crossfade
+    m_upcomingCrossfadeMS = 0;  
+  }
+  
   if (m_upcomingCrossfadeMS)
   {
     if (m_streams.size() == 0 ||
@@ -313,6 +336,35 @@ bool PAPlayer::QueueNextFile(const CFileItem &file)
 
 bool PAPlayer::QueueNextFileEx(const CFileItem &file, bool fadeIn/* = true */, bool job /* = false */)
 {
+
+  if (!file.IsSpotify())
+  {
+    #undef TIME_TO_CACHE_NEXT_FILE //Make sure we have default values
+    #undef FAST_XFADE_TIME
+    #undef MAX_SKIP_XFADE_TIME
+    #define TIME_TO_CACHE_NEXT_FILE 5000
+    #define FAST_XFADE_TIME           80
+    #define MAX_SKIP_XFADE_TIME     2000
+  }
+  else
+  {
+    m_defaultCrossfadeMS = 0;
+    #undef TIME_TO_CACHE_NEXT_FILE
+    #undef FAST_XFADE_TIME
+    #undef MAX_SKIP_XFADE_TIME
+    #define TIME_TO_CACHE_NEXT_FILE 0000
+    #define FAST_XFADE_TIME           00
+    #define MAX_SKIP_XFADE_TIME     0000
+    CSharedLock lock(m_streamsLock);
+    while (m_streams.size() > 0) //Make sure we only have one concurrent stream
+    {
+      lock.Leave();
+      Sleep(50);
+      CSharedLock lock(m_streamsLock);
+    }
+    lock.Leave();
+  }
+
   StreamInfo *si = new StreamInfo();
 
   // check if we advance a track of a CUE sheet

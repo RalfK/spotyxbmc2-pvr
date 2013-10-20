@@ -1238,3 +1238,4 @@ lib/cmyth/Makefile
 /addons/library.xbmc.pvr/libXBMC_pvr.lib
 
 /pvr-addons
+appkey.h
