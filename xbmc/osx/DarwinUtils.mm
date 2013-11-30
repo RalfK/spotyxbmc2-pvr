@@ -144,6 +144,23 @@ bool DarwinIsAppleTV2(void)
   return (platform == AppleTV2);
 }
 
+bool DarwinIsMavericks(void)
+{
+  static int isMavericks = -1;
+#if defined(TARGET_DARWIN_OSX)
+  // there is no NSAppKitVersionNumber10_9 out there anywhere
+  // so we detect mavericks by one of these newly added app nap
+  // methods - and fix the ugly mouse rect problem which was hitting
+  // us when mavericks came out
+  if (isMavericks == -1)
+  {
+    CLog::Log(LOGDEBUG, "Detected Mavericks...");
+    isMavericks = [NSProcessInfo instancesRespondToSelector:@selector(beginActivityWithOptions:reason:)] == TRUE ? 1 : 0;
+  }
+#endif
+  return isMavericks == 1;
+}
+
 bool DarwinHasRetina(void)
 {
   static enum iosPlatform platform = iDeviceUnknown;
@@ -174,6 +191,7 @@ const char *GetDarwinOSReleaseString(void)
 
 const char *GetDarwinVersionString(void)
 {
+  CCocoaAutoPool pool;
   return [[[NSProcessInfo processInfo] operatingSystemVersionString] UTF8String];
 }
 
@@ -277,6 +295,51 @@ int  GetDarwinExecutablePath(char* path, uint32_t *pathsize)
   return 0;
 }
 
+const char* DarwinGetXbmcRootFolder(void)
+{
+  static std::string rootFolder = "";
+  if ( rootFolder.length() == 0)
+  {
+    if (DarwinIsIosSandboxed())
+    {
+      // when we are sandbox make documents our root
+      // so that user can access everything he needs 
+      // via itunes sharing
+      rootFolder = "Documents";
+    }
+    else
+    {
+      rootFolder = "Library/Preferences";
+    }
+  }
+  return rootFolder.c_str();
+}
+
+bool DarwinIsIosSandboxed(void)
+{
+  static int ret = -1;
+  if (ret == -1)
+  {
+    uint32_t path_size = 2*MAXPATHLEN;
+    char     given_path[2*MAXPATHLEN];
+    int      result = -1; 
+    ret = 0;
+    memset(given_path, 0x0, path_size);
+    /* Get Application directory */  
+    result = GetDarwinExecutablePath(given_path, &path_size);
+    if (result == 0)
+    {
+      // we re sandboxed if we are installed in /var/mobile/Applications
+      if (strlen("/var/mobile/Applications/") < path_size &&
+        strncmp(given_path, "/var/mobile/Applications/", strlen("/var/mobile/Applications/")) == 0)
+      {
+        ret = 1;
+      }
+    }
+  }
+  return ret == 1;
+}
+
 bool DarwinHasVideoToolboxDecoder(void)
 {
   static int DecoderAvailable = -1;
@@ -291,49 +354,29 @@ bool DarwinHasVideoToolboxDecoder(void)
     }
     else
     {
-      /* Get Application directory */
-      uint32_t path_size = 2*MAXPATHLEN;
-      char     given_path[2*MAXPATHLEN];
-      int      result = -1;
-      
-      memset(given_path, 0x0, path_size);
-      result = GetDarwinExecutablePath(given_path, &path_size);
-      if (result == 0) 
+      /* When XBMC is started from a sandbox directory we have to check the sysctl values */      
+      if (DarwinIsIosSandboxed())
       {
-        /* When XBMC is started from a sandbox directory we have to check the sysctl values */
-        if (strlen("/var/mobile/Applications/") < path_size &&
-           strncmp(given_path, "/var/mobile/Applications/", strlen("/var/mobile/Applications/")) == 0)
-        {
+        uint64_t proc_enforce = 0;
+        uint64_t vnode_enforce = 0; 
+        size_t size = sizeof(vnode_enforce);
 
-          uint64_t proc_enforce = 0;
-          uint64_t vnode_enforce = 0; 
-          size_t size = sizeof(vnode_enforce);
-          
-          sysctlbyname("security.mac.proc_enforce",  &proc_enforce,  &size, NULL, 0);  
-          sysctlbyname("security.mac.vnode_enforce", &vnode_enforce, &size, NULL, 0);
-          
-          if (vnode_enforce && proc_enforce)
-          {
-            DecoderAvailable = 0;
-            CLog::Log(LOGINFO, "VideoToolBox decoder not available. Use : sysctl -w security.mac.proc_enforce=0; sysctl -w security.mac.vnode_enforce=0\n");
-            //NSLog(@"%s VideoToolBox decoder not available. Use : sysctl -w security.mac.proc_enforce=0; sysctl -w security.mac.vnode_enforce=0", __PRETTY_FUNCTION__);
-          }
-          else
-          {
-            DecoderAvailable = 1;
-            CLog::Log(LOGINFO, "VideoToolBox decoder available\n");
-            //NSLog(@"%s VideoToolBox decoder available", __PRETTY_FUNCTION__);
-          }  
+        sysctlbyname("security.mac.proc_enforce",  &proc_enforce,  &size, NULL, 0);  
+        sysctlbyname("security.mac.vnode_enforce", &vnode_enforce, &size, NULL, 0);
+
+        if (vnode_enforce && proc_enforce)
+        {
+          DecoderAvailable = 1;
+          CLog::Log(LOGINFO, "VideoToolBox decoder not available. Use : sysctl -w security.mac.proc_enforce=0; sysctl -w security.mac.vnode_enforce=0\n");
         }
         else
         {
           DecoderAvailable = 1;
-        }
-        //NSLog(@"%s Executable path %s", __PRETTY_FUNCTION__, given_path);
+          CLog::Log(LOGINFO, "VideoToolBox decoder available\n");
+        }  
       }
       else
       {
-        // In theory this case can never happen. But who knows.
         DecoderAvailable = 1;
       }
     }

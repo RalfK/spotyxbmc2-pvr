@@ -24,6 +24,8 @@
 #include "RegExp.h"
 #include "StdString.h"
 #include "log.h"
+#include "utils/StringUtils.h"
+#include "utils/Utf8Utils.h"
 
 using namespace PCRE;
 
@@ -53,6 +55,11 @@ int CRegExp::m_JitSupported  = -1;
 
 CRegExp::CRegExp(bool caseless /*= false*/, bool utf8 /*= false*/)
 {
+  InitValues(caseless, utf8);
+}
+
+void CRegExp::InitValues(bool caseless /*= false*/, bool utf8 /*= false*/)
+{
   m_re          = NULL;
   m_sd          = NULL;
   m_iOptions    = PCRE_DOTALL | PCRE_NEWLINE_ANY;
@@ -73,6 +80,12 @@ CRegExp::CRegExp(bool caseless /*= false*/, bool utf8 /*= false*/)
   m_jitStack    = NULL;
 
   memset(m_iOvector, 0, sizeof(m_iOvector));
+}
+
+CRegExp::CRegExp(bool caseless, bool utf8, const char *re, studyMode study /*= NoStudy*/)
+{
+  InitValues(caseless, utf8);
+  RegComp(re, study);
 }
 
 CRegExp::CRegExp(const CRegExp& re)
@@ -214,6 +227,7 @@ int CRegExp::PrivateRegFind(size_t bufferLen, const char *str, unsigned int star
 
   if (rc<1)
   {
+    static const int fragmentLen = 80; // length of excerpt before erroneous char for log
     switch(rc)
     {
     case PCRE_ERROR_NOMATCH:
@@ -225,13 +239,26 @@ int CRegExp::PrivateRegFind(size_t bufferLen, const char *str, unsigned int star
 
 #ifdef PCRE_ERROR_SHORTUTF8 
     case PCRE_ERROR_SHORTUTF8:
+      {
+        const size_t startPos = (m_subject.length() > fragmentLen) ? CUtf8Utils::RFindValidUtf8Char(m_subject, m_subject.length() - fragmentLen) : 0;
+        if (startPos != std::string::npos)
+          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character at the end of string. Text before bad character: \"%s\"", m_subject.substr(startPos).c_str());
+        else
+          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character at the end of string");
+        return -1;
+      }
 #endif
     case PCRE_ERROR_BADUTF8:
-      CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character");
-      return -1;
-
+      {
+        const size_t startPos = (m_iOvector[0] > fragmentLen) ? CUtf8Utils::RFindValidUtf8Char(m_subject, m_iOvector[0] - fragmentLen) : 0;
+        if (m_iOvector[0] >= 0 && startPos != std::string::npos)
+          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character, error code: %d, position: %d. Text before bad char: \"%s\"", m_iOvector[1], m_iOvector[0], m_subject.substr(startPos, m_iOvector[0] - startPos + 1).c_str());
+        else
+          CLog::Log(LOGERROR, "PCRE: Bad UTF-8 character, error code: %d, position: %d", m_iOvector[1], m_iOvector[0]);
+        return -1;
+      }
     case PCRE_ERROR_BADUTF8_OFFSET:
-      CLog::Log(LOGERROR, "PCRE: Offset (%d) is pointing to the middle of UTF-8 character", startoffset);
+      CLog::Log(LOGERROR, "PCRE: Offset is pointing to the middle of UTF-8 character");
       return -1;
 
     default:
@@ -371,8 +398,7 @@ void CRegExp::DumpOvector(int iLog /* = LOGDEBUG */)
   int size = GetSubCount(); // past the subpatterns is junk
   for (int i = 0; i <= size; i++)
   {
-    CStdString t;
-    t.Format("[%i,%i]", m_iOvector[(i*2)], m_iOvector[(i*2)+1]);
+    CStdString t = StringUtils::Format("[%i,%i]", m_iOvector[(i*2)], m_iOvector[(i*2)+1]);
     if (i != size)
       t += ",";
     str += t;
@@ -454,7 +480,7 @@ bool CRegExp::LogCheckUtf8Support(void)
   {
     CLog::Log(LOGNOTICE, "Consider installing PCRE lib version 8.10 or later with enabled Unicode properties and UTF-8 support. Your PCRE lib version: %s", PCRE::pcre_version());
 #if PCRE_UCP == 0
-    CLog::Log(LOGNOTICE, "You will need to rebuild XBMC after PCRE lib update.", PCRE::pcre_version());
+    CLog::Log(LOGNOTICE, "You will need to rebuild XBMC after PCRE lib update.");
 #endif
   }
 
