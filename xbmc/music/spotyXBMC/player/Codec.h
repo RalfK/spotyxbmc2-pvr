@@ -23,6 +23,7 @@
 #define CODEC_H_
 #include "../../../cores/paplayer/CachingCodec.h"
 #include "../DllLibspotify.h"
+#include "../../utils/StdString.h"
 
 namespace addon_music_spotify {
 

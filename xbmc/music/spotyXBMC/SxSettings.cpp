@@ -130,7 +130,7 @@ namespace addon_music_spotify {
   sp_radio_genre Settings::getRadioGenres(ADDON::AddonPtr addon, int radio) {
 
   	CStdString radioC;
-  	radioC.Format("radio%igenre", radio);
+  	radioC = StringUtils::Format("radio%igenre", radio);
 
     struct {
       bool enable;

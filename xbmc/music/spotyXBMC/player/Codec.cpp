@@ -42,7 +42,7 @@ namespace addon_music_spotify {
     //the bitrate is hardcoded, we dont no it before first music delivery and then its to late, the skin has already printed it out
     m_Bitrate = Settings::getInstance()->useHighBitrate() ? 320000 : 160000;
     m_CodecName = "spotify";
-	m_DataFormat = AE_FMT_S16NE;
+    m_DataFormat = AE_FMT_S16NE;
     m_TotalTime = 0;
     m_currentTrack = 0;
     m_isPlayerLoaded = false;
@@ -58,25 +58,28 @@ namespace addon_music_spotify {
     m_bufferSize = 2048 * sizeof(int16_t) * 50;
     m_buffer = new char[m_bufferSize];
     CStdString uri = URIUtils::GetFileName(strFile);
-    CStdString extension = uri.Right(uri.GetLength() - uri.Find('.') - 1);
-    if (extension.Left(12) == "spotifyradio") {
+    Logger::printOut(uri);
+    CStdString extension = uri.substr(uri.find('.') + 1);
+    if (extension.substr(0, 12) == "spotifyradio") {
       //if its a radiotrack the radionumber and tracknumber is secretly encoded at the end of the extension
-      CStdString trackStr = extension.Right(
-          extension.GetLength() - extension.ReverseFind('#') - 1);
+      CStdString trackStr = extension.substr(extension.rfind('#') + 1);
       Logger::printOut(extension);
-      CStdString radioNumber = extension.Left(uri.Find('#'));
+      CStdString radioNumber = extension.substr(0, uri.find('#'));
       Logger::printOut(radioNumber);
-      radioNumber = radioNumber.Right(
-          radioNumber.GetLength() - radioNumber.Find('#') - 1);
+      radioNumber = radioNumber.substr(radioNumber.find('#') + 1);
       Logger::printOut("loading codec radio");
       RadioHandler::getInstance()->pushToTrack(atoi(radioNumber),
           atoi(trackStr));
     }
+
     //we have a non legit extension so remove it manually
-    uri = uri.Left(uri.Find('.'));
+    uri = uri.substr(0, uri.find('.'));
 
     Logger::printOut("trying to load track:");
     Logger::printOut(uri);
+    if(m_dll == NULL) {
+      Logger::printOut("NULL");
+    }
     sp_link *spLink = m_dll->sp_link_create_from_string(uri);
     m_currentTrack = m_dll->sp_link_as_track(spLink);
     m_dll->sp_track_add_ref(m_currentTrack);
@@ -87,6 +90,7 @@ namespace addon_music_spotify {
     m_isPlayerLoaded = false;
     m_TotalTime =  m_dll->sp_track_duration(m_currentTrack);
 
+    Logger::printOut("trying to prefetch next track:");
     //prefetch the next track!
 
 	  CPlayList& playlist = g_playlistPlayer.GetPlaylist(PLAYLIST_MUSIC);
@@ -96,8 +100,8 @@ namespace addon_music_spotify {
 	  	CFileItemPtr song = playlist[nextSong];
 	  	if (song != NULL){
 	  		CStdString uri = song->GetPath();
-	  		if (uri.Left(7).Equals("spotify")){
-	  			uri = uri.Left(uri.Find('.'));
+	  		if (uri.substr(0, 7) == "spotify"){
+	  			uri = uri.substr(0, uri.find('.'));
 	  	    Logger::printOut("prefetching track:");
 	  	    Logger::printOut(uri);
             sp_link *spLink = m_dll->sp_link_create_from_string(uri);
@@ -163,7 +167,7 @@ namespace addon_music_spotify {
           sp_error error = m_dll->sp_session_player_load(getSession(), m_currentTrack);
           CStdString message;
           Logger::printOut("load player 3");
-          message.Format("%s", m_dll->sp_error_message(error));
+          message = StringUtils::Format("%s", m_dll->sp_error_message(error));
           Logger::printOut(message);
           Logger::printOut("load player 4");
           if (SP_ERROR_OK == error) {

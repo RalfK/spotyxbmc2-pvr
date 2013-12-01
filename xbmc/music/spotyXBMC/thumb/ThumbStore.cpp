@@ -150,14 +150,14 @@ namespace addon_music_spotify {
 
 			CCurlFile http;
 			CStdString artistString = artistName;
-			artistString.Replace(' ', '+');
+			StringUtils::Replace(artistString,' ', '+');
 			CStdString urlString;
-			urlString.Format(
+			urlString = StringUtils::Format(
 					"http://htbackdrops.org/api/afb0f6cdbd412a7888005de34f86e4a5/searchXML?keywords=%s&default_operator=and&aid=1&fields=title,keywords,caption,mb_name,mb_alias&inc=keywords,caption,mb_name,mb_aliases&limit=1",
-					artistString);
+					artistString.c_str());
 
 			CURL url(urlString);
-
+/*
 			if (http.Open(url)) {
 				Logger::printOut("Looking for fanart, need to fetch a new address");
 				Logger::printOut(artistNameString);
@@ -182,10 +182,10 @@ namespace addon_music_spotify {
 						TiXmlNode* fileNameElement = element->FirstChild("filename");
 						CStdString name = fileNameElement->ToElement()->GetText();
 
-						CStdString *fanartUrl = new CStdString();
-						fanartUrl->Format(
+						CStdString* fanartUrl;
+						*fanartUrl = StringUtils::Format(
 								"http://htbackdrops.org/api/afb0f6cdbd412a7888005de34f86e4a5/download/%s/fullsize/%s",
-								id, name);
+								id.c_str(), name.c_str());
 						//Logger::printOut("Adding online fanart");
 
 						m_fanarts.insert(
@@ -204,7 +204,7 @@ namespace addon_music_spotify {
 						return fanartUrl;
 					}
 				}
-			}
+			}*/
 			//Logger::printOut("Adding standard fanart");
 			m_fanarts.insert(stringMap::value_type(artistNameString, m_stdFanart));
 

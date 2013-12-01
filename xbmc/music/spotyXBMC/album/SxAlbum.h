@@ -27,6 +27,7 @@
 #include <string>
 #include "../thumb/SxThumb.h"
 #include "../track/TrackContainer.h"
+#include "../../../utils/StdString.h"
 #include "URL.h"
 
 using namespace std;

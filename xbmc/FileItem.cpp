@@ -1204,10 +1204,10 @@ bool CFileItem::IsRemovable() const
 
 bool CFileItem::IsSpotify() const
 {
-  if (URIUtils::GetExtension(m_strPath).Equals(".spotify", false))
+  if (URIUtils::GetExtension(m_strPath).compare(".spotify"))
     return true;
-  CStdString extension = m_strPath.Right(m_strPath.GetLength() - m_strPath.Find('.') - 1);
-  if (extension.Left(12) == "spotifyradio")
+  CStdString extension = m_strPath.substr(m_strPath.find('.') + 1);
+  if (extension.substr(0, 12) == "spotifyradio")
     return true;
   return false;
 }

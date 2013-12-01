@@ -22,7 +22,8 @@
 #ifndef UTILS_H_
 #define UTILS_H_
 
-#include <string>
+#include "../../utils/StdString.h"
+#include "../../utils/StringUtils.h"
 #include "artist/SxArtist.h"
 #include "track/SxTrack.h"
 #include "album/SxAlbum.h"

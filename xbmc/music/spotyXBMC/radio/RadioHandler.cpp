@@ -63,14 +63,14 @@ namespace addon_music_spotify {
     Utils::updateRadio(radioNumber);
 
     CStdString path;
-    path.Format("musicdb://3/spotify:radio:%i/", radioNumber);
+    path = StringUtils::Format("musicdb://3/spotify:radio:%i/", radioNumber);
     //TODO update the now playing playlist with the new songs
     Logger::printOut("updating now playing");
     if (g_playlistPlayer.GetCurrentPlaylist() == PLAYLIST_MUSIC && m_radios[radioNumber - 1] != NULL && m_radios[radioNumber - 1]->m_currentPlayingPos != 0) {
 	  CPlayList& playlist = g_playlistPlayer.GetPlaylist(PLAYLIST_MUSIC);
       g_playlistPlayer.SetCurrentSong(0); 
       CStdString path;
-      path.Format("musicdb://3/spotify:radio:%i/", radioNumber);
+      path = StringUtils::Format("musicdb://3/spotify:radio:%i/", radioNumber);
       CFileItemList items;
       g_spotify->GetTracks(items, path, "", -1);
 	  playlist.Clear();

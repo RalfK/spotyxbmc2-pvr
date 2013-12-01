@@ -30,6 +30,8 @@
 #include "FileItem.h"
 #include "../../cores/paplayer/ICodec.h"
 #include "../../dialogs/GUIDialogContextMenu.h"
+#include "../../utils/StdString.h"
+#include "../../utils/StringUtils.h"
 
 using namespace std;
 using namespace addon_music_spotify;

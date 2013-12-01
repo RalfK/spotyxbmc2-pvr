@@ -42,7 +42,7 @@ namespace addon_music_spotify {
 		char linkString[256];
         m_dll->sp_link_as_string(link, linkString, 256);
 		CStdString linkStringClean = linkString;
-		linkStringClean.Remove(':');
+		StringUtils::Replace(linkStringClean,":","");        
         m_dll->sp_link_release(link);
 		m_file = path + linkStringClean.c_str() + ".jpg";
 		if (XFILE::CFile::Exists(m_file, true)) {
@@ -51,7 +51,7 @@ namespace addon_music_spotify {
 		  CStdString pathS(m_file);
 		  bool recache;
 		  CStdString cached(CTextureCache::Get().CheckCachedImage(pathS,true,recache));
-		  if (!cached.IsEmpty() && !recache) {
+		  if (!cached.empty() && !recache) {
 			//Logger::printOut("Thumb already in XBMC cache, no need to download again");
 			m_file = cached;
 			m_imageIsFromCache = true;

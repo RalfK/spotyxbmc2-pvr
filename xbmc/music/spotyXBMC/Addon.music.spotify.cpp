@@ -18,7 +18,7 @@
  For contact with the author:
  david.erenger@gmail.com
  */
-
+#include "../../utils/StdString.h"
 #include "Addon.music.spotify.h"
 #include <stdint.h>
 #include "Utils.h"
@@ -81,13 +81,13 @@ bool Addon_music_spotify::GetPlaylists(CFileItemList& items) {
 		CMediaSource playlistShare;
 		for (int i = 0; i < ps->getPlaylistCount(); i++) {
 			if (!ps->getPlaylist(i)->isFolder() && ps->getPlaylist(i)->isLoaded()) {
-				playlistShare.strPath.Format("musicdb://3/spotify:playlist:%i", i);
+				playlistShare.strPath = StringUtils::Format("musicdb://3/spotify:playlist:%i", i);
 				const char* owner = ps->getPlaylist(i)->getOwnerName();
 				if (owner != NULL)
-					playlistShare.strName.Format("%s %s %s",
-							ps->getPlaylist(i)->getName(), Settings::getInstance()->getByString(), owner);
+					playlistShare.strName = StringUtils::Format("%s %s %s",
+							ps->getPlaylist(i)->getName(), Settings::getInstance()->getByString().c_str(), owner);
 				else
-					playlistShare.strName.Format("%s", ps->getPlaylist(i)->getName());
+					playlistShare.strName = StringUtils::Format("%s", ps->getPlaylist(i)->getName());
 				CFileItemPtr pItem(new CFileItem(playlistShare));
 				SxThumb* thumb = ps->getPlaylist(i)->getThumb();
 				if (thumb != NULL)
@@ -104,12 +104,14 @@ bool Addon_music_spotify::GetAlbums(CFileItemList& items, CStdString& path,
 		CStdString artistName) {
 	CURL url(path);
 	CStdString uri = url.GetFileNameWithoutPath();
-	if (uri.Left(14).Equals("spotify:artist")) {
+	Logger::printOut("Addon_music_spotify::GetAlbums");
+	Logger::printOut(uri);
+	if (uri.substr(0,14) == "spotify:artist") {
 		return getArtistAlbums(items, uri);
-	} else if (uri.Left(15).Equals("spotify:toplist")) {
+	} else if (uri.substr(0,15) == "spotify:toplist") {
 		return getTopListAlbums(items);
-	} else if (uri.Left(13).Equals("spotify:track")) {
-        sp_link *spLink = m_dll->sp_link_create_from_string(uri.Left(uri.Find('.')));
+	} else if (uri.substr(0,13) == "spotify:track") {
+        sp_link *spLink = m_dll->sp_link_create_from_string(uri.substr(0,uri.find('.')).c_str());
 		if (!spLink)
 			return false;
         sp_track *spTrack = m_dll->sp_link_as_track(spLink);
@@ -117,10 +119,10 @@ bool Addon_music_spotify::GetAlbums(CFileItemList& items, CStdString& path,
             sp_artist* spArtist = m_dll->sp_track_artist(spTrack, 0);
 			return getArtistAlbums(items, spArtist);
 		}
-	} else if (uri.Left(13).Equals("spotify:album")) {
+	} else if (uri.substr(0,13) == "spotify:album") {
 		Logger::printOut("browsing artist from album");
 		Logger::printOut(uri);
-        sp_link *spLink = m_dll->sp_link_create_from_string(uri.Left(uri.Find('#')));
+        sp_link *spLink = m_dll->sp_link_create_from_string(uri.substr(0,uri.find('#')).c_str());
 		if (!spLink)
 			return false;
         sp_album *spAlbum = m_dll->sp_link_as_album(spLink);
@@ -163,7 +165,7 @@ bool Addon_music_spotify::getArtistAlbums(CFileItemList& items,
 		char* uri = new char[256];
         m_dll->sp_link_as_string(link, uri, 256);
         m_dll->sp_link_release(link);
-		path.Format("musicdb://1/%s/", uri);
+		path = StringUtils::Format("musicdb://1/%s/", uri);
 		delete uri;
 		pItem->SetPath(path);
 		pItem->m_bIsFolder = true;
@@ -203,7 +205,7 @@ bool Addon_music_spotify::getAllAlbums(CFileItemList& items,
 
 	Logger::printOut("get album");
 	if (isReady()) {
-		if (artistStr.IsEmpty()) {
+		if (artistStr.empty()) {
 			//load all starred albums
 			PlaylistStore* ps = Session::getInstance()->getPlaylistStore();
 			StarredList* sl = ps->getStarredList();
@@ -240,21 +242,21 @@ bool Addon_music_spotify::GetTracks(CFileItemList& items, CStdString& path,
 	CStdString uri = url.GetFileNameWithoutPath();
 	//the path will look something like this "musicdb://2/spotify:artist:0LcJLqbBmaGUft1e9Mm8HV/-1/"
 	//if we are trying to show all tracks for a spotify artist, we cant use the params becouse they are only integers.
-	CURL url2(path.Left(path.GetLength() - 3));
+	CURL url2(path.substr(0,path.size() - 3));
 	CStdString artist = url2.GetFileNameWithoutPath();
-
-	if (uri.Left(13).Equals("spotify:album")) {
+	if (uri.substr(0,13) == "spotify:album") {
 		return getAlbumTracks(items, uri);
-	} else if (artist.Left(14).Equals("spotify:artist")) {
+	} else if (artist.substr(0,14) == "spotify:artist") {
 		return getArtistTracks(items, artist);
-	} else if (uri.Left(16).Equals("spotify:playlist")) {
-		uri.Delete(0, 17);
+	} else if (uri.substr(0,16) == "spotify:playlist") {
+		uri.erase(0, 17);
+		Logger::printOut(StringUtils::Format("get tracks: %s", uri.substr(0,16).c_str()));
 		return getPlaylistTracks(items, atoi(uri));
-	} else if (artist.Left(15).Equals("spotify:toplist")) {
+	} else if (artist.substr(0,15) == "spotify:toplist") {
 		return g_spotify->getTopListTracks(items);
-	} else if (uri.Left(13).Equals("spotify:radio")) {
-		return getRadioTracks(items, atoi(uri.Right(1)));
-	} else if (uri.Left(13).Equals("spotify:track")) {
+	} else if (uri.substr(0,13) == "spotify:radio") {
+		return getRadioTracks(items, atoi(uri.substr(uri.size()-1).c_str()));
+	} else if (uri.substr(0,13) == "spotify:track") {
 		return getAlbumTracksFromTrack(items, uri);
 	} else if (albumId == -1) {
 		return getAllTracks(items, artistName);
@@ -265,9 +267,9 @@ bool Addon_music_spotify::GetOneTrack(CFileItemList& items, CStdString& path) {
   Logger::printOut("get one track");
   CURL url(path);
   CStdString uri = url.GetFileNameWithoutPath();
-  if (uri.Left(13).Equals("spotify:track")) {
+  if (uri.substr(0,13) == "spotify:track") {
       if (isReady()) {
-      sp_link *spLink = m_dll->sp_link_create_from_string(uri.Left(uri.Find('.')));
+      sp_link *spLink = m_dll->sp_link_create_from_string(uri.substr(0,uri.find('.')).c_str());
       if (!spLink) return false;
       sp_track *spTrack = m_dll->sp_link_as_track(spLink);
       if (spTrack) {
@@ -284,7 +286,7 @@ bool Addon_music_spotify::GetOneTrack(CFileItemList& items, CStdString& path) {
 bool Addon_music_spotify::getAlbumTracksFromTrack(CFileItemList& items,
 		CStdString& uri) {
 	if (isReady()) {
-        sp_link *spLink = m_dll->sp_link_create_from_string(uri.Left(uri.Find('.')));
+        sp_link *spLink = m_dll->sp_link_create_from_string(uri.substr(0,uri.find('.')).c_str());
 		if (!spLink)
 			return false;
         sp_track *spTrack = m_dll->sp_link_as_track(spLink);
@@ -313,8 +315,8 @@ bool Addon_music_spotify::getAlbumTracks(CFileItemList& items,
 		CStdString& path) {
 	if (isReady()) {
 		//lets split the string to get the album uri and the disc number
-		CStdString uri = path.Left(path.Find('#'));
-		CStdString discStr = path.Right(path.GetLength() - path.Find('#') - 1);
+		CStdString uri = path.substr(0,path.find('#'));
+		CStdString discStr = path.substr(path.find('#') + 1);
 		//Logger::printOut(discStr.c_str());
 		int disc = atoi(discStr.c_str());
 
@@ -363,7 +365,7 @@ bool Addon_music_spotify::getAllTracks(CFileItemList& items, CStdString& path) {
 	Logger::printOut("get tracks");
 	Logger::printOut(path);
 	if (isReady()) {
-		if (path.IsEmpty()) {
+		if (path.empty()) {
 			//load the starred tracks
 			PlaylistStore* ps = Session::getInstance()->getPlaylistStore();
 			StarredList* sl = ps->getStarredList();
@@ -392,7 +394,7 @@ bool Addon_music_spotify::getRadioTracks(CFileItemList& items, int radio) {
 				const CFileItemPtr pItem = Utils::SxTrackToItem(tracks[i], "",
 						i + lowestTrackNumber + 1);
 				CStdString path;
-				path.Format("%s%s%i%s%i", pItem->GetPath(), "radio#", radio, "#",
+				path = StringUtils::Format("%s%s%i%s%i", pItem->GetPath().c_str(), "radio#", radio, "#",
 						i + lowestTrackNumber);
 				pItem->SetPath(path);
 				items.Add(pItem);
@@ -406,9 +408,9 @@ bool Addon_music_spotify::getRadioTracks(CFileItemList& items, int radio) {
 bool Addon_music_spotify::GetArtists(CFileItemList& items, CStdString& path) {
 	CURL url(path);
 	CStdString uri = url.GetFileNameWithoutPath();
-	if (uri.Left(15).Equals("spotify:toplist")) {
+	if (uri.substr(0,15) == "spotify:toplist") {
 		getTopListArtists(items);
-	} else if (uri.Left(14).Equals("spotify:artist")) {
+	} else if (uri.substr(0,14) == "spotify:artist") {
 		getArtistSimilarArtists(items, uri);
 	} else {
 		getAllArtists(items);
@@ -484,7 +486,7 @@ bool Addon_music_spotify::GetTopLists(CFileItemList& items) {
 		//add the tracks entry
 		CFileItemPtr pItem(new CFileItem(Settings::getInstance()->getTopListTrackString()));
 		CStdString path;
-		path.Format("musicdb://2/spotify:toplist/-1/");
+		path = StringUtils::Format("musicdb://2/spotify:toplist/-1/");
 		pItem->SetPath(path);
 		pItem->m_bIsFolder = true;
 		items.Add(pItem);
@@ -492,7 +494,7 @@ bool Addon_music_spotify::GetTopLists(CFileItemList& items) {
 
 		//add the album entry
 		CFileItemPtr pItem2(new CFileItem(Settings::getInstance()->getTopListAlbumString()));
-		path.Format("musicdb://2/spotify:toplist");
+		path = StringUtils::Format("musicdb://2/spotify:toplist");
 		pItem2->SetPath(path);
 		pItem2->m_bIsFolder = true;
 		items.Add(pItem2);
@@ -500,7 +502,7 @@ bool Addon_music_spotify::GetTopLists(CFileItemList& items) {
 
 		//add the artist entry
 		CFileItemPtr pItem3(new CFileItem(Settings::getInstance()->getTopListArtistString()));
-		path.Format("musicdb://1/spotify:toplist");
+		path = StringUtils::Format("musicdb://1/spotify:toplist");
 		pItem3->SetPath(path);
 		pItem3->m_bIsFolder = true;
 		items.Add(pItem3);
@@ -513,21 +515,21 @@ bool Addon_music_spotify::GetCustomEntries(CFileItemList& items) {
 	if (isReady()) {
 		//add radio 1
 		CStdString name;
-		name.Format("%s%s", Settings::getInstance()->getRadioPrefixString(),
-				Settings::getInstance()->getRadio1Name());
+		name = StringUtils::Format("%s%s", Settings::getInstance()->getRadioPrefixString().c_str(),
+				Settings::getInstance()->getRadio1Name().c_str());
 		CFileItemPtr pItem(new CFileItem(name));
 		CStdString path;
-		path.Format("musicdb://3/spotify:radio:1/");
+		path = StringUtils::Format("musicdb://3/spotify:radio:1/");
 		pItem->SetPath(path);
 		pItem->m_bIsFolder = true;
 		items.Add(pItem);
 		pItem->SetArt("fanart", Settings::getInstance()->getFanart());
 
 		//add radio 2
-		name.Format("%s%s", Settings::getInstance()->getRadioPrefixString(),
-				Settings::getInstance()->getRadio2Name());
+		name = StringUtils::Format("%s%s", Settings::getInstance()->getRadioPrefixString().c_str(),
+				Settings::getInstance()->getRadio2Name().c_str());
 		CFileItemPtr pItem2(new CFileItem(name));
-		path.Format("musicdb://3/spotify:radio:2/");
+		path = StringUtils::Format("musicdb://3/spotify:radio:2/");
 		pItem2->SetPath(path);
 		pItem2->m_bIsFolder = true;
 		items.Add(pItem2);
@@ -545,8 +547,8 @@ bool Addon_music_spotify::GetContextButtons(CFileItemPtr& item,
 		//the path will look something like this "musicdb://2/spotify:artist:0LcJLqbBmaGUft1e9Mm8HV/-1/"
 		//if we are trying to show all tracks for a spotify artist, we cant use the params becouse they are only integers.
 
-		if (uri.Left(13).Equals("spotify:album")) {
-			uri = uri.Left(uri.Find('#'));
+		if (uri.substr(0,13) == "spotify:album") {
+			uri = uri.substr(0,uri.find('#'));
             sp_link *spLink = m_dll->sp_link_create_from_string(uri);
             sp_album *spAlbum = m_dll->sp_link_as_album(spLink);
 			SxAlbum* salbum = AlbumStore::getInstance()->getAlbum(spAlbum, true);
@@ -562,8 +564,8 @@ bool Addon_music_spotify::GetContextButtons(CFileItemPtr& item,
 			}
             m_dll->sp_link_release(spLink);
             m_dll->sp_album_release(spAlbum);
-		} else if (uri.Left(13).Equals("spotify:track")) {
-			uri = uri.Left(uri.Find('.'));
+		} else if (uri.substr(0,13) == "spotify:track") {
+			uri = uri.substr(0,uri.find('.'));
 			Logger::printOut(uri);
             sp_link *spLink = m_dll->sp_link_create_from_string(uri);
             sp_track* spTrack = m_dll->sp_link_as_track(spLink);
@@ -607,7 +609,7 @@ bool Addon_music_spotify::ToggleStarTrack(CFileItemPtr& item) {
 	if (isReady()) {
 		CURL url(item->GetPath());
 		CStdString uri = url.GetFileNameWithoutPath();
-		uri = uri.Left(uri.Find('.'));
+		uri = uri.substr(0,uri.find('.'));
 		Logger::printOut(uri);
         sp_link *spLink = m_dll->sp_link_create_from_string(uri);
         sp_track* spTrack = m_dll->sp_link_as_track(spLink);
@@ -626,13 +628,13 @@ bool Addon_music_spotify::ToggleStarAlbum(CFileItemPtr& item) {
 		CStdString uri = url.GetFileNameWithoutPath();
 
 		sp_album *spAlbum = NULL;
-		if (uri.Left(13).Equals("spotify:album")) {
-			uri = uri.Left(uri.Find('#'));
+		if (uri.substr(0,13) == "spotify:album") {
+			uri = uri.substr(0,uri.find('#'));
             sp_link* spLink = m_dll->sp_link_create_from_string(uri);
             spAlbum = m_dll->sp_link_as_album(spLink);
             m_dll->sp_link_release(spLink);
-		} else if (uri.Left(13).Equals("spotify:track")) {
-            sp_link *spLink = m_dll->sp_link_create_from_string(uri.Left(uri.Find('.')));
+		} else if (uri.substr(0,13) == "spotify:track") {
+            sp_link *spLink = m_dll->sp_link_create_from_string(uri.substr(0,uri.find('.')).c_str());
 			if (!spLink)
 				return true;
             sp_track *spTrack = m_dll->sp_link_as_track(spLink);
@@ -730,7 +732,7 @@ bool Addon_music_spotify::Search(CStdString query, CFileItemList& items) {
 	if (isReady()) {
 		if (!SearchHandler::getInstance()->search(query)) {
 			CStdString albumPrefix;
-			albumPrefix.Format("[%s] ", g_localizeStrings.Get(558).c_str());
+			albumPrefix = StringUtils::Format("[%s] ", g_localizeStrings.Get(558).c_str());
 			Logger::printOut("search fetch albums");
 			vector<SxAlbum*> albums = SearchHandler::getInstance()->getAlbumResults();
 			for (int i = 0; i < albums.size(); i++) {
@@ -751,7 +753,7 @@ bool Addon_music_spotify::Search(CStdString query, CFileItemList& items) {
 				items.Add(Utils::SxTrackToItem(tracks[i]));
 
 			CStdString artistPrefix;
-			artistPrefix.Format("[%s] ", g_localizeStrings.Get(557).c_str());
+			artistPrefix = StringUtils::Format("[%s] ", g_localizeStrings.Get(557).c_str());
 
 			Logger::printOut("search fetch artists");
 			vector<SxArtist*> artists =

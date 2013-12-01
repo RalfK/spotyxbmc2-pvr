@@ -22,6 +22,8 @@
 #ifndef SXSETTINGS_H_
 #define SXSETTINGS_H_
 
+#include "utils/StdString.h"
+#include "../../utils/StringUtils.h"
 #include "DllLibspotify.h"
 #include "addons/Addon.h"
 #include "addons/AddonManager.h"

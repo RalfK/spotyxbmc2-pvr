@@ -70,16 +70,15 @@ namespace addon_music_spotify {
     outAlbum.artist =  StringUtils::Split(album->getAlbumArtistName(), g_advancedSettings.m_musicItemSeparator);
     CStdString title;
     if (discNumber != 0)
-      title.Format("%s%s %s %i", prefix, album->getAlbumName(), "disc",
-          discNumber);
+      title = StringUtils::Format("%s%s %s %i", prefix.c_str(), album->getAlbumName(), "disc", discNumber);
     else
-      title.Format("%s%s", prefix, album->getAlbumName());
+      title = StringUtils::Format("%s%s", prefix.c_str(), album->getAlbumName());
     outAlbum.strAlbum = title;
     outAlbum.iYear = album->getAlbumYear();
     outAlbum.strReview = album->getReview();
     outAlbum.iRating = album->getAlbumRating();
     CStdString path;
-    path.Format("musicdb://3/%s#%i", album->getUri(), discNumber);
+    path = StringUtils::Format("musicdb://3/%s#%i", album->getUri(), discNumber);
     const CFileItemPtr pItem(new CFileItem(path, outAlbum));
     if (album->hasThumb())
       pItem->SetArt("thumb",album->getThumb()->getPath());
@@ -94,17 +93,17 @@ namespace addon_music_spotify {
     }
     CSong outSong;
     CStdString path;
-    path.Format("%s.spotify", track->getUri());
+    path = StringUtils::Format("%s.spotify", track->getUri());
     outSong.strFileName = path;
     CStdString title;
-    title.Format("%s%s", prefix, track->getName());
+    title = StringUtils::Format("%s%s", prefix.c_str(), track->getName().c_str());
     outSong.strTitle = title;
     outSong.iTrack = trackNumber == -1 ? track->getTrackNumber() : trackNumber;
     outSong.iDuration = track->getDuration();
     outSong.rating = track->getRating();
     char ratingChar[3];
     CStdString ratingStr; //= itoa(1 + (track->getRating() / 2), ratingChar, 10);
-    ratingStr.Format("%i", 1 + (track->getRating() / 2), ratingChar, 10);
+    ratingStr = StringUtils::Format("%i", 1 + (track->getRating() / 2), ratingChar, 10);
     //delete ratingChar;
     outSong.rating = ratingStr[0];
     outSong.artist =  StringUtils::Split(track->getArtistName(), g_advancedSettings.m_musicItemSeparator);
@@ -124,13 +123,13 @@ namespace addon_music_spotify {
     }
 
     CStdString path;
-    path.Format("musicdb://2/%s/", artist->getUri());
+    path = StringUtils::Format("musicdb://2/%s/", artist->getUri());
 
     CFileItemPtr pItem(new CFileItem(path, true));
     CStdString label;
-    label.Format("%s%s", prefix, artist->getArtistName());
+    label = StringUtils::Format("%s%s", prefix.c_str(), artist->getArtistName());
     pItem->SetLabel(label);
-    label.Format("A %s", artist->getArtistName());
+    label = StringUtils::Format("A %s", artist->getArtistName());
 
     pItem->GetMusicInfoTag()->SetTitle(label);
     pItem->GetMusicInfoTag()->SetArtist(artist->getArtistName());
@@ -160,14 +159,14 @@ namespace addon_music_spotify {
 
   void Utils::updatePlaylists() {
      CStdString path;
-     path.Format("special://musicplaylists/");
+     path = StringUtils::Format("special://musicplaylists/");
      updatePath(path);
    }
 
    void Utils::updateMenu() {
      Logger::printOut("updating main music menu");
      CStdString path;
-     path.Format("");
+     path = StringUtils::Format("");
      updatePath(path);
    }
 
@@ -175,42 +174,42 @@ namespace addon_music_spotify {
      //TODO FIX!
      Logger::printOut("updating playlist view");
      CStdString path;
-     path.Format("musicdb://3/spotify:playlist:%i/", index);
+     path = StringUtils::Format("musicdb://3/spotify:playlist:%i/", index);
      updatePath(path);
    }
 
    void Utils::updateAllArtists() {
      Logger::printOut("updating all artists");
      CStdString path;
-     path.Format("musicdb://2/");
+     path = StringUtils::Format("musicdb://2/");
      updatePath(path);
    }
 
    void Utils::updateAllAlbums() {
      Logger::printOut("updating all albums");
      CStdString path;
-     path.Format("musicdb://3/");
+     path = StringUtils::Format("musicdb://3/");
      updatePath(path);
    }
 
    void Utils::updateAllTracks() {
      Logger::printOut("updating all tracks");
      CStdString path;
-     path.Format("musicdb://4/");
+     path = StringUtils::Format("musicdb://4/");
      updatePath(path);
    }
 
    void Utils::updateRadio(int radio) {
      Logger::printOut("updating radio results");
      CStdString path;
-     path.Format("musicdb://3/spotify:radio:%i/", radio);
+     path = StringUtils::Format("musicdb://3/spotify:radio:%i/", radio);
      updatePath(path);
    }
 
    void Utils::updateToplistMenu() {
      Logger::printOut("updating toplistmenu");
      CStdString path;
-     path.Format("musicdb://5/");
+     path = StringUtils::Format("musicdb://5/");
      updatePath(path);
    }
 
@@ -227,7 +226,7 @@ namespace addon_music_spotify {
 
      Logger::printOut("updating search results");
      CStdString path;
-     path.Format("musicsearch://%s/", query);
+     path = StringUtils::Format("musicsearch://%s/", query.c_str());
      updatePath(path);
    }
 

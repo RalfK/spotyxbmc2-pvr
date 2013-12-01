@@ -112,8 +112,9 @@ ICodec* CodecFactory::CreateCodec(const CStdString& strFileType)
     return new DVDPlayerCodec();
   //spotify
   //TODO see if any addon has the ability to play the format.... now hardcode spotify
-  else if (strFileType.Left(7).Equals("spotify"))
+  else if (strFileType.substr(0, 7) == "spotify") {
     return g_spotify->GetCodec();
+  }
 
   return NULL;
 }

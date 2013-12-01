@@ -24,6 +24,7 @@
 
 #include "../DllLibspotify.h"
 #include "../track/TrackContainer.h"
+#include "../../../utils/StdString.h"
 #include <vector>
 
 namespace addon_music_spotify {
