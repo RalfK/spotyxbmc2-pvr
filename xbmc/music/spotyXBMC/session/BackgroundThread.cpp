@@ -40,6 +40,10 @@ namespace addon_music_spotify {
     	return;
     }
   	Sleep(Settings::getInstance()->getStartDelay());
+    Sleep(Settings::getInstance()->getStartDelay());
+    Sleep(Settings::getInstance()->getStartDelay());
+    Sleep(Settings::getInstance()->getStartDelay());
+    Sleep(Settings::getInstance()->getStartDelay());
     Session::getInstance()->connect();
     Session::getInstance()->unlock();
     Logger::printOut("bgthread OnStartup done");

@@ -69,6 +69,7 @@ namespace addon_music_spotify {
 		  m_searchNumberArtists = 10 * atoi(addon->GetSetting("searchNoArtists")) + 1;
 		  m_searchNumberAlbums = 10 * atoi(addon->GetSetting("searchNoAlbums")) + 1;
 		  m_searchNumberTracks = 10 * atoi(addon->GetSetting("searchNoTracks")) + 1;
+		  m_searchNumberPlaylists = 10 * atoi(addon->GetSetting("searchNoPlaylists")) + 1;
 		  m_preloadArtistDetails = addon->GetSetting("preloadArtistDetails") == "true";
 
 		  int i = atoi(addon->GetSetting("artistNoArtists")) + 1;
@@ -83,19 +84,6 @@ namespace addon_music_spotify {
 		  if (i == 11) m_artistNumberTracks = -1;
 		  m_artistNumberTracks = 10 * i;
 
-		  m_radio1Name = addon->GetSetting("radio1name");
-		  m_radio1From = 1900 + (10 * (4 + atoi(addon->GetSetting("radio1from"))));
-		  m_radio1To = 1900 + (10 * (4 + atoi(addon->GetSetting("radio1to"))));
-
-		  m_radio1Genres = getRadioGenres(addon, 1);
-
-		  m_radio2Name = addon->GetSetting("radio2name");
-		  m_radio2From = 1900 + (10 * (4 + atoi(addon->GetSetting("radio2from"))));
-		  m_radio2To = 1900 + (10 * (4 + atoi(addon->GetSetting("radio2to"))));
-
-		  m_radio2Genres = getRadioGenres(addon, 2);
-
-		  m_radioNumberTracks = atoi(addon->GetSetting("radioNoTracks")) + 3;
 		  m_toplistRegionEverywhere = addon->GetSetting("topListRegion") == "1";
 		  m_preloadTopLists = addon->GetSetting("preloadToplists") == "true";
 		  m_byString = addon->GetString(30002);
@@ -127,48 +115,4 @@ namespace addon_music_spotify {
   Settings::~Settings() {
   }
 
-  sp_radio_genre Settings::getRadioGenres(ADDON::AddonPtr addon, int radio) {
-
-  	CStdString radioC;
-  	radioC = StringUtils::Format("radio%igenre", radio);
-
-    struct {
-      bool enable;
-      int id;
-    } radiogenres[] = {
-    		{ addon->GetSetting(radioC + "1") == "true", 0x1 },
-    		{ addon->GetSetting(radioC + "2") == "true", 0x2 },
-    		{ addon->GetSetting(radioC + "3") == "true", 0x4 },
-    		{ addon->GetSetting(radioC + "4") == "true", 0x8 },
-    		{ addon->GetSetting(radioC + "") == "true", 0x10 },
-    		{ addon->GetSetting(radioC + "6") == "true", 0x20 },
-    		{ addon->GetSetting(radioC + "7") == "true", 0x40 },
-    		{ addon->GetSetting(radioC + "8") == "true", 0x80 },
-    		{ addon->GetSetting(radioC + "9") == "true", 0x100 },
-    		{ addon->GetSetting(radioC + "10") == "true", 0x200 },
-    		{ addon->GetSetting(radioC + "11") == "true", 0x400 },
-    		{ addon->GetSetting(radioC + "12") == "true", 0x800 },
-    		{ addon->GetSetting(radioC + "13") == "true", 0x1000 },
-    		{ addon->GetSetting(radioC + "14") == "true", 0x2000 },
-    		{ addon->GetSetting(radioC + "15") == "true", 0x4000 },
-    		{ addon->GetSetting(radioC + "16") == "true", 0x8000 },
-    		{ addon->GetSetting(radioC + "17") == "true", 0x10000 },
-    		{ addon->GetSetting(radioC + "18") == "true", 0x20000 },
-			  { addon->GetSetting(radioC + "19") == "true", 0x40000 },
-    		{ addon->GetSetting(radioC + "20") == "true", 0x80000 },
-    		{ addon->GetSetting(radioC + "21") == "true", 0x100000 },
-    		{ addon->GetSetting(radioC + "22") == "true", 0x200000 },
-    		{ addon->GetSetting(radioC + "23") == "true", 0x400000 },
-    		{ addon->GetSetting(radioC + "24") == "true", 0x800000 },
-    		{ addon->GetSetting(radioC + "25") == "true", 0x1000000 },
-    		{ addon->GetSetting(radioC + "26") == "true", 0x2000000 },
-    		{ addon->GetSetting(radioC + "27") == "true", 0x4000000 },
-    };
-
-    int mask = 0;
-    for (int i = 0; i < sizeof(radiogenres) / sizeof(radiogenres[0]); i++)
-      if (radiogenres[i].enable) mask |= radiogenres[i].id;
-
-    return (sp_radio_genre) mask;
-  }
 } /* namespace addon_music_spotify */

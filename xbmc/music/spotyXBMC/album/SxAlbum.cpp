@@ -107,7 +107,7 @@ void SxAlbum::doLoadThumb() {
 	if (m_hasThumb)
 		return;
 	//Logger::printOut("Requesting thumb for album");
-    const byte* image = m_dll->sp_album_cover(m_spAlbum);
+    const byte* image = m_dll->sp_album_cover(m_spAlbum,SP_IMAGE_SIZE_NORMAL);
 	if (image) {
 		m_thumb = ThumbStore::getInstance()->getThumb(image);
 		if (m_thumb)

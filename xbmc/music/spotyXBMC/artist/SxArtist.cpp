@@ -57,7 +57,7 @@ namespace addon_music_spotify {
         m_dll->sp_link_release(link);
 
 			//check if there is a thumb
-            const byte* image = m_dll->sp_artist_portrait(artist);
+            const byte* image = m_dll->sp_artist_portrait(artist,SP_IMAGE_SIZE_NORMAL);
 			if (image) {
 				m_thumb = ThumbStore::getInstance()->getThumb(image);
 				if (m_thumb)

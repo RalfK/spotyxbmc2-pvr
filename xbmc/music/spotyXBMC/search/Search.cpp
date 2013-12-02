@@ -38,6 +38,7 @@ namespace addon_music_spotify {
     m_maxArtistResults = Settings::getInstance()->getSearchNumberArtists();
     m_maxAlbumResults = Settings::getInstance()->getSearchNumberAlbums();
     m_maxTrackResults = Settings::getInstance()->getSearchNumberTracks();
+    m_maxPlaylistkResults = Settings::getInstance()->getSearchNumberPlaylists();
 
     m_query = query;
 
@@ -49,7 +50,20 @@ namespace addon_music_spotify {
     m_cancelSearch = false;
     Logger::printOut("creating search");
     Logger::printOut(query);
-    m_currentSearch = m_dll->sp_search_create(Session::getInstance()->getSpSession(), m_query.c_str(), 0, m_maxTrackResults, 0, m_maxAlbumResults, 0, m_maxArtistResults, &cb_searchComplete, this);
+    m_currentSearch = m_dll->sp_search_create(
+      Session::getInstance()->getSpSession(), 
+      m_query.c_str(), 
+      0, 
+      m_maxTrackResults, 
+      0, 
+      m_maxAlbumResults, 
+      0, 
+      m_maxArtistResults,
+      0,
+      m_maxPlaylistkResults,
+      SP_SEARCH_STANDARD,
+      &cb_searchComplete, 
+      this);
 
   }
 

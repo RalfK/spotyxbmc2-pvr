@@ -40,7 +40,6 @@
 #include "../../MediaSource.h"
 #include "player/PlayerHandler.h"
 #include "search/SearchHandler.h"
-#include "radio/RadioHandler.h"
 #include "SxSettings.h"
 
 using namespace addon_music_spotify;
@@ -254,9 +253,7 @@ bool Addon_music_spotify::GetTracks(CFileItemList& items, CStdString& path,
 		return getPlaylistTracks(items, atoi(uri));
 	} else if (artist.substr(0,15) == "spotify:toplist") {
 		return g_spotify->getTopListTracks(items);
-	} else if (uri.substr(0,13) == "spotify:radio") {
-		return getRadioTracks(items, atoi(uri.substr(uri.size()-1).c_str()));
-	} else if (uri.substr(0,13) == "spotify:track") {
+	}  else if (uri.substr(0,13) == "spotify:track") {
 		return getAlbumTracksFromTrack(items, uri);
 	} else if (albumId == -1) {
 		return getAllTracks(items, artistName);
@@ -383,28 +380,6 @@ bool Addon_music_spotify::getAllTracks(CFileItemList& items, CStdString& path) {
 	return true;
 }
 
-bool Addon_music_spotify::getRadioTracks(CFileItemList& items, int radio) {
-	Logger::printOut("get radio tracks");
-	if (isReady()) {
-		int lowestTrackNumber = RadioHandler::getInstance()->getLowestTrackNumber(
-				radio);
-		if (radio == 1 || radio == 2) {
-			vector<SxTrack*> tracks = RadioHandler::getInstance()->getTracks(radio);
-			for (int i = 0; i < tracks.size(); i++) {
-				const CFileItemPtr pItem = Utils::SxTrackToItem(tracks[i], "",
-						i + lowestTrackNumber + 1);
-				CStdString path;
-				path = StringUtils::Format("%s%s%i%s%i", pItem->GetPath().c_str(), "radio#", radio, "#",
-						i + lowestTrackNumber);
-				pItem->SetPath(path);
-				items.Add(pItem);
-			}
-		}
-		return true;
-	}
-	return false;
-}
-
 bool Addon_music_spotify::GetArtists(CFileItemList& items, CStdString& path) {
 	CURL url(path);
 	CStdString uri = url.GetFileNameWithoutPath();
@@ -507,34 +482,6 @@ bool Addon_music_spotify::GetTopLists(CFileItemList& items) {
 		pItem3->m_bIsFolder = true;
 		items.Add(pItem3);
 		pItem3->SetArt("fanart", Settings::getInstance()->getFanart());
-	}
-	return true;
-}
-
-bool Addon_music_spotify::GetCustomEntries(CFileItemList& items) {
-	if (isReady()) {
-		//add radio 1
-		CStdString name;
-		name = StringUtils::Format("%s%s", Settings::getInstance()->getRadioPrefixString().c_str(),
-				Settings::getInstance()->getRadio1Name().c_str());
-		CFileItemPtr pItem(new CFileItem(name));
-		CStdString path;
-		path = StringUtils::Format("musicdb://3/spotify:radio:1/");
-		pItem->SetPath(path);
-		pItem->m_bIsFolder = true;
-		items.Add(pItem);
-		pItem->SetArt("fanart", Settings::getInstance()->getFanart());
-
-		//add radio 2
-		name = StringUtils::Format("%s%s", Settings::getInstance()->getRadioPrefixString().c_str(),
-				Settings::getInstance()->getRadio2Name().c_str());
-		CFileItemPtr pItem2(new CFileItem(name));
-		path = StringUtils::Format("musicdb://3/spotify:radio:2/");
-		pItem2->SetPath(path);
-		pItem2->m_bIsFolder = true;
-		items.Add(pItem2);
-		pItem2->SetArt("fanart", Settings::getInstance()->getFanart());
-
 	}
 	return true;
 }

@@ -74,6 +74,7 @@ namespace addon_music_spotify {
     int m_maxAlbumResults;
     int m_maxArtistResults;
     int m_maxTrackResults;
+    int m_maxPlaylistkResults;
 
     bool m_artistsDone;
     bool m_albumsDone;

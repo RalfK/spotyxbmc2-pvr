@@ -36,6 +36,7 @@ namespace addon_music_spotify {
     m_callbacks.logged_in = &cb_loggedIn;
     m_callbacks.notify_main_thread = &cb_notifyMainThread;
     m_callbacks.music_delivery = &PlayerHandler::cb_musicDelivery;
+    m_callbacks.credentials_blob_updated = &cb_credentialsBlobUpdated;
     m_callbacks.metadata_updated = 0;
     m_callbacks.play_token_lost = 0;
     m_callbacks.log_message = &cb_logMessage;
@@ -52,7 +53,12 @@ namespace addon_music_spotify {
       delete m_dll, m_dll = NULL;
   }
 
+  void SessionCallbacks::cb_credentialsBlobUpdated(sp_session *session, const char *blob) {
+    Session::getInstance()->updateCredentialsBlob(blob);
+  }
+
   void SessionCallbacks::cb_connectionError(sp_session *session, sp_error error) {
+    
   }
 
   void SessionCallbacks::cb_loggedIn(sp_session *session, sp_error error) {

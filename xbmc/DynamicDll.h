@@ -175,6 +175,9 @@ public: \
 #define DEFINE_METHOD_LINKAGE11(result, linkage, name, args) \
         DEFINE_METHOD_LINKAGE_BASE(result, linkage, name, args, (p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11))
 
+#define DEFINE_METHOD_LINKAGE13(result, linkage, name, args) \
+        DEFINE_METHOD_LINKAGE_BASE(result, linkage, name, args, (p1, p2, p3, p4, p5, p6, p7, p8, p9, p10, p11, p12, p13))
+
 ///////////////////////////////////////////////////////////
 //
 //  DEFINE_METHOD_FP
@@ -216,6 +219,7 @@ public: \
 #define DEFINE_METHOD9(result, name, args) DEFINE_METHOD_LINKAGE9(result, __cdecl, name, args)
 #define DEFINE_METHOD10(result, name, args) DEFINE_METHOD_LINKAGE10(result, __cdecl, name, args)
 #define DEFINE_METHOD11(result, name, args) DEFINE_METHOD_LINKAGE11(result, __cdecl, name, args)
+#define DEFINE_METHOD13(result, name, args) DEFINE_METHOD_LINKAGE13(result, __cdecl, name, args)
 
 #ifdef TARGET_WINDOWS
 ///////////////////////////////////////////////////////////
@@ -339,6 +343,7 @@ public: \
 #define DEFINE_FUNC_ALIGNED9(result, linkage, name, t1, t2, t3, t4, t5, t6, t7, t8, t9)        DEFINE_METHOD_LINKAGE9 (result, linkage, name, (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9) )
 #define DEFINE_FUNC_ALIGNED10(result, linkage, name, t1, t2, t3, t4, t5, t6, t7, t8, t10)      DEFINE_METHOD_LINKAGE10(result, linkage, name, (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10) )
 #define DEFINE_FUNC_ALIGNED11(result, linkage, name, t1, t2, t3, t4, t5, t6, t7, t8, t10, t11) DEFINE_METHOD_LINKAGE11(result, linkage, name, (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10, t11 p11) )
+#define DEFINE_FUNC_ALIGNED13(result, linkage, name, t1, t2, t3, t4, t5, t6, t7, t8, t10, t11, t12, t13) DEFINE_METHOD_LINKAGE11(result, linkage, name, (t1 p1, t2 p2, t3 p3, t4 p4, t5 p5, t6 p6, t7 p7, t8 p8, t9 p9, t10 p10, t11 p11, t12 p12, t13 p13) )
 
 #endif
 

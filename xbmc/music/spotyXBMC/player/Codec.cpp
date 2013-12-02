@@ -25,7 +25,6 @@
 #include "utils/URIUtils.h"
 #include <stdint.h>
 #include "PlayerHandler.h"
-#include "../radio/RadioHandler.h"
 #include "../SxSettings.h"
 #include "../../PlayListPlayer.h"
 #include "../../../playlists/PlayList.h"
@@ -60,17 +59,6 @@ namespace addon_music_spotify {
     CStdString uri = URIUtils::GetFileName(strFile);
     Logger::printOut(uri);
     CStdString extension = uri.substr(uri.find('.') + 1);
-    if (extension.substr(0, 12) == "spotifyradio") {
-      //if its a radiotrack the radionumber and tracknumber is secretly encoded at the end of the extension
-      CStdString trackStr = extension.substr(extension.rfind('#') + 1);
-      Logger::printOut(extension);
-      CStdString radioNumber = extension.substr(0, uri.find('#'));
-      Logger::printOut(radioNumber);
-      radioNumber = radioNumber.substr(radioNumber.find('#') + 1);
-      Logger::printOut("loading codec radio");
-      RadioHandler::getInstance()->pushToTrack(atoi(radioNumber),
-          atoi(trackStr));
-    }
 
     //we have a non legit extension so remove it manually
     uri = uri.substr(0, uri.find('.'));

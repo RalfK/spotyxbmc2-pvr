@@ -51,7 +51,7 @@ namespace addon_music_spotify {
     void notifyMainThread() {
       m_nextEvent = 0;
     }
-
+    void updateCredentialsBlob(const char*);
     void loggedIn();
     void loggedOut();
     bool isLoggedOut() {
@@ -91,6 +91,8 @@ namespace addon_music_spotify {
     int m_nextEvent;
     BackgroundThread *m_bgThread;
     bool m_lock;
+
+    const char *m_blob;
 
     bool m_isEnabled;
     bool m_isLoggedOut;

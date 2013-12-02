@@ -17,3 +17,49 @@ bgthread OnStartup
 bgthread OnStartup
 bgthread OnStartup
 bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+unable to load libspotify
+get tracks
+get tracks
+
+get starred artists
+unable to load libspotify
+unable to load libspotify
+unable to load libspotify
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup
+bgthread OnStartup

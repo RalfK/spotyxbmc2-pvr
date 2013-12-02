@@ -46,6 +46,7 @@ namespace addon_music_spotify {
     static void SP_CALLCONV cb_connectionError(sp_session *session, sp_error error);
     static void SP_CALLCONV cb_loggedIn(sp_session *session, sp_error error);
     static void SP_CALLCONV cb_loggedOut(sp_session *session);
+    static void SP_CALLCONV cb_credentialsBlobUpdated(sp_session *session, const char *blob);
     static void SP_CALLCONV cb_notifyMainThread(sp_session *session);
     static void SP_CALLCONV cb_logMessage(sp_session *session, const char *data);
     static void SP_CALLCONV cb_searchComplete(sp_search *search, void *userdata);

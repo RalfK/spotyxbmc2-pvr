@@ -28,7 +28,6 @@
 #include "../track/TrackStore.h"
 #include "../album/AlbumStore.h"
 #include "../thumb/ThumbStore.h"
-#include "../radio/RadioHandler.h"
 #include "../search/SearchHandler.h"
 #include "../Utils.h"
 
@@ -67,6 +66,8 @@ namespace addon_music_spotify {
   }
 
   bool Session::processEvents() {
+    Logger::printOut(StringUtils::Format("m_nextEvent: %d",m_nextEvent));
+    Logger::printOut(StringUtils::Format("m_nextEvent: %p",m_session));
     m_dll->sp_session_process_events(m_session, &m_nextEvent);
     return true;
   }
@@ -79,7 +80,7 @@ namespace addon_music_spotify {
       config.api_version = SPOTIFY_API_VERSION;
       Logger::printOut("API version:");
       char* version = new char[20];
-//      Logger::printOut(itoa(SPOTIFY_API_VERSION, version, 10));
+      Logger::printOut(SPOTIFY_API_VERSION);
 	  
 	  //the api is not copying the string so create a new c string
 	  CStdString location = Settings::getInstance()->getCachePath();
@@ -117,7 +118,12 @@ namespace addon_music_spotify {
       m_dll->sp_session_set_connection_rules(m_session, SP_CONNECTION_RULE_NETWORK);
       m_dll->sp_session_set_volume_normalization(m_session, Settings::getInstance()->useNormalization());
 
-      m_dll->sp_session_login(m_session, Settings::getInstance()->getUserName().c_str(), Settings::getInstance()->getPassword().c_str(), true);
+      m_dll->sp_session_login(
+        m_session, 
+        Settings::getInstance()->getUserName().c_str(), 
+        Settings::getInstance()->getPassword().c_str(), 
+        true,
+        NULL);
       m_isEnabled = true;
       Logger::printOut("Logged in, returning");
       return true;
@@ -176,6 +182,10 @@ namespace addon_music_spotify {
       Logger::printOut("cleaned session");
   	}
     return true;
+  }
+
+  void Session::updateCredentialsBlob(const char *blob) {
+    m_blob = blob;
   }
 
   void Session::loggedIn() {
