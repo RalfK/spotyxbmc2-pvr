@@ -46,11 +46,15 @@ namespace addon_music_spotify {
     m_currentTrack = 0;
     m_isPlayerLoaded = false;
     m_buffer = 0;
+    m_dll = NULL;
+    m_dll = new DllLibspotify();
+    m_dll->Load();
   }
 
   Codec::~Codec() {
     DeInit();
     delete m_buffer;
+    delete m_dll;
   }
 
   bool Codec::Init(const CStdString & strFile, unsigned int filecache) {
@@ -222,7 +226,7 @@ namespace addon_music_spotify {
     };
 
     if (m_Channels > 2) {
-	  Logger::printOut("m_Channels is bigger than 2, please fix code, I can´t return a valid AEChannel map");
+	  Logger::printOut("m_Channels is bigger than 2, please fix code, I cannot return a valid AEChannel map");
 //    return CAEUtil::GuessChLayout(m_Channels);
     }
 

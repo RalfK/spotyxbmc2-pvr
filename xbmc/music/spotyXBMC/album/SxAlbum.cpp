@@ -115,7 +115,7 @@ void SxAlbum::doLoadThumb() {
 	}
 }
 
-void SxAlbum::tracksLoaded(sp_albumbrowse *result) {
+void SxAlbum::tracksLoaded(sp_albumbrowse *result, DllLibspotify *libSpotify) {
     if (m_dll->sp_albumbrowse_error(result) == SP_ERROR_OK) {
         m_review = m_dll->sp_albumbrowse_review(result);
 		//remove the links from the review text (it contains spotify uris so maybe we can do something fun with it later)
@@ -147,10 +147,13 @@ void SxAlbum::tracksLoaded(sp_albumbrowse *result) {
 }
 
 void SxAlbum::cb_albumBrowseComplete(sp_albumbrowse *result, void *userdata) {
+	static DllLibspotify *sl = new DllLibspotify();
+	sl->Load();
+
 	//Logger::printOut("album browse complete");
 	SxAlbum *album = (SxAlbum*) (userdata);
 	//Logger::printOut(album->getAlbumName());
-	album->tracksLoaded(result);
+	album->tracksLoaded(result, sl);
 }
 
 bool SxAlbum::getTrackItems(CFileItemList& items) {

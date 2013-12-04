@@ -75,6 +75,7 @@ namespace addon_music_spotify {
   bool Session::connect() {
     if (!m_session) {
       sp_session_config config;
+      memset(&config, 0, sizeof(sp_session_config));
       Logger::printOut("Creating session");
 	 
       config.api_version = SPOTIFY_API_VERSION;

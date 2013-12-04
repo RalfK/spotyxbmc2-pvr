@@ -30,23 +30,16 @@ namespace addon_music_spotify {
       m_dll = new DllLibspotify();
       m_dll->Load();
 
+      memset(&m_callbacks, 0, sizeof(m_callbacks));
+
     m_callbacks.connection_error = &cb_connectionError;
     m_callbacks.logged_out = &cb_loggedOut;
-    m_callbacks.message_to_user = 0;
     m_callbacks.logged_in = &cb_loggedIn;
     m_callbacks.notify_main_thread = &cb_notifyMainThread;
     m_callbacks.music_delivery = &PlayerHandler::cb_musicDelivery;
     m_callbacks.credentials_blob_updated = &cb_credentialsBlobUpdated;
-    m_callbacks.metadata_updated = 0;
-    m_callbacks.play_token_lost = 0;
     m_callbacks.log_message = &cb_logMessage;
     m_callbacks.end_of_track = &PlayerHandler::cb_endOfTrack;
-    m_callbacks.streaming_error = 0;
-    m_callbacks.userinfo_updated = 0;
-    m_callbacks.start_playback = 0;
-    m_callbacks.stop_playback = 0;
-    m_callbacks.get_audio_buffer_stats = 0;
-    //m_callbacks.offline_status_updated = 0;
   }
 
   SessionCallbacks::~SessionCallbacks() {
@@ -58,7 +51,6 @@ namespace addon_music_spotify {
   }
 
   void SessionCallbacks::cb_connectionError(sp_session *session, sp_error error) {
-    
   }
 
   void SessionCallbacks::cb_loggedIn(sp_session *session, sp_error error) {
@@ -71,6 +63,7 @@ namespace addon_music_spotify {
       Logger::printOut("Error while logging in!");
       Logger::printOut(m_dll->sp_error_message(error));
     }
+
     delete m_dll, m_dll = NULL;
   }
 

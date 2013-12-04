@@ -41,7 +41,7 @@ namespace addon_music_spotify {
     static void SP_CALLCONV cb_albumBrowseComplete(sp_albumbrowse *result, void *userdata);
     void doLoadTracksAndDetails();
     void doLoadThumb();
-    void tracksLoaded(sp_albumbrowse *result);
+    void tracksLoaded(sp_albumbrowse *result, DllLibspotify *libSpotify);
     const char *getReview() const;
 
     friend class AlbumStore;
